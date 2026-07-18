@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+APP_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+APP="$APP_DIR/t113_display_app"
+LOG="/tmp/t113_tcp.log"
+PID="/tmp/t113_display_app.pid"
+STATE="/tmp/t113_sensor_state.json"
+CSV="/tmp/t113_sensor_data.csv"
+PORT="${PORT:-5000}"
+BIND_IP="${BIND_IP:-0.0.0.0}"
+
+if [ -f "$PID" ] && kill -0 "$(cat "$PID")" 2>/dev/null; then
+    echo "t113_display_app is already running, pid=$(cat "$PID")"
+    exit 0
+fi
+
+rm -f "$LOG"
+rm -f "$STATE"
+rm -f "$CSV"
+chmod 755 "$APP"
+"$APP" -a "$BIND_IP" -p "$PORT" -d -l "$LOG" -P "$PID" -S "$STATE" -C "$CSV"
+
+sleep 1
+cat "$LOG"
+if [ -f "$STATE" ]; then
+    echo "initial state:"
+    cat "$STATE"
+fi
+echo "log: $LOG"
+echo "pid: $PID"
+echo "latest json: $STATE"
+echo "csv data: $CSV"
+echo "watch log: tail -f $LOG"
+echo "watch csv: tail -f $CSV"

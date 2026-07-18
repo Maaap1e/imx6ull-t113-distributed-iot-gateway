@@ -1,0 +1,55 @@
+# Linux and C/C++ build output
+build/
+cmake-build-*/
+Output/
+*.o
+*.obj
+*.d
+*.a
+*.so
+*.elf
+*.axf
+*.map
+*.hex
+*.bin
+*.lst
+*.lnp
+*.dep
+*.htm
+*.html
+
+# Generated executables
+imx6ull_gateway_app
+stm32_can_sensor_client
+stm32_can_ota_host
+t113_display_app
+demo
+
+# Keil local state
+*.uvguix.*
+*.scvd
+DebugConfig/
+
+# Runtime data
+*.log
+*.csv
+*.pid
+*.tmp
+param.cfg
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# T113 assets are supplied separately because their redistribution rights vary
+t113/lvgl_app/res/font/*.otf
+t113/lvgl_app/res/image/*.png
+t113/lvgl_app/res/image/*.gif
+t113/lvgl_app/res/music/*.wav
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
