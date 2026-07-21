@@ -1,0 +1,34 @@
+name: build-and-test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: find . -type f \( -name '*.sh' -o -name 'S90iot-*' \) -print0 | xargs -0 -n1 sh -n
+      - name: Build Linux applications
+        run: |
+          make -C linux/can_sensor_client
+          make -C linux/can_ota_host
+          make -C linux/imx6ull_gateway
+          make -C t113/tcp_receiver
+      - name: Run protocol tests
+        run: make -C tests test
+      - name: Test target packaging
+        run: |
+          sh scripts/package_target.sh imx6ull
+          sh scripts/package_target.sh t113
+          tar -tzf dist/iot-gateway-$(cat VERSION)-imx6ull.tar.gz >/dev/null
+          tar -tzf dist/iot-gateway-$(cat VERSION)-t113.tar.gz >/dev/null
+      - name: Check Python tool
+        run: python3 -m py_compile tests/tcp_fault_injector.py
+      - name: Check version metadata
+        run: grep -F "$(cat VERSION)" README.md

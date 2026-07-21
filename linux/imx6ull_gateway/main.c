@@ -38,6 +38,14 @@ typedef struct {
     const char *last_error;
 } gateway_runtime_status_t;
 
+static volatile sig_atomic_t g_running = 1;
+
+static void handle_stop_signal(int signo)
+{
+    (void)signo;
+    g_running = 0;
+}
+
 static void usage(const char *prog)
 {
     printf("Usage: %s [-a t113_ip] [-p port] [-i interval_ms] [-A ap3216c_sysfs_dir] [-D ap3216c_dev] [-I icm20608_dev] [-M stm32_can_state_json] [-s] [-v]\n", prog);
@@ -60,7 +68,7 @@ static void sleep_ms(unsigned int ms)
     req.tv_sec = ms / 1000u;
     req.tv_nsec = (long)(ms % 1000u) * 1000000L;
 
-    while (nanosleep(&req, &req) < 0 && errno == EINTR) {
+    while (nanosleep(&req, &req) < 0 && errno == EINTR && g_running) {
     }
 }
 
@@ -270,6 +278,8 @@ int main(int argc, char *argv[])
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, handle_stop_signal);
+    signal(SIGTERM, handle_stop_signal);
     srand((unsigned int)(time(NULL) ^ getpid()));
 
     while ((opt = getopt(argc, argv, "a:p:i:A:D:I:M:svh")) != -1) {
@@ -308,7 +318,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    while (1) {
+    while (g_running) {
         sensor_snapshot_t snapshot;
         char payload[MAX_PAYLOAD_SIZE];
         int payload_len;
@@ -400,4 +410,11 @@ int main(int argc, char *argv[])
 
         sleep_ms(interval_ms);
     }
+
+    if (fd >= 0) {
+        close(fd);
+    }
+    printf("Gateway stopped: sent_seq=%u reconnects=%u disconnects=%u\n",
+           seq - 1u, runtime.reconnect_count, runtime.disconnect_count);
+    return 0;
 }

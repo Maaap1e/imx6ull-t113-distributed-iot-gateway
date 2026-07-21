@@ -1,20 +1,47 @@
 # Build and Deployment Notes
 
-## Linux applications
+## Ubuntu VM build host
 
-Each Linux module has a small Makefile. Native GCC can be used for protocol
-testing; board deployment requires the matching cross compiler.
+Linux applications are cross-compiled in the Ubuntu virtual machine. Keep the
+repository in the VM's Linux filesystem when possible. Set each compiler to the
+real absolute path supplied by the matching board SDK/toolchain; the names below
+are examples, not universal toolchain names.
 
 ```sh
-make -C linux/imx6ull_gateway CC=arm-linux-gnueabihf-gcc
-make -C linux/can_sensor_client CC=arm-linux-gnueabihf-gcc
-make -C linux/can_ota_host CC=arm-linux-gnueabihf-gcc
-make -C t113/tcp_receiver CC=arm-openwrt-linux-gcc
+export IMX_CC=/opt/imx6ull-toolchain/bin/arm-linux-gnueabihf-gcc
+export T113_CC=/opt/t113-toolchain/bin/arm-openwrt-linux-gcc
+
+IMX_CC="$IMX_CC" sh scripts/build_all.sh imx6ull
+T113_CC="$T113_CC" sh scripts/build_all.sh t113
+
+file linux/imx6ull_gateway/imx6ull_gateway_app
+file t113/tcp_receiver/t113_display_app
 ```
 
-Copy only the resulting executable and start/stop scripts to the target. Runtime
-logs, PID files, CSV files and JSON state stay under `/tmp` and must not be
-committed.
+The `file` output must report an ARM executable, not x86-64. Native GCC is used
+only for host protocol tests (`make -C tests test`).
+
+`build_all.sh` covers the standalone Linux user-space programs only. Kernel
+drivers/device trees, STM32 Keil projects, and the complete T113 LVGL target must
+still be built with their corresponding BSP/SDK workflows.
+
+## Create and transfer target bundles
+
+```sh
+sh scripts/package_target.sh imx6ull
+sh scripts/package_target.sh t113
+
+scp dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
+```
+
+The packaging script also writes a `.sha256` file when `sha256sum` is available.
+Copy it with the archive and verify it on the board before extraction.
+
+On the matching board, extract its bundle and run `sh scripts/install_target.sh
+<role>`. The installer preserves an existing `/etc/iot-gateway/<role>.conf` and
+writes new defaults as `<role>.conf.new`. See `docs/RUNTIME_MANAGEMENT.md` for
+BusyBox, systemd, health checks, and bounded tmpfs logs.
 
 ## STM32 projects
 
@@ -60,5 +87,6 @@ public source tree.
 4. Start the i.MX6ULL TCP gateway.
 5. Start the T113 LVGL application.
 
-Start scripts use background processes, PID files and logs so the serial console
-remains usable.
+Start scripts use background processes, PID files and bounded logs so the serial
+console remains usable. Production startup should use the supplied BusyBox init
+script or systemd units instead of shell-login startup commands.

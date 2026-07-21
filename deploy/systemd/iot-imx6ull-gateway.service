@@ -1,0 +1,15 @@
+[Unit]
+Description=i.MX6ULL sensor TCP gateway
+After=network-online.target iot-can-sensor.service
+Wants=network-online.target
+Requires=iot-can-sensor.service
+
+[Service]
+Type=simple
+Environment=IOT_GATEWAY_CONFIG=/etc/iot-gateway/imx6ull.conf
+ExecStart=/opt/iot-gateway/scripts/run_gateway.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

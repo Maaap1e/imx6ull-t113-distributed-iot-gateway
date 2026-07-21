@@ -1,0 +1,12 @@
+[Unit]
+Description=IoT gateway bounded-log maintenance (%i)
+
+[Service]
+Type=simple
+Environment=IOT_GATEWAY_CONFIG=/etc/iot-gateway/%i.conf
+ExecStart=/opt/iot-gateway/scripts/runtime_maintenance.sh %i
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

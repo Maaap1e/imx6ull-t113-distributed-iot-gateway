@@ -8,7 +8,7 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Status](https://img.shields.io/badge/Status-Prototype%20Verified-brightgreen.svg)
+![Version](https://img.shields.io/badge/Version-v1.0.0--rc.1-orange.svg)
 
 </div>
 
@@ -23,6 +23,8 @@
 - **全志 T113 显示终端**：接收带帧头和 CRC32 的 TCP 数据，写入原子状态文件，再由 LVGL 页面显示设备在线状态与传感器数据。
 
 i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 App 固件。Bootloader 依次完成应用区擦除、分块写入、序号检查、CRC32 校验以及 App 跳转，构成 Linux 网关远程升级 CAN 节点固件的完整闭环。
+
+当前仓库版本为 **`v1.0.0-rc.1`**：功能代码、统一配置、进程守护、开机启动、日志/CSV 限额和协议测试已经补齐；在三块实板完成 24 小时稳定性与故障恢复验收后，再发布正式 **`v1.0.0`**。本版本不把尚未实现的 MQTT、OTA 数字签名、回滚和断点续传算作 1.0 能力。
 
 ```mermaid
 flowchart LR
@@ -84,6 +86,8 @@ sequenceDiagram
 ```text
 .
 |-- docs/                         # 通信协议、OTA 与部署文档
+|-- config/                       # 两块 Linux 板的运行配置
+|-- deploy/                       # BusyBox init 与 systemd 服务
 |-- linux/
 |   |-- imx6ull_gateway/          # i.MX6ULL 采集与 TCP Client
 |   |-- can_sensor_client/        # SocketCAN 接收与状态发布
@@ -94,6 +98,9 @@ sequenceDiagram
 |-- stm32/
 |   |-- can_ota_bootloader/       # 常驻 CAN Bootloader
 |   `-- dht11_can_app/            # DHT11 CAN App，链接到 0x08010000
+|-- scripts/                      # 虚拟机构建/打包、板端安装/守护与健康检查
+|-- tests/                        # TCP 协议单测与故障注入
+|-- VERSION                       # 发布版本
 |-- .env.example                  # 不含密钥的环境变量示例
 |-- THIRD_PARTY_NOTICES.md        # 第三方来源与许可证边界
 `-- LICENSE                       # 本项目自研代码的使用说明
@@ -112,9 +119,127 @@ sequenceDiagram
 
 CAN 物理层需要在两端配置 CAN 收发器，共地并连接 CANH/CANL，在总线两个物理端点各配置一个 120 欧终端电阻。
 
-## 快速开始
+## 推荐工作流：Ubuntu 虚拟机交叉编译
 
-### 1. 编译 Linux 应用
+开发板只运行 ARM 程序，不负责保存源码和编译。推荐链路为：
+
+```text
+Windows 宿主机 / GitHub
+        -> Ubuntu 虚拟机交叉编译
+        -> 生成 imx6ull、t113 两个 tar.gz 安装包
+        -> scp 到对应开发板
+        -> 板端安装、配置并启动
+```
+
+建议把仓库放在 Ubuntu 自己的 Linux 文件系统（例如 `~/workspace`），而不是长期放在 VMware 共享目录中，避免共享目录造成权限位丢失和编译速度下降。即使脚本没有执行权限，也可以统一用 `sh scripts/xxx.sh` 调用。
+
+### 1. 在虚拟机确认交叉工具链
+
+下面路径只是示例，必须替换成你虚拟机中的真实路径：
+
+```sh
+cd ~/workspace/imx6ull-t113-distributed-iot-gateway
+
+export IMX_CC=/opt/imx6ull-toolchain/bin/arm-linux-gnueabihf-gcc
+export T113_CC=/opt/t113-toolchain/bin/arm-openwrt-linux-gcc
+
+"$IMX_CC" --version
+"$T113_CC" --version
+```
+
+如果 T113 SDK 需要先执行环境脚本，就先进入 Tina SDK 执行其 `build/envsetup.sh`，再用 `command -v <编译器名称>` 找到编译器。不要照抄示例路径或编译器前缀。
+
+### 2. 分别交叉编译
+
+```sh
+# i.MX6ULL：网关、CAN 采集和 CAN OTA 主机
+IMX_CC="$IMX_CC" sh scripts/build_all.sh imx6ull
+
+# T113：TCP 接收程序
+T113_CC="$T113_CC" sh scripts/build_all.sh t113
+
+# 确认产物是 ARM ELF，而不是虚拟机的 x86-64 程序
+file linux/imx6ull_gateway/imx6ull_gateway_app
+file linux/can_sensor_client/stm32_can_sensor_client
+file linux/can_ota_host/stm32_can_ota_host
+file t113/tcp_receiver/t113_display_app
+```
+
+这里的脚本只编译本仓库可独立构建的 Linux 用户态程序，不会重新编译 i.MX6ULL 内核/设备树/驱动、STM32 Keil 工程或完整 T113 LVGL 程序。T113 LVGL 仍需放回匹配的 Tina SDK 应用目录编译；当前 T113 安装包包含的是独立 TCP 接收服务。
+
+### 3. 在虚拟机生成板端安装包
+
+```sh
+sh scripts/package_target.sh imx6ull
+sh scripts/package_target.sh t113
+ls -lh dist/
+```
+
+输出为：
+
+```text
+dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz
+dist/iot-gateway-1.0.0-rc.1-t113.tar.gz
+dist/*.tar.gz.sha256
+```
+
+如果同名包已经存在，脚本会拒绝覆盖。确认需要重新生成时使用 `FORCE=1 sh scripts/package_target.sh <目标>`。
+
+### 4. 从虚拟机传到开发板
+
+```sh
+scp dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
+```
+
+可以同时传输对应的 `.sha256` 文件，并在板端支持 `sha256sum` 时执行 `sha256sum -c <文件名>.sha256` 检查传输完整性。如果板子没有 SSH/SCP，可以用 U 盘、TFTP 或 FTP 传输同一个安装包，后续安装步骤不变。
+
+### 5. 在 i.MX6ULL 安装
+
+```sh
+cd /tmp
+tar -xzf iot-gateway-1.0.0-rc.1-imx6ull.tar.gz
+cd iot-gateway-1.0.0-rc.1-imx6ull
+sh scripts/install_target.sh imx6ull
+vi /etc/iot-gateway/imx6ull.conf
+```
+
+至少检查 `T113_IP`、`TCP_PORT`、`CAN_IFACE`、`CAN_BITRATE` 和三个传感器设备路径。安装内容进入 SD 卡根文件系统的 `/opt/iot-gateway` 和 `/etc/iot-gateway`，重启后仍然存在；运行日志位于 tmpfs `/tmp`，重启后清空。
+
+### 6. 在 T113 安装
+
+```sh
+cd /tmp
+tar -xzf iot-gateway-1.0.0-rc.1-t113.tar.gz
+cd iot-gateway-1.0.0-rc.1-t113
+sh scripts/install_target.sh t113
+vi /etc/iot-gateway/t113.conf
+```
+
+### 7. 启动并检查
+
+安装器会根据板端现有目录安装 systemd unit 或 BusyBox init 脚本。
+
+```sh
+# BusyBox / Tina Linux
+/etc/init.d/S90iot-imx6ull start   # i.MX6ULL 上执行
+/etc/init.d/S90iot-t113 start      # T113 上执行
+
+# systemd 版 i.MX6ULL
+systemctl daemon-reload
+systemctl enable --now iot-can-sensor.service iot-imx6ull-gateway.service
+systemctl enable --now iot-runtime-maintenance@imx6ull.service
+
+# 健康检查
+/opt/iot-gateway/scripts/healthcheck.sh imx6ull
+/opt/iot-gateway/scripts/healthcheck.sh t113
+```
+
+两条健康检查命令分别在对应板子上执行，不是在虚拟机里执行。
+
+## 手动调试流程
+
+### 1. 单独编译 Linux 应用
 
 根据目标板工具链调整 `CC`：
 
@@ -123,6 +248,13 @@ make -C linux/can_sensor_client CC=arm-linux-gnueabihf-gcc
 make -C linux/can_ota_host CC=arm-linux-gnueabihf-gcc
 make -C linux/imx6ull_gateway CC=arm-linux-gnueabihf-gcc
 make -C t113/tcp_receiver CC=arm-openwrt-linux-gcc
+```
+
+也可以按目标执行：
+
+```sh
+IMX_CC=arm-linux-gnueabihf-gcc sh scripts/build_all.sh imx6ull
+T113_CC=arm-openwrt-linux-gcc sh scripts/build_all.sh t113
 ```
 
 ### 2. 启动 T113 TCP 接收端
@@ -186,12 +318,25 @@ chmod +x setup_can.sh run_ota.sh
 
 一次成功升级依次经历 `ready`、`erasing`、`writing`、`verify` 和 `done`。固件二进制不进入 Git 历史，建议作为版本化的 GitHub Release 附件发布。
 
+### 7. 直接从完整仓库安装
+
+如果为了调试把完整仓库复制到了目标板，也可以 root 身份直接执行：
+
+```sh
+sh scripts/install_target.sh imx6ull   # 在 i.MX6ULL
+sh scripts/install_target.sh t113      # 在 T113
+```
+
+配置位于 `/etc/iot-gateway/`。BusyBox/Tina 系统使用 `/etc/init.d/S90iot-*`，systemd 系统使用 `deploy/systemd/` 中的服务；完整操作见运行管理文档。
+
 ## 协议文档
 
 - [TCP 帧格式与 JSON 数据](docs/TCP_PROTOCOL.md)
 - [CAN 遥测与控制协议](docs/CAN_PROTOCOL.md)
 - [CAN IAP/OTA 流程](docs/OTA_FLOW.md)
 - [编译与板端部署](docs/BUILD_AND_DEPLOY.md)
+- [运行、守护与日志限额](docs/RUNTIME_MANAGEMENT.md)
+- [v1.0 实板验收清单](docs/V1_ACCEPTANCE.md)
 - [GitHub 发布检查清单](docs/PUBLISH_CHECKLIST.md)
 
 ## 当前完成情况
@@ -205,6 +350,11 @@ chmod +x setup_can.sh run_ota.sh
 | Linux CAN 状态 JSON/CSV 输出 | 已验证 |
 | STM32 CAN Bootloader 与整包 OTA | 已验证 |
 | T113 LVGL 设备状态和传感器可视化 | 已集成 |
+| 统一配置、优雅退出与健康检查 | `v1.0.0-rc.1` 已实现 |
+| BusyBox/systemd 开机启动与异常拉起 | `v1.0.0-rc.1` 已实现，待实板冷启动验收 |
+| tmpfs 日志/CSV 定额轮转 | `v1.0.0-rc.1` 已实现，待 24 小时验收 |
+| CRC、超长帧、粘包与拆包测试 | 已加入自动化测试与故障注入工具 |
+| OTA 与进程守护协调 | 已实现锁文件及 systemd 服务暂停/恢复 |
 | MQTT 命令下发与状态回传 | 规划中，当前仓库未包含 |
 | i.MX6ULL 本地 OTA 进度页面 | 规划中 |
 | 固件签名、回滚和断点续传 | 规划中 |
@@ -242,8 +392,7 @@ STM32 -> CAN -> /tmp/stm32_can_state.json
 - 为 OTA 主机增加状态 JSON，并在 i.MX6ULL 本地屏幕显示升级进度。
 - 增加固件版本策略、数字签名、回滚确认和掉电恢复机制。
 - 增加 CAN bus-off 自动恢复、节点注册和多节点地址分配。
-- 为两个 Linux 应用增加系统服务、看门狗与开机启动管理。
-- 增加针对错误 CRC、超长帧、粘包和拆包的自动化协议测试。
+- 将运行指标接入轻量级监控，并保存正式版本的长期稳定性趋势。
 
 ## 版权与第三方说明
 

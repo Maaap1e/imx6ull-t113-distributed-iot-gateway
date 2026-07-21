@@ -7,6 +7,8 @@
 - 只添加自己拍摄的硬件照片、自己制作的架构图或已获得再分发许可的媒体资源。
 - 不提交天气 API Key、Wi-Fi 密码、私钥、真实公网地址和个人目录路径。
 - 在 i.MX6ULL、T113 和 STM32 实板上重新编译并执行一次完整链路验证。
+- 完成 `docs/V1_ACCEPTANCE.md`，保留 24 小时资源记录与故障恢复结果。
+- 确认 `VERSION`、README 徽章、Release tag 和固件版本相互一致。
 - 将测试通过的 `.bin`/`.hex` 放入 GitHub Release，不要提交到 Git 历史。
 
 ## 初始化仓库
@@ -24,14 +26,20 @@ git push -u origin main
 执行 `git add .` 后先检查 `git status`。预期不应出现 `Output/`、`build/`、
 固件二进制、日志、CSV、PID、`.env` 或 T113 私有媒体资源。
 
-## 推荐的首个 Release
+## v1.0 发布顺序
 
 ```text
-Tag: v0.1.0
-Title: Three-node prototype with CAN OTA
+Pre-release tag: v1.0.0-rc.1
+Pre-release title: v1.0 runtime hardening release candidate
+
+Final tag (only after board acceptance): v1.0.0
+Final title: Distributed IoT gateway v1.0
 Assets:
+- iot-gateway-1.0.0-imx6ull.tar.gz
+- iot-gateway-1.0.0-t113.tar.gz
 - stm32_can_ota_bootloader.hex
 - stm32_dht11_can_app.bin
+- acceptance-results.txt
 ```
 
 Release 说明建议记录实测板卡、CAN 波特率、TCP 端口、固件链接地址、

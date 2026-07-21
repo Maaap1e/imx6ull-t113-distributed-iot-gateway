@@ -1,5 +1,6 @@
 # Linux and C/C++ build output
 build/
+dist/
 cmake-build-*/
 Output/
 *.o
@@ -24,6 +25,10 @@ stm32_can_sensor_client
 stm32_can_ota_host
 t113_display_app
 demo
+
+# Python cache
+__pycache__/
+*.pyc
 
 # Keil local state
 *.uvguix.*
