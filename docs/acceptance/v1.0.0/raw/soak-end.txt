@@ -1,0 +1,208 @@
+2026-07-23 01:12:43 CST
+6ac80ef71c366d4b1d8e5515e6639e11be0e5652
+Thu Jul 23 01:12:52 CST 2026
+1784740372
+ 01:12:52 up 1 day, 12 min,  load average: 0.00, 0.02, 0.00
+              total        used        free      shared  buff/cache   available
+Mem:         110244       49492        9948        2444       50804       53124
+Swap:             0           0           0
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M      2.4M     51.4M   4% /tmp
+4.0K	/tmp/lvgl_app.log
+4.0K	/tmp/t113_supervisor.log
+40.0K	/tmp/t113_tcp.log
+1.0M	/tmp/t113_tcp.log.1
+1.3M	/tmp/t113_sensor_data.csv
+OK   supervisor: pid=1156
+OK   t113-receiver: pid=1193
+INFO file=/tmp/t113_sensor_state.json bytes=746
+INFO file=/tmp/t113_sensor_data.csv bytes=1376137
+INFO file=/tmp/t113_tcp.log bytes=39847
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M      2.4M     51.4M   4% /tmp
+              total        used        free      shared  buff/cache   available
+Mem:         110244       49772        9668        2444       50804       52844
+Swap:             0           0           0
+1156
+1193
+{"gateway":"imx6ull","timestamp":1784740372,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":201655,"crc_errors":0,"protocol_errors":0,"disconnects":1},"payload":{"gateway":"imx6ull","timestamp":1784769163,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":40,"disconnect_count":2,"last_connected_time":1784682182,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":647,"ir":5,"ps":0},"icm20608_ok":1,"icm20608":{"gyro_x":-1.40,"gyro_y":-0.37,"gyro_z":-0.43,"accel_x":-0.01,"accel_y":0.00,"accel_z":0.99,"temp":39.86},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":43,"app_version":"1.0","counter":102,"frames":170929,"checksum_errors":0,"last_seen":1784769163}}}
+
+supervisor: restarting T113 receiver
+T113 display server listening on 0.0.0.0:5000
+initial state:
+{"gateway":"imx6ull","timestamp":9,"online":0,"connected":0,"status":"offline","alert":"waiting gateway connection","tcp_server":{"rx_frames":0,"crc_errors":0,"protocol_errors":0,"disconnects":0},"ap3216c_ok":0,"ap3216c":{"als":0,"ir":0,"ps":0},"icm20608_ok":0,"icm20608":{"gyro_x":0,"gyro_y":0,"gyro_z":0,"accel_x":0,"accel_y":0,"accel_z":0,"temp":0},"stm32_can_ok":0,"stm32_can":{"node":"stm32f103","online":0,"dht_ok":0,"temperature":0,"humidity":0,"app_version":"0.0","counter":0,"frames":0,"checksum_errors":0,"last_seen":0}}
+log: /tmp/t113_tcp.log
+pid: /tmp/t113_display_app.pid
+latest json: /tmp/t113_sensor_state.json
+csv data: /tmp/t113_sensor_data.csv
+watch log: tail -f /tmp/t113_tcp.log
+watch csv: tail -f /tmp/t113_sensor_data.csv
+rotated log /tmp/t113_tcp.log (1048698 bytes)
+[UI] AP3216C ok=1 als=662 ir=2 ps=0 | ICM20608 ok=1 temp=39.22 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=132
+[UI] AP3216C ok=1 als=661 ir=0 ps=13 | ICM20608 ok=1 temp=39.27 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=142
+[UI] AP3216C ok=1 als=660 ir=3 ps=8 | ICM20608 ok=1 temp=39.25 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=152
+[UI] AP3216C ok=1 als=659 ir=2 ps=13 | ICM20608 ok=1 temp=39.29 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=161
+[UI] AP3216C ok=1 als=656 ir=0 ps=0 | ICM20608 ok=1 temp=39.33 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=171
+[UI] AP3216C ok=1 als=472 ir=5 ps=13 | ICM20608 ok=1 temp=39.34 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=181
+[UI] AP3216C ok=1 als=655 ir=2 ps=17 | ICM20608 ok=1 temp=39.37 C | STM32 online=1 dht_ok=1 temp=29 C humidity=34 % counter=190
+[UI] AP3216C ok=1 als=653 ir=8 ps=0 | ICM20608 ok=1 temp=39.40 C | STM32 online=1 dht_ok=1 temp=29 C humidity=33 % counter=200
+[UI] AP3216C ok=1 als=653 ir=3 ps=0 | ICM20608 ok=1 temp=39.42 C | STM32 online=1 dht_ok=1 temp=29 C humidity=33 % counter=210
+[UI] AP3216C ok=1 als=654 ir=6 ps=0 | ICM20608 ok=1 temp=39.45 C | STM32 online=1 dht_ok=1 temp=29 C humidity=33 % counter=220
+[UI] AP3216C ok=1 als=651 ir=0 ps=0 | ICM20608 ok=1 temp=39.45 C | STM32 online=1 dht_ok=1 temp=29 C humidity=33 % counter=230
+[UI] AP3216C ok=1 als=650 ir=1 ps=0 | ICM20608 ok=1 temp=39.47 C | STM32 online=1 dht_ok=1 temp=29 C humidity=34 % counter=239
+[UI] AP3216C ok=1 als=651 ir=0 ps=6 | ICM20608 ok=1 temp=39.47 C | STM32 online=1 dht_ok=1 temp=29 C humidity=34 % counter=249
+[UI] AP3216C ok=1 als=651 ir=2 ps=6 | ICM20608 ok=1 temp=39.50 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=3
+[UI] AP3216C ok=1 als=650 ir=1 ps=0 | ICM20608 ok=1 temp=39.51 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=13
+[UI] AP3216C ok=1 als=650 ir=7 ps=0 | ICM20608 ok=1 temp=39.55 C | STM32 online=1 dht_ok=1 temp=29 C humidity=35 % counter=22
+[UI] AP3216C ok=1 als=650 ir=0 ps=0 | ICM20608 ok=1 temp=39.53 C | STM32 online=1 dht_ok=1 temp=29 C humidity=36 % counter=32
+[UI] AP3216C ok=1 als=651 ir=0 ps=3 | ICM20608 ok=1 temp=39.57 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=42
+[UI] AP3216C ok=1 als=649 ir=6 ps=6 | ICM20608 ok=1 temp=39.57 C | STM32 online=1 dht_ok=1 temp=29 C humidity=36 % counter=51
+[UI] AP3216C ok=1 als=650 ir=3 ps=5 | ICM20608 ok=1 temp=39.59 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=61
+[UI] AP3216C ok=1 als=649 ir=0 ps=10 | ICM20608 ok=1 temp=39.59 C | STM32 online=1 dht_ok=1 temp=28 C humidity=37 % counter=71
+[UI] AP3216C ok=1 als=649 ir=0 ps=0 | ICM20608 ok=1 temp=39.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=81
+[UI] AP3216C ok=1 als=651 ir=6 ps=0 | ICM20608 ok=1 temp=39.62 C | STM32 online=1 dht_ok=1 temp=28 C humidity=38 % counter=90
+[UI] AP3216C ok=1 als=647 ir=7 ps=0 | ICM20608 ok=1 temp=39.65 C | STM32 online=1 dht_ok=1 temp=28 C humidity=38 % counter=100
+[UI] AP3216C ok=1 als=646 ir=2 ps=3 | ICM20608 ok=1 temp=39.62 C | STM32 online=1 dht_ok=1 temp=28 C humidity=39 % counter=110
+[UI] AP3216C ok=1 als=650 ir=3 ps=6 | ICM20608 ok=1 temp=39.64 C | STM32 online=1 dht_ok=1 temp=28 C humidity=39 % counter=120
+[UI] AP3216C ok=1 als=646 ir=0 ps=15 | ICM20608 ok=1 temp=39.65 C | STM32 online=1 dht_ok=1 temp=28 C humidity=39 % counter=129
+[UI] AP3216C ok=1 als=648 ir=1 ps=0 | ICM20608 ok=1 temp=39.66 C | STM32 online=1 dht_ok=1 temp=28 C humidity=40 % counter=139
+[UI] AP3216C ok=1 als=647 ir=0 ps=0 | ICM20608 ok=1 temp=39.68 C | STM32 online=1 dht_ok=1 temp=28 C humidity=40 % counter=149
+[UI] AP3216C ok=1 als=648 ir=3 ps=0 | ICM20608 ok=1 temp=39.69 C | STM32 online=1 dht_ok=1 temp=28 C humidity=40 % counter=158
+[UI] AP3216C ok=1 als=649 ir=2 ps=1 | ICM20608 ok=1 temp=39.70 C | STM32 online=1 dht_ok=1 temp=28 C humidity=40 % counter=168
+[UI] AP3216C ok=1 als=647 ir=0 ps=0 | ICM20608 ok=1 temp=39.69 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=178
+[UI] AP3216C ok=1 als=647 ir=0 ps=10 | ICM20608 ok=1 temp=39.71 C | STM32 online=1 dht_ok=1 temp=28 C humidity=40 % counter=188
+[UI] AP3216C ok=1 als=647 ir=0 ps=5 | ICM20608 ok=1 temp=39.70 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=197
+[UI] AP3216C ok=1 als=644 ir=1 ps=0 | ICM20608 ok=1 temp=39.73 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=207
+[UI] AP3216C ok=1 als=644 ir=3 ps=9 | ICM20608 ok=1 temp=39.74 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=217
+[UI] AP3216C ok=1 als=648 ir=6 ps=0 | ICM20608 ok=1 temp=39.75 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=227
+[UI] AP3216C ok=1 als=645 ir=0 ps=3 | ICM20608 ok=1 temp=39.75 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=236
+[UI] AP3216C ok=1 als=645 ir=0 ps=3 | ICM20608 ok=1 temp=39.76 C | STM32 online=1 dht_ok=1 temp=28 C humidity=41 % counter=246
+[UI] AP3216C ok=1 als=645 ir=3 ps=10 | ICM20608 ok=1 temp=39.79 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=0
+[UI] AP3216C ok=1 als=647 ir=3 ps=0 | ICM20608 ok=1 temp=39.77 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=9
+[UI] AP3216C ok=1 als=646 ir=2 ps=3 | ICM20608 ok=1 temp=39.77 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=20
+[UI] AP3216C ok=1 als=644 ir=7 ps=0 | ICM20608 ok=1 temp=39.77 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=30
+[UI] AP3216C ok=1 als=642 ir=0 ps=0 | ICM20608 ok=1 temp=39.80 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=40
+[UI] AP3216C ok=1 als=645 ir=0 ps=10 | ICM20608 ok=1 temp=39.80 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=49
+[UI] AP3216C ok=1 als=648 ir=3 ps=8 | ICM20608 ok=1 temp=39.80 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=59
+[UI] AP3216C ok=1 als=646 ir=0 ps=7 | ICM20608 ok=1 temp=39.80 C | STM32 online=1 dht_ok=1 temp=28 C humidity=42 % counter=69
+[UI] AP3216C ok=1 als=645 ir=5 ps=7 | ICM20608 ok=1 temp=39.83 C | STM32 online=1 dht_ok=1 temp=28 C humidity=43 % counter=78
+[UI] AP3216C ok=1 als=653 ir=0 ps=1 | ICM20608 ok=1 temp=39.84 C | STM32 online=1 dht_ok=1 temp=28 C humidity=43 % counter=88
+[UI] AP3216C ok=1 als=646 ir=1 ps=6 | ICM20608 ok=1 temp=39.83 C | STM32 online=1 dht_ok=1 temp=28 C humidity=43 % counter=98
+Thu Jul 23 01:12:56 UTC 2026
+1784769176
+ 01:12:56 up 1 day, 22 min,  1 user,  load average: 0.14, 0.14, 0.14
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        333M        2.3M        101M        348M
+Swap:            0B          0B          0B
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  2.0M  246M   1% /var/volatile
+528K	/tmp/imx6ull_gateway.log
+4.0K	/tmp/imx6ull_supervisor.log
+636K	/tmp/stm32_can_client.log
+632K	/tmp/stm32_can_data.csv
+OK   supervisor: pid=727
+OK   can-client: pid=769
+OK   gateway: pid=790
+INFO file=/tmp/stm32_can_state.json bytes=167
+INFO file=/tmp/stm32_can_data.csv bytes=646161
+INFO file=/tmp/stm32_can_client.log bytes=647248
+INFO file=/tmp/imx6ull_gateway.log bytes=540309
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  2.0M  246M   1% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        333M        2.3M        101M        348M
+Swap:            0B          0B          0B
+727
+769
+790
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":43,"app_version":"1.0","counter":115,"frames":170955,"checksum_errors":0,"last_seen":1784769176}
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    1367664    170958   0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    0          0        0       0       0       0
+supervisor: restarting CAN client
+can0 is up, bitrate=500000
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=26 C humidity=28 % ok=1 version=1.0 counter=142 frames=1
+log: /tmp/stm32_can_client.log
+pid: /tmp/stm32_can_client.pid
+latest json: /tmp/stm32_can_state.json
+csv data: /tmp/stm32_can_data.csv
+supervisor: restarting gateway
+Connecting to T113 192.168.3.32:5000 ...
+connect: Network is unreachable
+Connecting to T113 192.168.3.32:5000 ...
+connect: Network is unreachable
+log: /tmp/imx6ull_gateway.log
+pid: /tmp/imx6ull_gateway_app.pid
+T113_IP: 192.168.3.32
+TCP_PORT: 5000
+STM32_CAN_STATE: /tmp/stm32_can_state.json
+watch log: tail -f /tmp/imx6ull_gateway.log
+Sent seq=201165 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201188 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201211 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201235 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201257 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201280 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201304 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201327 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201350 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201374 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201396 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201419 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201443 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201466 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201489 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201513 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201535 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201558 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201582 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201605 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201628 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201651 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201674 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201697 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201721 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201744 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201767 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201790 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201813 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201836 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201860 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201883 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201905 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201929 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201952 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201975 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=201999 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202022 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202044 bytes=561 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202068 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202091 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202114 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202138 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202160 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202183 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202207 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202230 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202253 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202277 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=202299 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+ 5100 root     99032 S    ./demo

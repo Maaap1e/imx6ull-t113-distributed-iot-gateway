@@ -1,0 +1,25 @@
+#!/bin/sh /etc/rc.common
+
+START=90
+STOP=10
+
+start()
+{
+    /opt/iot-gateway/scripts/start_stack.sh t113
+}
+
+boot()
+{
+    start
+}
+
+stop()
+{
+    /opt/iot-gateway/scripts/stop_stack.sh t113
+}
+
+restart()
+{
+    stop
+    start
+}

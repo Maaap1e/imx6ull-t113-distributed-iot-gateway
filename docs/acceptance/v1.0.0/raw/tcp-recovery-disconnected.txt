@@ -1,0 +1,43 @@
+=== TCP recovery: disconnected ===
+2026-07-23T01:21:03+08:00
+{"gateway":"imx6ull","timestamp":1784740829,"online":0,"connected":0,"status":"offline","alert":"gateway disconnected","tcp_server":{"rx_frames":202695,"crc_errors":0,"protocol_errors":0,"disconnects":2},"ap3216c_ok":0,"ap3216c":{"als":0,"ir":0,"ps":0},"icm20608_ok":0,"icm20608":{"gyro_x":0,"gyro_y":0,"gyro_z":0,"accel_x":0,"accel_y":0,"accel_z":0,"temp":0},"stm32_can_ok":0,"stm32_can":{"node":"stm32f103","online":0,"dht_ok":0,"temperature":0,"humidity":0,"app_version":"0.0","counter":0,"frames":0,"checksum_errors":0,"last_seen":0}}
+[UI] AP3216C ok=1 als=646 ir=0 ps=21 | ICM20608 ok=1 temp=39.91 C | STM32 online=1 dht_ok=1 temp=29 C humidity=41 % counter=7
+[UI] AP3216C ok=1 als=646 ir=3 ps=13 | ICM20608 ok=1 temp=39.94 C | STM32 online=1 dht_ok=1 temp=29 C humidity=41 % counter=17
+[UI] AP3216C ok=1 als=646 ir=6 ps=9 | ICM20608 ok=1 temp=39.95 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=27
+[UI] AP3216C ok=1 als=646 ir=6 ps=8 | ICM20608 ok=1 temp=39.94 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=36
+[UI] AP3216C ok=1 als=646 ir=6 ps=2 | ICM20608 ok=1 temp=39.96 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=46
+[UI] AP3216C ok=1 als=644 ir=0 ps=3 | ICM20608 ok=1 temp=39.95 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=56
+[UI] AP3216C ok=1 als=641 ir=5 ps=13 | ICM20608 ok=1 temp=39.95 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=65
+[UI] AP3216C ok=1 als=643 ir=0 ps=0 | ICM20608 ok=1 temp=39.95 C | STM32 online=1 dht_ok=1 temp=29 C humidity=41 % counter=75
+[UI] AP3216C ok=1 als=636 ir=3 ps=5 | ICM20608 ok=1 temp=39.96 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=85
+[UI] AP3216C ok=1 als=640 ir=0 ps=0 | ICM20608 ok=1 temp=39.96 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=95
+[UI] AP3216C ok=1 als=452 ir=0 ps=9 | ICM20608 ok=1 temp=39.97 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=105
+[UI] AP3216C ok=1 als=641 ir=0 ps=13 | ICM20608 ok=1 temp=39.97 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=114
+[UI] AP3216C ok=1 als=642 ir=1 ps=0 | ICM20608 ok=1 temp=39.98 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=124
+[UI] AP3216C ok=1 als=645 ir=5 ps=7 | ICM20608 ok=1 temp=40.02 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=134
+[UI] AP3216C ok=1 als=640 ir=3 ps=8 | ICM20608 ok=1 temp=40.00 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=144
+[UI] AP3216C ok=1 als=642 ir=0 ps=3 | ICM20608 ok=1 temp=40.03 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=153
+[UI] AP3216C ok=1 als=643 ir=3 ps=7 | ICM20608 ok=1 temp=40.07 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=163
+[UI] AP3216C ok=1 als=640 ir=3 ps=8 | ICM20608 ok=1 temp=40.08 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=172
+[UI] AP3216C ok=1 als=643 ir=2 ps=0 | ICM20608 ok=1 temp=40.09 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=182
+[UI] AP3216C ok=1 als=640 ir=0 ps=1 | ICM20608 ok=1 temp=40.10 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=192
+[UI] AP3216C ok=1 als=642 ir=6 ps=6 | ICM20608 ok=1 temp=40.08 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=202
+[UI] AP3216C ok=1 als=644 ir=2 ps=5 | ICM20608 ok=1 temp=40.12 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=212
+[UI] AP3216C ok=1 als=640 ir=1 ps=14 | ICM20608 ok=1 temp=40.13 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=222
+[UI] AP3216C ok=1 als=642 ir=2 ps=0 | ICM20608 ok=1 temp=40.13 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=231
+[UI] AP3216C ok=1 als=642 ir=5 ps=2 | ICM20608 ok=1 temp=40.17 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=241
+[UI] AP3216C ok=1 als=641 ir=2 ps=5 | ICM20608 ok=1 temp=40.16 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=251
+[UI] AP3216C ok=1 als=646 ir=5 ps=5 | ICM20608 ok=1 temp=40.18 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=4
+[UI] AP3216C ok=1 als=646 ir=0 ps=0 | ICM20608 ok=1 temp=40.19 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=14
+[UI] AP3216C ok=1 als=640 ir=0 ps=15 | ICM20608 ok=1 temp=40.20 C | STM32 online=1 dht_ok=1 temp=29 C humidity=40 % counter=24
+Gateway receive timeout. Closing idle connection.
+OK   supervisor: pid=1156
+OK   t113-receiver: pid=1193
+INFO file=/tmp/t113_sensor_state.json bytes=539
+INFO file=/tmp/t113_sensor_data.csv bytes=1383416
+INFO file=/tmp/t113_tcp.log bytes=45605
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M      2.4M     51.4M   4% /tmp
+              total        used        free      shared  buff/cache   available
+Mem:         110244       50144        8208        2460       51892       52456
+Swap:             0           0           0

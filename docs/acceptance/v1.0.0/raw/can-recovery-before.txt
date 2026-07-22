@@ -1,0 +1,16 @@
+=== CAN recovery: before ===
+2026-07-23T01:23:38+08:00
+OK   supervisor: pid=727
+OK   can-client: pid=769
+OK   gateway: pid=790
+INFO file=/tmp/stm32_can_state.json bytes=167
+INFO file=/tmp/stm32_can_data.csv bytes=650980
+INFO file=/tmp/stm32_can_client.log bytes=652025
+INFO file=/tmp/imx6ull_gateway.log bytes=544580
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  2.0M  246M   1% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        332M        2.3M        101M        348M
+Swap:            0B          0B          0B
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":40,"app_version":"1.0","counter":223,"frames":172195,"checksum_errors":0,"last_seen":1784769812}
+{"gateway":"imx6ull","timestamp":1784741020,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":202971,"crc_errors":0,"protocol_errors":0,"disconnects":2},"payload":{"gateway":"imx6ull","timestamp":1784769812,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":47,"disconnect_count":3,"last_connected_time":1784769693,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":644,"ir":3,"ps":0},"icm20608_ok":1,"icm20608":{"gyro_x":-1.40,"gyro_y":-0.37,"gyro_z":-0.37,"accel_x":-0.02,"accel_y":-0.00,"accel_z":0.99,"temp":40.46},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":40,"app_version":"1.0","counter":222,"frames":172193,"checksum_errors":0,"last_seen":1784769811}}}

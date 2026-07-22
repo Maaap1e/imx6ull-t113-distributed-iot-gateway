@@ -1,0 +1,6 @@
+Stopping STM32 CAN sensor client before OTA...
+stm32_can_sensor_client stopped
+/opt/iot-gateway/linux/can_ota_host/setup_can.sh: line 8: ip: command not found
+Restarting STM32 CAN sensor client...
+/opt/iot-gateway/linux/can_sensor_client/setup_can.sh: line 8: ip: command not found
+warning: failed to restart STM32 CAN sensor client

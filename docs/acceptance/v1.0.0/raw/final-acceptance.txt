@@ -1,0 +1,69 @@
+=== v1.0.0-rc.1 final acceptance ===
+2026-07-23T01:53:56+08:00
+6ac80ef71c366d4b1d8e5515e6639e11be0e5652
+ M CHANGELOG.md
+ M README.md
+ M docs/RUNTIME_MANAGEMENT.md
+ M docs/TCP_PROTOCOL.md
+ M linux/imx6ull_gateway/protocol.c
+ M linux/imx6ull_gateway/protocol.h
+ M scripts/install_target.sh
+ M scripts/package_target.sh
+ M stm32/can_ota_bootloader/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/arm/startup_stm32f103xe.s
+ M stm32/can_ota_bootloader/Drivers/SYSTEM/readme.txt
+ M stm32/can_ota_bootloader/Drivers/readme.txt
+ M stm32/can_ota_bootloader/Middlewares/USMART/readme.txt
+ M stm32/can_ota_bootloader/Middlewares/readme.txt
+ M stm32/can_ota_bootloader/keilkill.bat
+ M stm32/dht11_can_app/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/arm/startup_stm32f103xe.s
+ M stm32/dht11_can_app/Drivers/SYSTEM/readme.txt
+ M stm32/dht11_can_app/Drivers/readme.txt
+ M stm32/dht11_can_app/Middlewares/USMART/readme.txt
+ M stm32/dht11_can_app/Middlewares/readme.txt
+ M stm32/dht11_can_app/keilkill.bat
+ M t113/tcp_receiver/main.c
+ M t113/tcp_receiver/protocol.c
+ M t113/tcp_receiver/protocol.h
+ M tests/protocol_test.c
+?? acceptance/
+?? deploy/openwrt/
+?? docs/acceptance/
+=== T113 ===
+OK   supervisor: pid=1156
+OK   t113-receiver: pid=19037
+INFO file=/tmp/t113_sensor_state.json bytes=742
+INFO file=/tmp/t113_sensor_data.csv bytes=1415134
+INFO file=/tmp/t113_tcp.log bytes=70384
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M      2.5M     51.3M   5% /tmp
+              total        used        free      shared  buff/cache   available
+Mem:         110244       50148        8036        2568       52060       52344
+Swap:             0           0           0
+{"gateway":"imx6ull","timestamp":1784742837,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":3445,"crc_errors":0,"protocol_errors":0,"disconnects":1},"payload":{"gateway":"imx6ull","timestamp":1784771629,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":0,"disconnect_count":0,"last_connected_time":1784770239,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":643,"ir":3,"ps":2},"icm20608_ok":1,"icm20608":{"gyro_x":-1.40,"gyro_y":-0.37,"gyro_z":-0.43,"accel_x":-0.02,"accel_y":-0.01,"accel_z":0.99,"temp":40.61},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":37,"app_version":"1.1","counter":124,"frames":1151,"checksum_errors":0,"last_seen":1784771628}}}
+=== i.MX6ULL ===
+OK   supervisor: pid=727
+OK   can-client: pid=15147
+OK   gateway: pid=11751
+INFO file=/tmp/stm32_can_state.json bytes=165
+INFO file=/tmp/stm32_can_data.csv bytes=662438
+INFO file=/tmp/stm32_can_client.log bytes=663907
+INFO file=/tmp/imx6ull_gateway.log bytes=555871
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  3.2M  245M   2% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        331M        3.6M        102M        346M
+Swap:            0B          0B          0B
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":37,"app_version":"1.1","counter":125,"frames":1153,"checksum_errors":0,"last_seen":1784771629}
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          1          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    1404096    175512   0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    49688      6211     0       0       0       0

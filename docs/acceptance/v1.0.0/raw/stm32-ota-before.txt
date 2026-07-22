@@ -1,0 +1,1 @@
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":33,"app_version":"1.0","counter":28,"frames":173838,"checksum_errors":0,"last_seen":1784770724}

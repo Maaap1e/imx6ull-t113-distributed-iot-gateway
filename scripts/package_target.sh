@@ -43,11 +43,14 @@ case "$STAGE_ROOT" in /tmp/*|/var/tmp/*) ;; *) echo "Unexpected temporary path" 
 trap 'rm -rf "$STAGE_ROOT"' EXIT HUP INT TERM
 BUNDLE_DIR="$STAGE_ROOT/$BUNDLE_NAME"
 mkdir -p "$BUNDLE_DIR/scripts" "$BUNDLE_DIR/config" "$BUNDLE_DIR/deploy/busybox" \
-    "$BUNDLE_DIR/deploy/systemd" "$BUNDLE_DIR/docs"
+    "$BUNDLE_DIR/deploy/openwrt" "$BUNDLE_DIR/deploy/systemd" "$BUNDLE_DIR/docs"
 
 cp "$BASE_DIR/VERSION" "$BASE_DIR/CHANGELOG.md" "$BASE_DIR/README.md" "$BUNDLE_DIR/"
 cp "$BASE_DIR/config/$ROLE.conf" "$BUNDLE_DIR/config/"
 cp "$BASE_DIR/deploy/busybox/S90iot-$ROLE" "$BUNDLE_DIR/deploy/busybox/"
+if [ "$ROLE" = "t113" ]; then
+    cp "$BASE_DIR/deploy/openwrt/iot-t113" "$BUNDLE_DIR/deploy/openwrt/"
+fi
 cp "$BASE_DIR/deploy/systemd/"*.service "$BUNDLE_DIR/deploy/systemd/"
 cp "$BASE_DIR/docs/RUNTIME_MANAGEMENT.md" "$BASE_DIR/docs/V1_ACCEPTANCE.md" "$BUNDLE_DIR/docs/"
 

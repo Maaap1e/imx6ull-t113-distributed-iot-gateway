@@ -1,0 +1,66 @@
+=== T113 process recovery: restored ===
+2026-07-23T01:30:29+08:00
+OK   supervisor: pid=1156
+OK   t113-receiver: pid=19037
+INFO file=/tmp/t113_sensor_state.json bytes=743
+INFO file=/tmp/t113_sensor_data.csv bytes=1392198
+INFO file=/tmp/t113_tcp.log bytes=52593
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M      2.5M     51.4M   5% /tmp
+              total        used        free      shared  buff/cache   available
+Mem:         110244       50084        8156        2524       52004       52452
+Swap:             0           0           0
+{"gateway":"imx6ull","timestamp":1784741430,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":187,"crc_errors":0,"protocol_errors":0,"disconnects":0},"payload":{"gateway":"imx6ull","timestamp":1784770222,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":48,"disconnect_count":4,"last_connected_time":1784770141,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":642,"ir":0,"ps":5},"icm20608_ok":1,"icm20608":{"gyro_x":-1.34,"gyro_y":-0.37,"gyro_z":-0.43,"accel_x":-0.01,"accel_y":-0.01,"accel_z":0.99,"temp":40.59},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":37,"app_version":"1.0","counter":50,"frames":172858,"checksum_errors":0,"last_seen":1784770221}}}
+[UI] AP3216C ok=1 als=644 ir=3 ps=0 | ICM20608 ok=1 temp=40.60 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=44
+[UI] AP3216C ok=1 als=646 ir=1 ps=2 | ICM20608 ok=1 temp=40.59 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=54
+[UI] AP3216C ok=1 als=644 ir=0 ps=6 | ICM20608 ok=1 temp=40.60 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=64
+[UI] AP3216C ok=1 als=647 ir=0 ps=5 | ICM20608 ok=1 temp=40.60 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=74
+[UI] AP3216C ok=1 als=647 ir=0 ps=0 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=84
+[UI] AP3216C ok=1 als=645 ir=10 ps=0 | ICM20608 ok=1 temp=40.59 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=93
+[UI] AP3216C ok=1 als=646 ir=7 ps=0 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=39 % counter=103
+[UI] AP3216C ok=1 als=641 ir=0 ps=11 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=113
+[UI] AP3216C ok=1 als=646 ir=2 ps=0 | ICM20608 ok=1 temp=40.63 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=122
+[UI] AP3216C ok=1 als=643 ir=7 ps=13 | ICM20608 ok=1 temp=40.65 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=132
+[UI] AP3216C ok=1 als=643 ir=2 ps=18 | ICM20608 ok=1 temp=40.65 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=142
+[UI] AP3216C ok=1 als=644 ir=0 ps=0 | ICM20608 ok=1 temp=40.65 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=151
+[UI] AP3216C ok=1 als=642 ir=3 ps=7 | ICM20608 ok=1 temp=40.67 C | STM32 online=1 dht_ok=1 temp=29 C humidity=38 % counter=161
+[UI] AP3216C ok=1 als=641 ir=2 ps=1 | ICM20608 ok=1 temp=40.68 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=171
+[UI] AP3216C ok=1 als=640 ir=3 ps=11 | ICM20608 ok=1 temp=40.63 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=181
+[UI] AP3216C ok=1 als=641 ir=0 ps=22 | ICM20608 ok=1 temp=40.65 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=191
+[UI] AP3216C ok=1 als=642 ir=0 ps=0 | ICM20608 ok=1 temp=40.63 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=200
+[UI] AP3216C ok=1 als=645 ir=6 ps=1 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=210
+[UI] AP3216C ok=1 als=643 ir=3 ps=0 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=220
+T113 display server listening on 0.0.0.0:5000
+Gateway connected: 192.168.3.34:41305
+[UI] AP3216C ok=1 als=642 ir=1 ps=0 | ICM20608 ok=1 temp=40.61 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=228
+[UI] AP3216C ok=1 als=641 ir=2 ps=1 | ICM20608 ok=1 temp=40.64 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=237
+[UI] AP3216C ok=1 als=640 ir=0 ps=0 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=247
+[UI] AP3216C ok=1 als=645 ir=2 ps=10 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=1
+[UI] AP3216C ok=1 als=644 ir=6 ps=0 | ICM20608 ok=1 temp=40.59 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=10
+[UI] AP3216C ok=1 als=642 ir=0 ps=0 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=20
+[UI] AP3216C ok=1 als=643 ir=2 ps=5 | ICM20608 ok=1 temp=40.58 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=30
+[UI] AP3216C ok=1 als=637 ir=0 ps=5 | ICM20608 ok=1 temp=40.62 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=40
+[UI] AP3216C ok=1 als=641 ir=6 ps=2 | ICM20608 ok=1 temp=40.58 C | STM32 online=1 dht_ok=1 temp=29 C humidity=37 % counter=49
+ 1156 root      3036 S    /bin/sh /opt/iot-gateway/scripts/runtime_supervisor.
+ 5100 root     99144 S    ./demo
+19037 root      1572 S    /opt/iot-gateway/t113/tcp_receiver/t113_display_app
+Sent seq=204306 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204329 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204351 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204375 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204398 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+send: Broken pipe
+send data frame: Broken pipe
+Connecting to T113 192.168.3.32:5000 ...
+connect: Connection refused
+Connecting to T113 192.168.3.32:5000 ...
+Connected to T113 display server.
+Sent seq=204417 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204440 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204464 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204486 bytes=561 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204509 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204533 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204556 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204579 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204602 bytes=562 AP3216C=ok ICM20608=ok STM32=online

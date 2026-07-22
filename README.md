@@ -8,7 +8,7 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v1.0.0--rc.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-v1.0.0-brightgreen.svg)
 
 </div>
 
@@ -24,7 +24,23 @@
 
 i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 App 固件。Bootloader 依次完成应用区擦除、分块写入、序号检查、CRC32 校验以及 App 跳转，构成 Linux 网关远程升级 CAN 节点固件的完整闭环。
 
-当前仓库版本为 **`v1.0.0-rc.1`**：功能代码、统一配置、进程守护、开机启动、日志/CSV 限额和协议测试已经补齐；在三块实板完成 24 小时稳定性与故障恢复验收后，再发布正式 **`v1.0.0`**。本版本不把尚未实现的 MQTT、OTA 数字签名、回滚和断点续传算作 1.0 能力。
+当前正式版本为 **`v1.0.0`**。本版本已在 STM32F103、i.MX6ULL 和 T113 实板上完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 验收。完整结果见 [v1.0.0 实板验收报告](docs/acceptance/v1.0.0/RESULT.md)。
+
+## 实物与界面展示
+
+### 硬件联调实物
+
+i.MX6ULL 负责传感器与 CAN 数据汇聚以及 STM32 CAN OTA，T113 负责 TCP 接收和 LVGL 人机界面显示；STM32F103 作为 CAN 传感器节点接入系统。
+
+![i.MX6ULL、T113 与 LVGL 显示终端实物联调](docs/images/hardware-overview.png)
+
+### LVGL 界面
+
+LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设置、系统设置和传感器仪表盘。仪表盘实时显示光照、温度、湿度、接近值以及网关和 STM32 节点的在线状态。
+
+![T113 LVGL 界面功能总览](docs/images/lvgl-ui-showcase.png)
+
+> 界面中出现的第三方商标和应用图标归各自权利人所有，仅用于实机界面与功能展示。
 
 ```mermaid
 flowchart LR
@@ -178,8 +194,8 @@ ls -lh dist/
 输出为：
 
 ```text
-dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz
-dist/iot-gateway-1.0.0-rc.1-t113.tar.gz
+dist/iot-gateway-1.0.0-imx6ull.tar.gz
+dist/iot-gateway-1.0.0-t113.tar.gz
 dist/*.tar.gz.sha256
 ```
 
@@ -188,8 +204,8 @@ dist/*.tar.gz.sha256
 ### 4. 从虚拟机传到开发板
 
 ```sh
-scp dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
-scp dist/iot-gateway-1.0.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-t113.tar.gz root@<T113_IP>:/tmp/
 ```
 
 可以同时传输对应的 `.sha256` 文件，并在板端支持 `sha256sum` 时执行 `sha256sum -c <文件名>.sha256` 检查传输完整性。如果板子没有 SSH/SCP，可以用 U 盘、TFTP 或 FTP 传输同一个安装包，后续安装步骤不变。
@@ -198,8 +214,8 @@ scp dist/iot-gateway-1.0.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
 
 ```sh
 cd /tmp
-tar -xzf iot-gateway-1.0.0-rc.1-imx6ull.tar.gz
-cd iot-gateway-1.0.0-rc.1-imx6ull
+tar -xzf iot-gateway-1.0.0-imx6ull.tar.gz
+cd iot-gateway-1.0.0-imx6ull
 sh scripts/install_target.sh imx6ull
 vi /etc/iot-gateway/imx6ull.conf
 ```
@@ -210,20 +226,22 @@ vi /etc/iot-gateway/imx6ull.conf
 
 ```sh
 cd /tmp
-tar -xzf iot-gateway-1.0.0-rc.1-t113.tar.gz
-cd iot-gateway-1.0.0-rc.1-t113
+tar -xzf iot-gateway-1.0.0-t113.tar.gz
+cd iot-gateway-1.0.0-t113
 sh scripts/install_target.sh t113
 vi /etc/iot-gateway/t113.conf
 ```
 
 ### 7. 启动并检查
 
-安装器会根据板端现有目录安装 systemd unit 或 BusyBox init 脚本。
+安装器会根据板端现有目录安装 systemd unit 或 BusyBox init 脚本；对于只执行 `/etc/rc.local`、不扫描新增 `S90*` 文件的厂商固件，也会自动注册相应启动命令。
 
 ```sh
-# BusyBox / Tina Linux
-/etc/init.d/S90iot-imx6ull start   # i.MX6ULL 上执行
-/etc/init.d/S90iot-t113 start      # T113 上执行
+# 普通 BusyBox i.MX6ULL
+/etc/init.d/S90iot-imx6ull start
+
+# OpenWrt/Tina 风格 T113
+/etc/init.d/iot-t113 start
 
 # systemd 版 i.MX6ULL
 systemctl daemon-reload
@@ -350,9 +368,9 @@ sh scripts/install_target.sh t113      # 在 T113
 | Linux CAN 状态 JSON/CSV 输出 | 已验证 |
 | STM32 CAN Bootloader 与整包 OTA | 已验证 |
 | T113 LVGL 设备状态和传感器可视化 | 已集成 |
-| 统一配置、优雅退出与健康检查 | `v1.0.0-rc.1` 已实现 |
-| BusyBox/systemd 开机启动与异常拉起 | `v1.0.0-rc.1` 已实现，待实板冷启动验收 |
-| tmpfs 日志/CSV 定额轮转 | `v1.0.0-rc.1` 已实现，待 24 小时验收 |
+| 统一配置、优雅退出与健康检查 | `v1.0.0` 已实现 |
+| BusyBox/systemd 开机启动与异常拉起 | `v1.0.0` 已实现，已完成实板冷启动验收|
+| tmpfs 日志/CSV 定额轮转 | `v1.0.0` 已实现，已完成 24 小时实板验收 |
 | CRC、超长帧、粘包与拆包测试 | 已加入自动化测试与故障注入工具 |
 | OTA 与进程守护协调 | 已实现锁文件及 systemd 服务暂停/恢复 |
 | MQTT 命令下发与状态回传 | 规划中，当前仓库未包含 |

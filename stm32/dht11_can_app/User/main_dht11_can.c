@@ -17,7 +17,7 @@
 #define CAN_CMD_OTA_ENTER       0xA5u
 
 #define APP_VERSION_MAJOR       1u
-#define APP_VERSION_MINOR       0u
+#define APP_VERSION_MINOR       1u
 
 #define CTRL_CMD_LED0           0x01u
 #define CTRL_CMD_LED1           0x02u

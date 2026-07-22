@@ -562,6 +562,12 @@ static void handle_client(int client_fd, const struct sockaddr_in *client_addr)
             g_tcp_disconnects++;
             break;
         }
+        if (ret == PROTOCOL_RECV_TIMEOUT) {
+            printf("Gateway receive timeout. Closing idle connection.\n");
+            g_tcp_disconnects++;
+            write_gateway_status_state(0, 0, "timeout", "gateway receive timeout");
+            break;
+        }
         if (ret < 0) {
             fprintf(stderr, "receive frame failed, code=%d. Closing client.\n", ret);
             if (ret == -4) {

@@ -25,6 +25,7 @@ stm32_can_sensor_client
 stm32_can_ota_host
 t113_display_app
 demo
+/tests/protocol_test
 
 # Python cache
 __pycache__/
@@ -58,3 +59,5 @@ t113/lvgl_app/res/music/*.wav
 .idea/
 .DS_Store
 Thumbs.db
+# Local acceptance workspace; canonical evidence is under docs/acceptance/
+/acceptance/

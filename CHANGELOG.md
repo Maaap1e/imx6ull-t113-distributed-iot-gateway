@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0 - 2026-07-23
+
+### Added
+
+- Added real-hardware integration and LVGL UI showcase images.
+
+### Validated
+
+- Completed a 24-hour real-board stability test.
+- Verified Ethernet and CAN disconnect/recovery behavior.
+- Verified automatic recovery of the i.MX6ULL gateway and T113 receiver.
+- Completed STM32 CAN OTA from application 1.0 to 1.1.
+- Verified STM32 application 1.1 after a full power cycle.
+- Verified LVGL UI operation and added complete board-level acceptance evidence.
+
+### Known limitations
+
+- CAN OTA uses CRC32 integrity checking without firmware signatures or rollback.
+- Non-login SSH OTA execution requires `/sbin` in `PATH`.
+- The i.MX6ULL payload timestamp has a documented UTC/CST display difference.
+
 ## 1.0.0-rc.1 - 2026-07-21
 
 ### Added
@@ -18,6 +39,12 @@
 - Start/stop scripts use configured paths and preserve runtime history.
 - CAN OTA coordinates with both BusyBox and systemd supervision so the CAN
   telemetry client does not compete for OTA status frames.
+- BusyBox installation registers the service in `rc.local` on vendor images
+  that do not automatically scan newly added `S90*` init scripts.
+- T113 installation now uses a native OpenWrt/Tina `rc.common` service and
+  enables its `/etc/rc.d` boot link and vendor `load_script.conf` entry.
+- T113 receive timeouts are classified as disconnects instead of malformed TCP
+  protocol frames, avoiding false protocol-error alarms during peer reboot.
 
 ### Release status
 

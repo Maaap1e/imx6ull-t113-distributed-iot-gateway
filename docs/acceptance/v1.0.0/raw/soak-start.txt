@@ -1,0 +1,94 @@
+2026年 07月 22日 星期三 01:05:14 CST
+6ac80ef71c366d4b1d8e5515e6639e11be0e5652
+Wed Jul 22 01:05:21 CST 2026
+ 01:05:21 up 5 min,  load average: 0.15, 0.22, 0.10
+              total        used        free      shared  buff/cache   available
+Mem:         110244       37276       39128          40       33840       67744
+Swap:             0           0           0
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M     40.0K     53.8M   0% /tmp
+4.0K	/tmp/t113_supervisor.log
+4.0K	/tmp/t113_tcp.log
+8.0K	/tmp/t113_sensor_data.csv
+OK   supervisor: pid=1156
+OK   t113-receiver: pid=1193
+INFO file=/tmp/t113_sensor_state.json bytes=741
+INFO file=/tmp/t113_sensor_data.csv bytes=4260
+INFO file=/tmp/t113_tcp.log bytes=3467
+Filesystem                Size      Used Available Use% Mounted on
+tmpfs                    53.8M     40.0K     53.8M   0% /tmp
+              total        used        free      shared  buff/cache   available
+Mem:         110244       37520       38884          40       33840       67500
+Swap:             0           0           0
+1156
+1193
+{"gateway":"imx6ull","timestamp":1784653521,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":570,"crc_errors":0,"protocol_errors":0,"disconnects":1},"payload":{"gateway":"imx6ull","timestamp":1784682316,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":40,"disconnect_count":2,"last_connected_time":1784682182,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":0,"ir":0,"ps":133},"icm20608_ok":1,"icm20608":{"gyro_x":-1.28,"gyro_y":-0.43,"gyro_z":-0.49,"accel_x":-0.02,"accel_y":0.00,"accel_z":0.99,"temp":34.36},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":27,"humidity":27,"app_version":"1.0","counter":226,"frames":1705,"checksum_errors":0,"last_seen":1784682316}}}
+Wed Jul 22 01:05:21 UTC 2026
+ 01:05:21 up 14 min,  1 user,  load average: 0.23, 0.19, 0.14
+              total        used        free      shared  buff/cache   available
+Mem:           494M         95M        297M        3.9M        102M        311M
+Swap:            0B          0B          0B
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  200K  248M   1% /var/volatile
+8.0K	/tmp/imx6ull_gateway.log
+4.0K	/tmp/imx6ull_supervisor.log
+8.0K	/tmp/stm32_can_client.log
+8.0K	/tmp/stm32_can_data.csv
+OK   supervisor: pid=727
+OK   can-client: pid=769
+OK   gateway: pid=790
+INFO file=/tmp/stm32_can_state.json bytes=165
+INFO file=/tmp/stm32_can_data.csv bytes=6242
+INFO file=/tmp/stm32_can_client.log bytes=6411
+INFO file=/tmp/imx6ull_gateway.log bytes=6484
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  200K  248M   1% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         95M        296M        3.9M        102M        311M
+Swap:            0B          0B          0B
+727
+769
+790
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    14688      1836     0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    0          0        0       0       0       0
+2026-07-22 01:06:33 CST
+ M CHANGELOG.md
+ M README.md
+ M docs/RUNTIME_MANAGEMENT.md
+ M docs/TCP_PROTOCOL.md
+ M linux/imx6ull_gateway/protocol.c
+ M linux/imx6ull_gateway/protocol.h
+ M scripts/install_target.sh
+ M scripts/package_target.sh
+ M stm32/can_ota_bootloader/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/arm/startup_stm32f103xe.s
+ M stm32/can_ota_bootloader/Drivers/SYSTEM/readme.txt
+ M stm32/can_ota_bootloader/Drivers/readme.txt
+ M stm32/can_ota_bootloader/Middlewares/USMART/readme.txt
+ M stm32/can_ota_bootloader/Middlewares/readme.txt
+ M stm32/can_ota_bootloader/keilkill.bat
+ M stm32/dht11_can_app/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/arm/startup_stm32f103xe.s
+ M stm32/dht11_can_app/Drivers/SYSTEM/readme.txt
+ M stm32/dht11_can_app/Drivers/readme.txt
+ M stm32/dht11_can_app/Middlewares/USMART/readme.txt
+ M stm32/dht11_can_app/Middlewares/readme.txt
+ M stm32/dht11_can_app/keilkill.bat
+ M t113/tcp_receiver/main.c
+ M t113/tcp_receiver/protocol.c
+ M t113/tcp_receiver/protocol.h
+ M tests/protocol_test.c
+?? acceptance/
+?? deploy/openwrt/
+454a10f6bd35d801f9a61d6b988a56833d21f7561397e0e925bef6eda72728d4  t113/tcp_receiver/t113_display_app
+42af79317103857623ad7e69dbb897ed0edc7055c13bed1ed112ad1b21c57eb4  linux/imx6ull_gateway/imx6ull_gateway_app
+96d2db0d9b35e78d75fd14c1979c24a6bff63088e795191e541de606dc016e46  linux/can_sensor_client/stm32_can_sensor_client

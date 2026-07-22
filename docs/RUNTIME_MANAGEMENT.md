@@ -33,8 +33,10 @@ listen address or port differs.
 ## BusyBox / SysV init
 
 The installer copies `S90iot-imx6ull` or `S90iot-t113` when `/etc/init.d` exists.
-The script starts a lightweight supervisor that restarts a missing application
-and rotates runtime files. Manual commands are:
+Some vendor images do not scan arbitrary `S90*` files; when `/etc/rc.local`
+exists, the installer also inserts the matching init-script command before
+`exit 0`. The script starts a lightweight supervisor that restarts a missing
+application and rotates runtime files. Manual commands are:
 
 ```sh
 /etc/init.d/S90iot-imx6ull start
@@ -44,9 +46,25 @@ and rotates runtime files. Manual commands are:
 /opt/iot-gateway/scripts/healthcheck.sh t113
 ```
 
-If the firmware does not automatically execute `S90*`, add the script to its
-documented boot hook. Do not edit a vendor startup file without first keeping a
-recoverable copy on the SD card.
+After installation, confirm the boot hook with `grep S90iot /etc/rc.local`. If
+the firmware uses neither `rc.local` nor an `S*` scan, add the init script to its
+documented boot hook. Keep a recoverable copy before editing another vendor
+startup file.
+
+## OpenWrt / Tina rc.common
+
+Tina images that provide `/etc/rc.common` and `/etc/rc.d` use the native
+`/etc/init.d/iot-t113` wrapper. The installer calls `enable`, which creates the
+boot link automatically. Vendor Tina images whose `rcS` reads
+`/etc/init.d/load_script.conf` are also registered in that file. Verify and
+control it with:
+
+```sh
+ls -l /etc/rc.d/*iot-t113*
+grep '^iot-t113$' /etc/init.d/load_script.conf 2>/dev/null
+/etc/init.d/iot-t113 start
+/etc/init.d/iot-t113 stop
+```
 
 ## systemd
 

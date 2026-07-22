@@ -31,8 +31,8 @@ still be built with their corresponding BSP/SDK workflows.
 sh scripts/package_target.sh imx6ull
 sh scripts/package_target.sh t113
 
-scp dist/iot-gateway-1.0.0-rc.1-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
-scp dist/iot-gateway-1.0.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-1.0.0-t113.tar.gz root@<T113_IP>:/tmp/
 ```
 
 The packaging script also writes a `.sha256` file when `sha256sum` is available.

@@ -29,6 +29,9 @@ collects exactly 20 header bytes, validates magic/version/length, then reads the
 declared payload length and verifies CRC32. This handles both split and
 coalesced TCP packets.
 
+A socket receive timeout is treated as an idle/disconnected peer and increments
+the disconnect counter. It is not counted as a malformed-frame protocol error.
+
 ## Data payload
 
 Data frames carry UTF-8 JSON. A representative payload is:

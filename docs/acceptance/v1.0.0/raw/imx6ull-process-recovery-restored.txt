@@ -1,0 +1,46 @@
+=== i.MX6ULL gateway process recovery: restored ===
+2026-07-23T01:32:46+08:00
+OK   supervisor: pid=727
+OK   can-client: pid=769
+OK   gateway: pid=11751
+INFO file=/tmp/stm32_can_state.json bytes=167
+INFO file=/tmp/stm32_can_data.csv bytes=654542
+INFO file=/tmp/stm32_can_client.log bytes=655621
+INFO file=/tmp/imx6ull_gateway.log bytes=548280
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  2.5M  245M   2% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        332M        2.9M        102M        347M
+Swap:            0B          0B          0B
+11751
+send data frame: Broken pipe
+Connecting to T113 192.168.3.32:5000 ...
+connect: Connection refused
+Connecting to T113 192.168.3.32:5000 ...
+Connected to T113 display server.
+Sent seq=204417 bytes=564 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204440 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204464 bytes=563 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204486 bytes=561 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204509 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204533 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204556 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204579 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204602 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=204625 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Connecting to T113 192.168.3.32:5000 ...
+Connected to T113 display server.
+Sent seq=1 bytes=561 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=25 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=48 bytes=561 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=71 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=94 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=117 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=140 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=164 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=187 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=210 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=233 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=256 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+Sent seq=279 bytes=562 AP3216C=ok ICM20608=ok STM32=online
+{"gateway":"imx6ull","timestamp":1784741568,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":507,"crc_errors":0,"protocol_errors":0,"disconnects":1},"payload":{"gateway":"imx6ull","timestamp":1784770360,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":0,"disconnect_count":0,"last_connected_time":1784770239,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":642,"ir":0,"ps":15},"icm20608_ok":1,"icm20608":{"gyro_x":-1.34,"gyro_y":-0.30,"gyro_z":-0.43,"accel_x":-0.01,"accel_y":-0.01,"accel_z":0.99,"temp":40.48},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":35,"app_version":"1.0","counter":185,"frames":173128,"checksum_errors":0,"last_seen":1784770360}}}

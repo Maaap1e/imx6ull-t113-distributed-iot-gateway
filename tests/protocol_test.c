@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -104,12 +105,30 @@ static void test_rejects_corruption(void)
     close(fd[0]); close(fd[1]);
 }
 
+static void test_receive_timeout(void)
+{
+    int fd[2];
+    struct timeval timeout;
+    uint8_t payload[8] = {0};
+    frame_header_t header;
+
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 20000;
+    CHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fd) == 0);
+    CHECK(setsockopt(fd[1], SOL_SOCKET, SO_RCVTIMEO,
+                     &timeout, sizeof(timeout)) == 0);
+    CHECK(protocol_recv_frame(fd[1], &header, payload, sizeof(payload)) ==
+          PROTOCOL_RECV_TIMEOUT);
+    close(fd[0]); close(fd[1]);
+}
+
 int main(void)
 {
     test_crc();
     test_round_trip();
     test_fragmented_and_coalesced();
     test_rejects_corruption();
+    test_receive_timeout();
     if (failures != 0) {
         fprintf(stderr, "%d protocol test(s) failed\n", failures);
         return 1;

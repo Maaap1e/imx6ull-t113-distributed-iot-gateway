@@ -8,6 +8,7 @@
 #define FRAME_VERSION 1u
 #define FRAME_HEADER_SIZE 20u
 #define MAX_PAYLOAD_SIZE 4096u
+#define PROTOCOL_RECV_TIMEOUT (-5)
 
 typedef enum {
     FRAME_TYPE_DATA = 1,

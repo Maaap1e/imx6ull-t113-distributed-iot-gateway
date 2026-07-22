@@ -1,0 +1,16 @@
+=== STM32 OTA: power-cycle verification ===
+2026-07-23T01:47:40+08:00
+OK   supervisor: pid=727
+OK   can-client: pid=15147
+OK   gateway: pid=11751
+INFO file=/tmp/stm32_can_state.json bytes=163
+INFO file=/tmp/stm32_can_data.csv bytes=659837
+INFO file=/tmp/stm32_can_client.log bytes=661183
+INFO file=/tmp/imx6ull_gateway.log bytes=553591
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  3.2M  245M   2% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         60M        331M        3.6M        102M        346M
+Swap:            0B          0B          0B
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":32,"app_version":"1.1","counter":15,"frames":421,"checksum_errors":0,"last_seen":1784771253}
+{"gateway":"imx6ull","timestamp":1784742461,"online":1,"connected":1,"status":"online","tcp_server":{"rx_frames":2574,"crc_errors":0,"protocol_errors":0,"disconnects":1},"payload":{"gateway":"imx6ull","timestamp":1784771253,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":0,"disconnect_count":0,"last_connected_time":1784770239,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":644,"ir":0,"ps":0},"icm20608_ok":1,"icm20608":{"gyro_x":-1.34,"gyro_y":-0.24,"gyro_z":-0.43,"accel_x":-0.01,"accel_y":-0.01,"accel_z":0.99,"temp":40.76},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":32,"app_version":"1.1","counter":14,"frames":419,"checksum_errors":0,"last_seen":1784771252}}}
