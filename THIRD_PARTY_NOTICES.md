@@ -5,6 +5,14 @@ from, or derived from, third-party SDKs and development-board examples.
 
 ## T113 and LVGL application
 
+- The T113/LVGL application combines project-authored UI pages, gateway data
+  integration and interaction logic with selected code or structural ideas
+  adapted from an existing T113/LVGL teaching project.
+- Project-authored additions include the distributed-gateway status
+  integration, live sensor dashboard, online-state display and related
+  data-refresh logic.
+- Files containing third-party-derived code or existing author notices retain
+  their original attribution.
 - LVGL and the complete T113 SDK are not vendored in this public package. They
   must be obtained from their respective upstream distributions and remain
   subject to their own licenses.
