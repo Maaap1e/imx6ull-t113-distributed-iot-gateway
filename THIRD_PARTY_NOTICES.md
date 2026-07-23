@@ -5,9 +5,6 @@ from, or derived from, third-party SDKs and development-board examples.
 
 ## T113 and LVGL application
 
-- The T113 UI application is based on an existing T113/LVGL teaching project.
-  Source files that already identify their original author retain that
-  attribution.
 - LVGL and the complete T113 SDK are not vendored in this public package. They
   must be obtained from their respective upstream distributions and remain
   subject to their own licenses.
