@@ -8,7 +8,7 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v1.0.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/Version-v1.1.0--rc.1-orange.svg)
 
 </div>
 
@@ -24,7 +24,18 @@
 
 i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 App 固件。Bootloader 依次完成应用区擦除、分块写入、序号检查、CRC32 校验以及 App 跳转，构成 Linux 网关远程升级 CAN 节点固件的完整闭环。
 
-当前正式版本为 **`v1.0.0`**。本版本已在 STM32F103、i.MX6ULL 和 T113 实板上完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 验收。完整结果见 [v1.0.0 实板验收报告](docs/acceptance/v1.0.0/RESULT.md)。
+当前稳定版本为 **`v1.0.0`**，已完成三节点冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收。当前候选版本为 **`v1.1.0-rc.1`**，新增 i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机，并完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。详见 [v1.0.0 实板验收报告](docs/acceptance/v1.0.0/RESULT.md)和 [v1.1.0-rc.1 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)。
+
+## 贡献范围与可验证证据
+
+本仓库是基于芯片厂商 SDK、开发板例程和既有 T113/LVGL 工程完成的系统集成项目，不把第三方基础代码或全部教学页面声明为原创。项目工作的重点是：
+
+- 设计三节点系统架构、自定义 TCP 帧和 CAN 应用协议，完成 Linux 网关、T113 接收服务、STM32 CAN 节点及 CAN IAP/OTA 的跨平台联调。
+- 基于 i.MX6ULL 官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树，修改寄存器读写、字符设备接口并编写用户态验证程序；通过 NFS 挂载缩短模块和应用部署周期。
+- 基于既有 T113/LVGL 工程完成二次开发，重构页面状态逻辑和主页面，接入网关数据、Wi-Fi 配置与连接、传感器仪表盘及设备在线状态，并优化定时器和差量刷新。
+- 补充板端自启动、进程守护、健康检查、日志轮转、版本化打包和实板验收证据，使系统能够冷启动运行并从 CAN/TCP 断线及关键进程退出中恢复。
+
+详细边界与源码证据索引见 [项目贡献与来源边界](docs/PROJECT_OWNERSHIP.md)；i.MX6ULL 驱动和 NFS 调试流程见 [驱动适配与 NFS 调试记录](docs/IMX6ULL_DRIVER_PORTING_AND_NFS.md)。
 
 ## 实物与界面展示
 
@@ -59,12 +70,13 @@ flowchart LR
 
 | 模块 | 实现内容 | 工程要点 |
 |---|---|---|
-| Linux 传感器采集 | AP3216C 通过 I2C/sysfs 或字符设备读取，ICM20608 通过字符设备读取 | 打通内核驱动到用户态的数据链路，并隔离单个设备故障 |
+| Linux 传感器采集 | 基于官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树 | 修改寄存器读写和字符设备接口，以 NFS + 用户态程序验证 `/dev` 数据链路 |
 | TCP 板间通信 | 20 字节二进制帧头 + JSON 负载 | 序号、时间戳、长度、CRC32、完整收发、心跳与断线重连 |
 | STM32 CAN 节点 | 心跳、DHT11 数据、LED 控制和控制应答 | SocketCAN 过滤、Checksum8、超时离线判断 |
 | CAN OTA | Linux 主机发送固件信息和 6 字节数据分片 | Flash 擦写、序号检查、进度状态、整包 CRC32 与 App 有效性校验 |
 | T113 数据桥接 | TCP 接收端原子更新 `/tmp/t113_sensor_state.json` | 网络线程与 LVGL UI 解耦，避免网络阻塞影响界面刷新 |
-| LVGL 交互终端 | 主页面、睡眠页面、模拟/数字时钟及横向传感器圆环 | 合并页面定时器，数据无变化时不重复刷新控件 |
+| MQTT 北向桥接 | 独立进程发布聚合 JSON、LWT 状态并处理白名单命令 | Broker 故障不影响 CAN/TCP/LVGL，支持退避重连、守护和日志轮转 |
+| LVGL 交互终端 | 基于既有工程重构主页面和状态逻辑，接入网关数据、Wi-Fi 配置、仪表盘与在线状态 | 状态文件解耦网络与 UI，合并定时器，数据无变化时不重复刷新控件 |
 | 后台运行 | 启停脚本、PID 文件、日志及有上限的重连退避 | 程序在后台持续运行，不占用板卡前台串口 |
 
 ## 数据链路
@@ -107,7 +119,10 @@ sequenceDiagram
 |-- linux/
 |   |-- imx6ull_gateway/          # i.MX6ULL 采集与 TCP Client
 |   |-- can_sensor_client/        # SocketCAN 接收与状态发布
-|   `-- can_ota_host/             # STM32 固件传输工具
+|   |-- can_ota_host/             # STM32 固件传输工具
+|   `-- mqtt_bridge/              # MQTT 遥测上报与白名单命令桥接
+|-- pc/
+|   `-- mqtt_dashboard/           # Windows Qt MQTT 上位机
 |-- t113/
 |   |-- tcp_receiver/             # TCP Server 与 JSON/CSV 输出
 |   `-- lvgl_app/                 # 最新 LVGL UI 和数据桥接源码
@@ -131,7 +146,7 @@ sequenceDiagram
 | CAN 节点 | STM32F103、CAN 收发器、DHT11 |
 | 网关传感器 | AP3216C（I2C）、ICM20608（SPI） |
 | 开发工具 | GCC 交叉工具链、CMake、Keil MDK-ARM、can-utils |
-| 网络通信 | TCP Socket；MQTT 作为后续扩展 |
+| 网络通信 | 自定义 TCP 帧；Eclipse Paho MQTT C 北向桥接（可选） |
 
 CAN 物理层需要在两端配置 CAN 收发器，共地并连接 CANH/CANL，在总线两个物理端点各配置一个 120 欧终端电阻。
 
@@ -347,9 +362,13 @@ sh scripts/install_target.sh t113      # 在 T113
 
 配置位于 `/etc/iot-gateway/`。BusyBox/Tina 系统使用 `/etc/init.d/S90iot-*`，systemd 系统使用 `deploy/systemd/` 中的服务；完整操作见运行管理文档。
 
-## 协议文档
+## 文档导航
 
+- [项目贡献与来源边界](docs/PROJECT_OWNERSHIP.md)
+- [i.MX6ULL 驱动适配与 NFS 调试](docs/IMX6ULL_DRIVER_PORTING_AND_NFS.md)
 - [TCP 帧格式与 JSON 数据](docs/TCP_PROTOCOL.md)
+- [MQTT 北向桥接](docs/MQTT_BRIDGE.md)
+- [Windows Qt MQTT 上位机](pc/mqtt_dashboard/README.md)
 - [CAN 遥测与控制协议](docs/CAN_PROTOCOL.md)
 - [CAN IAP/OTA 流程](docs/OTA_FLOW.md)
 - [编译与板端部署](docs/BUILD_AND_DEPLOY.md)
@@ -373,7 +392,8 @@ sh scripts/install_target.sh t113      # 在 T113
 | tmpfs 日志/CSV 定额轮转 | `v1.0.0` 已实现，已完成 24 小时实板验收 |
 | CRC、超长帧、粘包与拆包测试 | 已加入自动化测试与故障注入工具 |
 | OTA 与进程守护协调 | 已实现锁文件及 systemd 服务暂停/恢复 |
-| MQTT 命令下发与状态回传 | 规划中，当前仓库未包含 |
+| MQTT 命令下发与状态回传 | `v1.1.0-rc.1` 已实现并完成 3 小时 8 分钟实板验收 |
+| Windows Qt MQTT 上位机 | 已实现总览、趋势、控制、设置、CSV 与中英双语界面 |
 | i.MX6ULL 本地 OTA 进度页面 | 规划中 |
 | 固件签名、回滚和断点续传 | 规划中 |
 
@@ -406,7 +426,7 @@ STM32 -> CAN -> /tmp/stm32_can_state.json
 ## 演进方向
 
 - 使用轻量级 JSON 解析器替代当前的字段查找逻辑。
-- 增加 MQTT 控制路由、网关状态上报与主题权限设计。
+- 为 MQTT 增加 TLS、身份认证、请求去重及本地 Broker 验收。
 - 为 OTA 主机增加状态 JSON，并在 i.MX6ULL 本地屏幕显示升级进度。
 - 增加固件版本策略、数字签名、回滚确认和掉电恢复机制。
 - 增加 CAN bus-off 自动恢复、节点注册和多节点地址分配。

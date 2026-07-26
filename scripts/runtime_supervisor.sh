@@ -54,6 +54,10 @@ start_missing()
             echo "supervisor: restarting gateway"
             IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/linux/imx6ull_gateway/start_gateway.sh"
         fi
+        if [ "${MQTT_ENABLE:-0}" = "1" ] && ! is_alive "$MQTT_PID"; then
+            echo "supervisor: restarting MQTT bridge"
+            IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/linux/mqtt_bridge/start_mqtt_bridge.sh"
+        fi
     elif ! is_alive "$T113_PID"; then
         echo "supervisor: restarting T113 receiver"
         IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/t113/tcp_receiver/start_t113.sh"

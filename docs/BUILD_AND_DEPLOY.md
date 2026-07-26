@@ -10,11 +10,13 @@ are examples, not universal toolchain names.
 ```sh
 export IMX_CC=/opt/imx6ull-toolchain/bin/arm-linux-gnueabihf-gcc
 export T113_CC=/opt/t113-toolchain/bin/arm-openwrt-linux-gcc
+export PAHO_PREFIX="$HOME/tools/paho.mqtt.c/install-arm"
 
-IMX_CC="$IMX_CC" sh scripts/build_all.sh imx6ull
+IMX_CC="$IMX_CC" PAHO_PREFIX="$PAHO_PREFIX" sh scripts/build_all.sh imx6ull
 T113_CC="$T113_CC" sh scripts/build_all.sh t113
 
 file linux/imx6ull_gateway/imx6ull_gateway_app
+file linux/mqtt_bridge/mqtt_bridge
 file t113/tcp_receiver/t113_display_app
 ```
 
@@ -28,7 +30,8 @@ still be built with their corresponding BSP/SDK workflows.
 ## Create and transfer target bundles
 
 ```sh
-sh scripts/package_target.sh imx6ull
+PAHO_LIB_DIR="$PAHO_PREFIX/lib" PACKAGE_VERSION=1.1.0-rc.1 \
+  sh scripts/package_target.sh imx6ull
 sh scripts/package_target.sh t113
 
 scp dist/iot-gateway-1.0.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
@@ -85,7 +88,8 @@ public source tree.
 2. Start `stm32_can_sensor_client`.
 3. Start `t113_display_app` on T113.
 4. Start the i.MX6ULL TCP gateway.
-5. Start the T113 LVGL application.
+5. Optionally start the MQTT bridge after its Broker is configured.
+6. Start the T113 LVGL application.
 
 Start scripts use background processes, PID files and bounded logs so the serial
 console remains usable. Production startup should use the supplied BusyBox init

@@ -5,12 +5,16 @@ This document covers the `v1.0.0-rc.1` Linux runtime layer. The target layout is
 
 ## Build, package, and install
 
-Cross-compile and package in the Ubuntu VM:
+Cross-compile and package in the Ubuntu VM. The MQTT bridge requires the
+cross-compiled Eclipse Paho prefix and library directory:
 
 ```sh
-IMX_CC=/absolute/path/to/arm-linux-gnueabihf-gcc sh scripts/build_all.sh imx6ull
+IMX_CC=/absolute/path/to/arm-linux-gnueabihf-gcc \
+PAHO_PREFIX="$HOME/tools/paho.mqtt.c/install-arm" \
+  sh scripts/build_all.sh imx6ull
 T113_CC=/absolute/path/to/t113-gcc sh scripts/build_all.sh t113
-sh scripts/package_target.sh imx6ull
+PAHO_LIB_DIR="$HOME/tools/paho.mqtt.c/install-arm/lib" \
+  sh scripts/package_target.sh imx6ull
 sh scripts/package_target.sh t113
 ```
 
@@ -27,8 +31,9 @@ executables and runtime files. `DESTDIR=/some/staging/root` remains available fo
 distribution/image builders.
 
 Edit `/etc/iot-gateway/imx6ull.conf` and set at least `T113_IP`, `CAN_IFACE`,
-and the actual sensor device paths. Edit `/etc/iot-gateway/t113.conf` if the
-listen address or port differs.
+and the actual sensor device paths. Set `MQTT_ENABLE=1` only after reviewing the
+Broker and topic settings in `docs/MQTT_BRIDGE.md`. Edit
+`/etc/iot-gateway/t113.conf` if the listen address or port differs.
 
 ## BusyBox / SysV init
 
@@ -74,6 +79,8 @@ On i.MX6ULL:
 systemctl daemon-reload
 systemctl enable --now iot-can-sensor.service iot-imx6ull-gateway.service
 systemctl enable --now iot-runtime-maintenance@imx6ull.service
+# Optional, after MQTT_ENABLE=1:
+systemctl enable --now iot-mqtt-bridge.service
 ```
 
 On T113:
@@ -102,7 +109,8 @@ and 54 MiB on T113. Defaults therefore cap logs near 1 MiB and CSV data at
 4--5 MiB, retaining only a small fixed number of archives. Tune
 `LOG_MAX_BYTES`, `LOG_KEEP`, `CSV_MAX_BYTES`, and `CSV_KEEP` in the config.
 
-Logs use copy-and-truncate because processes keep the log descriptor open. CSV
+Logs, including the optional MQTT bridge log, use copy-and-truncate because
+processes keep the log descriptor open. CSV
 files use rename rotation because writers reopen the CSV on each sample. JSON
 state files are overwritten atomically and do not grow indefinitely.
 

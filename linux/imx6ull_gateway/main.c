@@ -29,6 +29,8 @@
 #define DEFAULT_AP3216C_DEV "/dev/ap3216c"
 #define DEFAULT_ICM20608_DEV "/dev/icm20608"
 #define DEFAULT_STM32_CAN_STATE "/tmp/stm32_can_state.json"
+#define DEFAULT_GATEWAY_STATE "/tmp/imx6ull_gateway_state.json"
+#define STATE_PATH_MAX 512
 
 typedef struct {
     int connected;
@@ -48,8 +50,12 @@ static void handle_stop_signal(int signo)
 
 static void usage(const char *prog)
 {
-    printf("Usage: %s [-a t113_ip] [-p port] [-i interval_ms] [-A ap3216c_sysfs_dir] [-D ap3216c_dev] [-I icm20608_dev] [-M stm32_can_state_json] [-s] [-v]\n", prog);
-    printf("Default: %s -a %s -p %d -i %d -A %s -D %s -I %s -M %s\n",
+    printf("Usage: %s [-a t113_ip] [-p port] [-i interval_ms] "
+           "[-A ap3216c_sysfs_dir] [-D ap3216c_dev] [-I icm20608_dev] "
+           "[-M stm32_can_state_json] [-S gateway_state_json] [-s] [-v]\n",
+           prog);
+    printf("Default: %s -a %s -p %d -i %d -A %s -D %s -I %s "
+           "-M %s -S %s\n",
            prog,
            DEFAULT_SERVER_IP,
            DEFAULT_SERVER_PORT,
@@ -57,9 +63,68 @@ static void usage(const char *prog)
            DEFAULT_AP3216C_DIR,
            DEFAULT_AP3216C_DEV,
            DEFAULT_ICM20608_DEV,
-           DEFAULT_STM32_CAN_STATE);
+           DEFAULT_STM32_CAN_STATE,
+           DEFAULT_GATEWAY_STATE);
     printf("  -s  use simulated sensor data, useful for VM TCP testing\n");
     printf("  -v  print every transmitted JSON frame\n");
+}
+
+static int write_atomic_state(const char *path,
+                              const char *data,
+                              size_t data_length)
+{
+    char temporary_path[STATE_PATH_MAX];
+    size_t offset = 0;
+    int fd;
+    int written;
+
+    written = snprintf(temporary_path, sizeof(temporary_path),
+                       "%s.tmp.%ld", path, (long)getpid());
+    if (written < 0 || (size_t)written >= sizeof(temporary_path)) {
+        errno = ENAMETOOLONG;
+        return -1;
+    }
+
+    fd = open(temporary_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd < 0) {
+        return -1;
+    }
+    while (offset < data_length) {
+        ssize_t result = write(fd, data + offset, data_length - offset);
+
+        if (result < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            goto fail;
+        }
+        if (result == 0) {
+            errno = EIO;
+            goto fail;
+        }
+        offset += (size_t)result;
+    }
+    if (close(fd) < 0) {
+        fd = -1;
+        goto fail;
+    }
+    fd = -1;
+    if (rename(temporary_path, path) < 0) {
+        goto fail;
+    }
+    return 0;
+
+fail:
+    {
+        int saved_errno = errno;
+
+        if (fd >= 0) {
+            close(fd);
+        }
+        unlink(temporary_path);
+        errno = saved_errno;
+    }
+    return -1;
 }
 
 static void sleep_ms(unsigned int ms)
@@ -250,6 +315,7 @@ static int connect_to_t113(const char *server_ip, unsigned short port)
 int main(int argc, char *argv[])
 {
     const char *server_ip = DEFAULT_SERVER_IP;
+    const char *gateway_state_path = DEFAULT_GATEWAY_STATE;
     sensor_config_t sensor_cfg = {
         DEFAULT_AP3216C_DIR,
         DEFAULT_AP3216C_DEV,
@@ -265,6 +331,7 @@ int main(int argc, char *argv[])
     time_t last_heartbeat = 0;
     time_t last_summary_log = 0;
     time_t last_sensor_warning = 0;
+    time_t last_state_warning = 0;
     int verbose = 0;
     unsigned int reconnect_delay_ms = RECONNECT_MIN_MS;
     gateway_runtime_status_t runtime = {
@@ -282,7 +349,7 @@ int main(int argc, char *argv[])
     signal(SIGTERM, handle_stop_signal);
     srand((unsigned int)(time(NULL) ^ getpid()));
 
-    while ((opt = getopt(argc, argv, "a:p:i:A:D:I:M:svh")) != -1) {
+    while ((opt = getopt(argc, argv, "a:p:i:A:D:I:M:S:svh")) != -1) {
         switch (opt) {
         case 'a':
             server_ip = optarg;
@@ -305,6 +372,9 @@ int main(int argc, char *argv[])
         case 'M':
             sensor_cfg.stm32_can_state_path = optarg;
             break;
+        case 'S':
+            gateway_state_path = optarg;
+            break;
         case 's':
             sensor_cfg.simulate = 1;
             break;
@@ -322,6 +392,7 @@ int main(int argc, char *argv[])
         sensor_snapshot_t snapshot;
         char payload[MAX_PAYLOAD_SIZE];
         int payload_len;
+        int connection_failed = 0;
         time_t now;
 
         if (fd < 0) {
@@ -330,18 +401,13 @@ int main(int argc, char *argv[])
                 runtime.connected = 0;
                 runtime.reconnect_count++;
                 runtime.last_error = "connect_failed";
-                sleep_ms(reconnect_delay_ms);
-                if (reconnect_delay_ms < RECONNECT_MAX_MS) {
-                    reconnect_delay_ms *= 2u;
-                    if (reconnect_delay_ms > RECONNECT_MAX_MS)
-                        reconnect_delay_ms = RECONNECT_MAX_MS;
-                }
-                continue;
+                connection_failed = 1;
+            } else {
+                runtime.connected = 1;
+                runtime.last_connected_time = time(NULL);
+                runtime.last_error = "none";
+                reconnect_delay_ms = RECONNECT_MIN_MS;
             }
-            runtime.connected = 1;
-            runtime.last_connected_time = time(NULL);
-            runtime.last_error = "none";
-            reconnect_delay_ms = RECONNECT_MIN_MS;
         }
 
         if (sensors_read_snapshot(&sensor_cfg, &snapshot) < 0) {
@@ -365,6 +431,25 @@ int main(int argc, char *argv[])
         if (payload_len < 0) {
             fprintf(stderr, "payload buffer is too small\n");
             sleep_ms(interval_ms);
+            continue;
+        }
+        if (write_atomic_state(gateway_state_path, payload,
+                               (size_t)payload_len) < 0) {
+            now = time(NULL);
+            if (verbose || now - last_state_warning >= SUMMARY_LOG_SECONDS) {
+                fprintf(stderr, "gateway state write failed: %s: %s\n",
+                        gateway_state_path, strerror(errno));
+                last_state_warning = now;
+            }
+        }
+
+        if (connection_failed) {
+            sleep_ms(reconnect_delay_ms);
+            if (reconnect_delay_ms < RECONNECT_MAX_MS) {
+                reconnect_delay_ms *= 2u;
+                if (reconnect_delay_ms > RECONNECT_MAX_MS)
+                    reconnect_delay_ms = RECONNECT_MAX_MS;
+            }
             continue;
         }
 

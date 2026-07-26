@@ -24,8 +24,10 @@ imx6ull_gateway_app
 stm32_can_sensor_client
 stm32_can_ota_host
 t113_display_app
+/linux/mqtt_bridge/mqtt_bridge
 demo
 /tests/protocol_test
+/tests/mqtt_command_test
 
 # Python cache
 __pycache__/
@@ -61,3 +63,6 @@ t113/lvgl_app/res/music/*.wav
 Thumbs.db
 # Local acceptance workspace; canonical evidence is under docs/acceptance/
 /acceptance/
+
+# Qt Creator out-of-source builds
+/pc/build-*/

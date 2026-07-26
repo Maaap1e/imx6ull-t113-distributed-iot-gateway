@@ -6,6 +6,7 @@ BASE_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 ROLE="${1:-all}"
 IMX_CC="${IMX_CC:-arm-linux-gnueabihf-gcc}"
 T113_CC="${T113_CC:-arm-openwrt-linux-gcc}"
+PAHO_PREFIX="${PAHO_PREFIX:-$HOME/tools/paho.mqtt.c/install-arm}"
 
 case "$ROLE" in
     imx6ull)
@@ -16,6 +17,8 @@ case "$ROLE" in
         make -C "$BASE_DIR/linux/can_sensor_client" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/can_ota_host" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/imx6ull_gateway" CC="$IMX_CC"
+        make -C "$BASE_DIR/linux/mqtt_bridge" CC="$IMX_CC" \
+            PAHO_PREFIX="$PAHO_PREFIX"
         ;;
     t113)
         command -v "$T113_CC" >/dev/null 2>&1 || {
@@ -25,7 +28,8 @@ case "$ROLE" in
         make -C "$BASE_DIR/t113/tcp_receiver" CC="$T113_CC"
         ;;
     all)
-        IMX_CC="$IMX_CC" T113_CC="$T113_CC" sh "$0" imx6ull
+        IMX_CC="$IMX_CC" T113_CC="$T113_CC" PAHO_PREFIX="$PAHO_PREFIX" \
+            sh "$0" imx6ull
         IMX_CC="$IMX_CC" T113_CC="$T113_CC" sh "$0" t113
         ;;
     *)

@@ -17,6 +17,7 @@ if [ -f "$SUPERVISOR_PID" ]; then
 fi
 
 if [ "$ROLE" = "imx6ull" ]; then
+    IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/linux/mqtt_bridge/stop_mqtt_bridge.sh"
     IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/linux/imx6ull_gateway/stop_gateway.sh"
     IOT_GATEWAY_CONFIG="$CONFIG_FILE" "$BASE_DIR/linux/can_sensor_client/stop_client.sh"
 else

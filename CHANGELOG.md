@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.1.0-rc.1 - 2026-07-26
+
+### Added
+
+- Added an optional i.MX6ULL MQTT northbound bridge based on Eclipse Paho.
+- Added atomic `/tmp/imx6ull_gateway_state.json` output so TCP display and
+  MQTT telemetry remain decoupled.
+- Added MQTT LWT status, bounded reconnect backoff, telemetry publication,
+  allow-listed LED commands, execution responses, supervision and health
+  checks.
+- Added MQTT command payload tests, including clients that append NUL or CRLF.
+- Added a Windows Qt Widgets MQTT dashboard with overview, trend, control and
+  settings pages.
+- Added strict telemetry JSON validation, Chinese/English UI translation,
+  daily UTF-8 CSV recording and Qt parser tests.
+- Added `v1.1.0-rc.1` MQTT/Qt real-hardware acceptance evidence.
+
+### Validated
+
+- Completed a 3-hour 8-minute MQTT and Qt continuous-operation test.
+- Received more than 2,300 telemetry messages with zero Qt parse errors.
+- Verified closed-loop LED off, on and heartbeat commands with device
+  execution responses.
+- Verified healthy supervisor, CAN client, TCP gateway and MQTT bridge
+  processes at the end of the test.
+- Verified CAN ERROR-ACTIVE state with zero receive errors, drops, overruns and
+  bus-off events at the end of the test.
+
+### Security
+
+- MQTT is disabled by default. The bundled Tongxinmao Broker settings
+  are for public smoke tests only; production deployments should use a trusted
+  Broker with authentication and transport security.
+
+### Known limitations
+
+- The public MQTT smoke-test path does not provide production-grade TLS,
+  authentication or topic isolation.
+- Qt trend history is held in process memory; raw telemetry is persisted to
+  CSV.
+- Device epoch/timezone differences remain visible in raw data; charts use PC
+  receive time.
+
 ## 1.0.0 - 2026-07-23
 
 ### Added

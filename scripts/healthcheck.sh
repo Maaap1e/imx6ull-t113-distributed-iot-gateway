@@ -40,13 +40,25 @@ show_file()
 }
 
 if [ "$ROLE" = "imx6ull" ]; then
+    GATEWAY_STATE="${GATEWAY_STATE:-/tmp/imx6ull_gateway_state.json}"
+    MQTT_PID="${MQTT_PID:-/tmp/mqtt_bridge.pid}"
+    MQTT_LOG="${MQTT_LOG:-/tmp/mqtt_bridge.log}"
     check_pid supervisor "$SUPERVISOR_PID"
     check_pid can-client "$STM32_CAN_PID"
     check_pid gateway "$GATEWAY_PID"
+    if [ "${MQTT_ENABLE:-0}" = "1" ]; then
+        check_pid mqtt-bridge "$MQTT_PID"
+    else
+        echo "INFO mqtt-bridge: disabled"
+    fi
     show_file "$STM32_CAN_STATE"
+    show_file "$GATEWAY_STATE"
     show_file "$STM32_CAN_CSV"
     show_file "$STM32_CAN_LOG"
     show_file "$GATEWAY_LOG"
+    if [ "${MQTT_ENABLE:-0}" = "1" ]; then
+        show_file "$MQTT_LOG"
+    fi
 else
     check_pid supervisor "$SUPERVISOR_PID"
     check_pid t113-receiver "$T113_PID"

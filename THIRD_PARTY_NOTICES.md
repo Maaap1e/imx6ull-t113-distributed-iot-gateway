@@ -29,6 +29,15 @@ from, or derived from, third-party SDKs and development-board examples.
   removed. Before commercial redistribution, review the terms supplied with
   the original development-board package.
 
+## Eclipse Paho MQTT C
+
+- The optional i.MX6ULL MQTT bridge links against Eclipse Paho MQTT C.
+- Paho MQTT C is not authored by this project and is distributed under the
+  Eclipse Public License 2.0 and Eclipse Distribution License 1.0. Obtain its
+  source and license texts from the official Eclipse Paho distribution.
+- Target packages may contain an externally cross-compiled
+  `libpaho-mqtt3c.so`; that library remains subject to its upstream licenses.
+
 ## General rule
 
 The root `LICENSE` applies only to code authored specifically for this project.

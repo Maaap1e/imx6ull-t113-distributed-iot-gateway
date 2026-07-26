@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install MQTT build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpaho-mqtt-dev
       - name: Check shell syntax
         run: find . -type f \( -name '*.sh' -o -name 'S90iot-*' \) -print0 | xargs -0 -n1 sh -n
       - name: Build Linux applications
@@ -19,12 +23,14 @@ jobs:
           make -C linux/can_sensor_client
           make -C linux/can_ota_host
           make -C linux/imx6ull_gateway
+          make -C linux/mqtt_bridge PAHO_PREFIX=/usr
           make -C t113/tcp_receiver
-      - name: Run protocol tests
+      - name: Run host unit tests
         run: make -C tests test
       - name: Test target packaging
         run: |
-          sh scripts/package_target.sh imx6ull
+          PAHO_LIB_DIR="$(dirname "$(ldconfig -p | awk '/libpaho-mqtt3c.so.1/{print $NF; exit}')")" \
+            sh scripts/package_target.sh imx6ull
           sh scripts/package_target.sh t113
           tar -tzf dist/iot-gateway-$(cat VERSION)-imx6ull.tar.gz >/dev/null
           tar -tzf dist/iot-gateway-$(cat VERSION)-t113.tar.gz >/dev/null

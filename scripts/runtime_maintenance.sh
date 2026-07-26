@@ -28,6 +28,10 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 . "$CONFIG_FILE"
 
+if [ "$ROLE" = "imx6ull" ]; then
+    MQTT_LOG="${MQTT_LOG:-/tmp/mqtt_bridge.log}"
+fi
+
 is_uint()
 {
     case "$1" in
@@ -123,6 +127,9 @@ maintain_once()
     if [ "$ROLE" = "imx6ull" ]; then
         rotate_copytruncate "$SUPERVISOR_LOG" "$LOG_MAX_BYTES" "$LOG_KEEP"
         rotate_copytruncate "$GATEWAY_LOG" "$LOG_MAX_BYTES" "$LOG_KEEP"
+        if [ "${MQTT_ENABLE:-0}" = "1" ]; then
+            rotate_copytruncate "$MQTT_LOG" "$LOG_MAX_BYTES" "$LOG_KEEP"
+        fi
         rotate_copytruncate "$STM32_CAN_LOG" "$LOG_MAX_BYTES" "$LOG_KEEP"
         rotate_rename "$STM32_CAN_CSV" "$CSV_MAX_BYTES" "$CSV_KEEP"
     else

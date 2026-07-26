@@ -1,0 +1,140 @@
+=== MQTT QT SOAK END ===
+=== HOST TIME ===
+2026-07-26T19:46:10+08:00
+1785066370
+=== IMX6ULL ===
+Sun Jul 26 19:46:10 UTC 2026
+1785095170
+ 19:46:10 up  4:10,  1 user,  load average: 0.17, 0.28, 0.31
+=== HEALTH ===
+OK   supervisor: pid=730
+OK   can-client: pid=767
+OK   gateway: pid=789
+OK   mqtt-bridge: pid=800
+INFO file=/tmp/stm32_can_state.json bytes=164
+INFO file=/tmp/imx6ull_gateway_state.json bytes=559
+INFO file=/tmp/stm32_can_data.csv bytes=83206
+INFO file=/tmp/stm32_can_client.log bytes=84358
+INFO file=/tmp/imx6ull_gateway.log bytes=91994
+INFO file=/tmp/mqtt_bridge.log bytes=11979
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  456K  248M   1% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         96M        295M        4.5M        103M        310M
+Swap:            0B          0B          0B
+=== PIDS ===
+730
+767
+789
+800
+=== CAN ===
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    180328     22541    0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    0          0        0       0       0       0
+=== FILE SIZES ===
+  2305  83206 /tmp/stm32_can_data.csv
+  1155  84358 /tmp/stm32_can_client.log
+  1512  91994 /tmp/imx6ull_gateway.log
+   255  11979 /tmp/mqtt_bridge.log
+  5227 271537 total
+=== MQTT EVENT COUNTS ===
+connected=1
+connection_lost=0
+connect_failed=2
+publish_failed=0
+telemetry_logged=252
+=== MQTT LOG ===
+MQTT telemetry published: count=2056 bytes=560
+MQTT telemetry published: count=2068 bytes=559
+MQTT telemetry published: count=2080 bytes=559
+MQTT telemetry published: count=2092 bytes=561
+MQTT telemetry published: count=2104 bytes=560
+MQTT telemetry published: count=2116 bytes=559
+MQTT telemetry published: count=2128 bytes=559
+MQTT telemetry published: count=2140 bytes=560
+MQTT telemetry published: count=2152 bytes=560
+MQTT telemetry published: count=2164 bytes=560
+MQTT telemetry published: count=2176 bytes=560
+MQTT telemetry published: count=2188 bytes=561
+MQTT telemetry published: count=2200 bytes=560
+MQTT telemetry published: count=2212 bytes=560
+MQTT telemetry published: count=2224 bytes=559
+MQTT telemetry published: count=2236 bytes=559
+MQTT telemetry published: count=2248 bytes=560
+MQTT telemetry published: count=2260 bytes=560
+MQTT telemetry published: count=2272 bytes=558
+MQTT telemetry published: count=2284 bytes=560
+MQTT telemetry published: count=2296 bytes=560
+MQTT telemetry published: count=2308 bytes=560
+MQTT telemetry published: count=2320 bytes=560
+MQTT telemetry published: count=2332 bytes=560
+MQTT telemetry published: count=2344 bytes=560
+MQTT telemetry published: count=2356 bytes=560
+MQTT telemetry published: count=2368 bytes=560
+MQTT telemetry published: count=2380 bytes=559
+MQTT telemetry published: count=2392 bytes=559
+MQTT telemetry published: count=2404 bytes=560
+MQTT telemetry published: count=2416 bytes=561
+MQTT telemetry published: count=2428 bytes=561
+MQTT telemetry published: count=2440 bytes=559
+MQTT telemetry published: count=2452 bytes=561
+MQTT telemetry published: count=2464 bytes=560
+MQTT telemetry published: count=2476 bytes=560
+MQTT telemetry published: count=2488 bytes=559
+MQTT telemetry published: count=2500 bytes=559
+MQTT telemetry published: count=2512 bytes=560
+MQTT telemetry published: count=2524 bytes=561
+MQTT telemetry published: count=2536 bytes=559
+MQTT telemetry published: count=2548 bytes=559
+MQTT telemetry published: count=2560 bytes=560
+MQTT telemetry published: count=2572 bytes=560
+MQTT telemetry published: count=2584 bytes=560
+MQTT telemetry published: count=2596 bytes=559
+MQTT telemetry published: count=2608 bytes=560
+MQTT telemetry published: count=2620 bytes=561
+MQTT telemetry published: count=2632 bytes=561
+MQTT telemetry published: count=2644 bytes=560
+MQTT telemetry published: count=2656 bytes=559
+MQTT telemetry published: count=2668 bytes=560
+MQTT telemetry published: count=2680 bytes=560
+MQTT telemetry published: count=2692 bytes=558
+MQTT telemetry published: count=2704 bytes=559
+MQTT telemetry published: count=2716 bytes=560
+MQTT telemetry published: count=2728 bytes=560
+MQTT telemetry published: count=2740 bytes=560
+MQTT telemetry published: count=2752 bytes=559
+MQTT telemetry published: count=2764 bytes=561
+MQTT telemetry published: count=2776 bytes=561
+MQTT telemetry published: count=2788 bytes=561
+MQTT telemetry published: count=2800 bytes=559
+MQTT telemetry published: count=2812 bytes=559
+MQTT telemetry published: count=2824 bytes=560
+MQTT telemetry published: count=2836 bytes=560
+MQTT telemetry published: count=2848 bytes=560
+MQTT telemetry published: count=2860 bytes=560
+MQTT telemetry published: count=2872 bytes=560
+MQTT telemetry published: count=2884 bytes=560
+MQTT telemetry published: count=2896 bytes=560
+MQTT telemetry published: count=2908 bytes=559
+MQTT telemetry published: count=2920 bytes=559
+MQTT telemetry published: count=2932 bytes=560
+MQTT telemetry published: count=2944 bytes=560
+MQTT telemetry published: count=2956 bytes=559
+MQTT telemetry published: count=2968 bytes=559
+MQTT telemetry published: count=2980 bytes=560
+MQTT telemetry published: count=2992 bytes=560
+MQTT telemetry published: count=3004 bytes=560
+=== GATEWAY STATE ===
+{"gateway":"imx6ull","timestamp":1785095170,"simulated":0,"tcp_client":{"connected":1,"reconnect_count":3,"disconnect_count":0,"last_connected_time":1784681431,"last_error":"none"},"ap3216c_ok":1,"ap3216c":{"als":0,"ir":0,"ps":245},"icm20608_ok":1,"icm20608":{"gyro_x":-1.28,"gyro_y":-0.37,"gyro_z":-0.37,"accel_x":-0.01,"accel_y":-0.00,"accel_z":0.99,"temp":38.03},"stm32_can_ok":1,"stm32_can":{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":38,"app_version":"1.1","counter":5,"frames":22540,"checksum_errors":0,"last_seen":1785095169}}
+=== STM32 STATE ===
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":38,"app_version":"1.1","counter":6,"frames":22542,"checksum_errors":0,"last_seen":1785095170}

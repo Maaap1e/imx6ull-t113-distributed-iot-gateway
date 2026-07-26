@@ -1,0 +1,15 @@
+[Unit]
+Description=i.MX6ULL MQTT northbound bridge
+After=network-online.target iot-imx6ull-gateway.service
+Wants=network-online.target
+Requires=iot-imx6ull-gateway.service
+
+[Service]
+Type=simple
+Environment=IOT_GATEWAY_CONFIG=/etc/iot-gateway/imx6ull.conf
+ExecStart=/opt/iot-gateway/scripts/run_mqtt_bridge.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

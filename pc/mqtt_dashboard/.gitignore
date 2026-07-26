@@ -1,0 +1,13 @@
+.qmake.stash
+Makefile
+Makefile.*
+debug/
+release/
+build-*/
+*.exe
+*.dll
+*.qm
+moc_*.cpp
+qrc_*.cpp
+object_script.*
+*.pro.user

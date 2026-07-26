@@ -27,6 +27,24 @@ copy_exec()
     chmod 755 "$dst"
 }
 
+copy_paho_runtime()
+{
+    paho_source="${PAHO_LIB_DIR:-$BASE_DIR/lib}"
+    copied=0
+
+    mkdir -p "$APP_DIR/lib"
+    for library in "$paho_source"/libpaho-mqtt3c.so*; do
+        [ -e "$library" ] || continue
+        cp -P "$library" "$APP_DIR/lib/"
+        copied=1
+    done
+    if [ "$copied" -ne 1 ]; then
+        echo "Missing Paho MQTT runtime in $paho_source" >&2
+        echo "Set PAHO_LIB_DIR to the ARM install-arm/lib directory." >&2
+        exit 1
+    fi
+}
+
 register_rc_local()
 {
     rc_local="$DESTDIR/etc/rc.local"
@@ -66,8 +84,9 @@ if [ "$ROLE" = "imx6ull" ]; then
     require_binary "$BASE_DIR/linux/imx6ull_gateway/imx6ull_gateway_app"
     require_binary "$BASE_DIR/linux/can_sensor_client/stm32_can_sensor_client"
     require_binary "$BASE_DIR/linux/can_ota_host/stm32_can_ota_host"
+    require_binary "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge"
     mkdir -p "$APP_DIR/linux/imx6ull_gateway" "$APP_DIR/linux/can_sensor_client" \
-        "$APP_DIR/linux/can_ota_host"
+        "$APP_DIR/linux/can_ota_host" "$APP_DIR/linux/mqtt_bridge"
     copy_exec "$BASE_DIR/linux/imx6ull_gateway/imx6ull_gateway_app" \
         "$APP_DIR/linux/imx6ull_gateway/imx6ull_gateway_app"
     copy_exec "$BASE_DIR/linux/can_sensor_client/stm32_can_sensor_client" \
@@ -88,6 +107,13 @@ if [ "$ROLE" = "imx6ull" ]; then
         "$APP_DIR/linux/can_ota_host/setup_can.sh"
     copy_exec "$BASE_DIR/linux/can_ota_host/run_ota.sh" \
         "$APP_DIR/linux/can_ota_host/run_ota.sh"
+    copy_exec "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge" \
+        "$APP_DIR/linux/mqtt_bridge/mqtt_bridge"
+    copy_exec "$BASE_DIR/linux/mqtt_bridge/start_mqtt_bridge.sh" \
+        "$APP_DIR/linux/mqtt_bridge/start_mqtt_bridge.sh"
+    copy_exec "$BASE_DIR/linux/mqtt_bridge/stop_mqtt_bridge.sh" \
+        "$APP_DIR/linux/mqtt_bridge/stop_mqtt_bridge.sh"
+    copy_paho_runtime
 else
     require_binary "$BASE_DIR/t113/tcp_receiver/t113_display_app"
     mkdir -p "$APP_DIR/t113/tcp_receiver"
@@ -112,6 +138,7 @@ if [ -d "$DESTDIR/etc/systemd/system" ]; then
     if [ "$ROLE" = "imx6ull" ]; then
         cp "$BASE_DIR/deploy/systemd/iot-can-sensor.service" "$DESTDIR/etc/systemd/system/"
         cp "$BASE_DIR/deploy/systemd/iot-imx6ull-gateway.service" "$DESTDIR/etc/systemd/system/"
+        cp "$BASE_DIR/deploy/systemd/iot-mqtt-bridge.service" "$DESTDIR/etc/systemd/system/"
     else
         cp "$BASE_DIR/deploy/systemd/iot-t113-receiver.service" "$DESTDIR/etc/systemd/system/"
     fi
