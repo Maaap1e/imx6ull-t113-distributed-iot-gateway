@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">i.MX6ULL、T113 与 STM32F103 三节点系统架构</title>
+  <desc id="desc">STM32F103 通过 CAN 向 i.MX6ULL 汇报传感器数据并接受控制和 OTA；i.MX6ULL 通过自定义 TCP 协议连接 T113 LVGL 终端，并通过 MQTT 连接 Broker 与 Windows Qt 上位机。</desc>
+
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#eef4ff"/>
+    </linearGradient>
+    <linearGradient id="gatewayHeader" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1d4ed8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Arial, "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px Arial, "Microsoft YaHei", sans-serif; fill: #475569; }
+      .nodeTag { font: 700 12px Arial, "Microsoft YaHei", sans-serif; letter-spacing: 1.5px; }
+      .nodeTitle { font: 700 25px Arial, "Microsoft YaHei", sans-serif; fill: #ffffff; }
+      .nodeRole { font: 500 14px Arial, "Microsoft YaHei", sans-serif; fill: #dbeafe; }
+      .section { font: 700 15px Arial, "Microsoft YaHei", sans-serif; fill: #334155; }
+      .body { font: 400 14px Arial, "Microsoft YaHei", sans-serif; fill: #334155; }
+      .bodyStrong { font: 700 14px Arial, "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .chip { font: 600 12px Arial, "Microsoft YaHei", sans-serif; fill: #334155; }
+      .linkTitle { font: 700 13px Arial, "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .linkText { font: 400 12px Arial, "Microsoft YaHei", sans-serif; fill: #475569; }
+      .bottomTitle { font: 700 18px Arial, "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .bottomText { font: 400 13px Arial, "Microsoft YaHei", sans-serif; fill: #475569; }
+      .foot { font: 500 12px Arial, "Microsoft YaHei", sans-serif; fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="920" rx="28" fill="url(#background)"/>
+  <rect x="42" y="34" width="1516" height="852" rx="24" fill="#ffffff" stroke="#dbe4f0"/>
+
+  <text id="architecture-title" class="title" x="80" y="92">三节点分布式嵌入式物联网网关</text>
+  <text class="subtitle" x="80" y="126">本地实时链路与 MQTT 北向链路解耦：Broker 或 PC 故障不影响 CAN、TCP 与 LVGL 运行</text>
+  <rect x="1355" y="65" width="155" height="38" rx="19" fill="#e0e7ff"/>
+  <text x="1432" y="89" text-anchor="middle" style="font:700 13px Arial,'Microsoft YaHei',sans-serif;fill:#4338ca">STABLE · v1.1.0</text>
+
+  <!-- Main protocol connectors -->
+  <line x1="450" y1="350" x2="605" y2="350" stroke="#2563eb" stroke-width="5"
+        marker-start="url(#arrowBlue)" marker-end="url(#arrowBlue)"/>
+  <rect x="450" y="273" width="155" height="58" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="linkTitle" x="527.5" y="296" text-anchor="middle">CAN 500 kbit/s</text>
+  <text class="linkText" x="527.5" y="316" text-anchor="middle">遥测 / 控制 / IAP·OTA</text>
+
+  <line x1="995" y1="350" x2="1150" y2="350" stroke="#2563eb" stroke-width="5"
+        marker-end="url(#arrowBlue)"/>
+  <rect x="995" y="263" width="155" height="68" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="linkTitle" x="1072.5" y="286" text-anchor="middle">Ethernet / TCP</text>
+  <text class="linkText" x="1072.5" y="306" text-anchor="middle">20B 帧头 + JSON</text>
+  <text class="linkText" x="1072.5" y="322" text-anchor="middle">CRC32 / 重连</text>
+
+  <!-- STM32 node -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="170" width="390" height="390" rx="22" fill="#ffffff" stroke="#fed7aa" stroke-width="2"/>
+    <path d="M82 170 H428 Q450 170 450 192 V254 H60 V192 Q60 170 82 170" fill="#ea580c"/>
+  </g>
+  <rect x="84" y="190" width="82" height="24" rx="12" fill="#ffedd5"/>
+  <text class="nodeTag" x="125" y="207" text-anchor="middle" fill="#c2410c">NODE 01</text>
+  <text class="nodeTitle" x="84" y="238">STM32F103</text>
+  <text class="nodeRole" x="260" y="237">CAN 传感器与执行节点</text>
+
+  <text class="section" x="88" y="292">采集与控制</text>
+  <rect x="88" y="307" width="92" height="30" rx="15" fill="#fff7ed" stroke="#fdba74"/>
+  <text class="chip" x="134" y="327" text-anchor="middle">DHT11</text>
+  <rect x="188" y="307" width="112" height="30" rx="15" fill="#fff7ed" stroke="#fdba74"/>
+  <text class="chip" x="244" y="327" text-anchor="middle">LED 控制</text>
+  <text class="body" x="88" y="368">• 周期心跳、温湿度与固件版本上报</text>
+  <text class="body" x="88" y="395">• 命令执行结果通过 CAN 闭环应答</text>
+
+  <text class="section" x="88" y="438">Bootloader / App</text>
+  <rect x="88" y="454" width="334" height="76" rx="14" fill="#fff7ed"/>
+  <text class="bodyStrong" x="106" y="480">常驻 CAN Bootloader</text>
+  <text class="body" x="106" y="502">Flash 擦写 · 分片序号 · CRC32 · App 跳转</text>
+  <text class="body" x="106" y="522">应用区：0x08010000　验收固件：v1.1</text>
+
+  <!-- i.MX6ULL node -->
+  <g filter="url(#shadow)">
+    <rect x="605" y="170" width="390" height="390" rx="22" fill="#ffffff" stroke="#bfdbfe" stroke-width="3"/>
+    <path d="M627 170 H973 Q995 170 995 192 V254 H605 V192 Q605 170 627 170" fill="url(#gatewayHeader)"/>
+  </g>
+  <rect x="629" y="190" width="82" height="24" rx="12" fill="#dbeafe"/>
+  <text class="nodeTag" x="670" y="207" text-anchor="middle" fill="#1d4ed8">NODE 02</text>
+  <text class="nodeTitle" x="629" y="238">i.MX6ULL</text>
+  <text class="nodeRole" x="790" y="237">Linux 边缘网关 / 系统中枢</text>
+
+  <text class="section" x="633" y="292">板载采集</text>
+  <rect x="633" y="307" width="132" height="30" rx="15" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="chip" x="699" y="327" text-anchor="middle">AP3216C · I²C</text>
+  <rect x="774" y="307" width="137" height="30" rx="15" fill="#eff6ff" stroke="#93c5fd"/>
+  <text class="chip" x="842.5" y="327" text-anchor="middle">ICM20608 · SPI</text>
+
+  <text class="section" x="633" y="370">服务进程</text>
+  <text class="body" x="633" y="397">• SocketCAN 接收、节点在线状态与 JSON/CSV</text>
+  <text class="body" x="633" y="424">• 传感器聚合、自定义 TCP Client 与断线重连</text>
+  <text class="body" x="633" y="451">• MQTT 遥测/LWT/白名单命令与执行响应</text>
+  <text class="body" x="633" y="478">• CAN OTA Host 向 STM32 Bootloader 发送固件</text>
+
+  <rect x="633" y="497" width="334" height="37" rx="12" fill="#eff6ff"/>
+  <text class="bodyStrong" x="800" y="521" text-anchor="middle">原子状态文件解耦各链路与 UI</text>
+
+  <!-- T113 node -->
+  <g filter="url(#shadow)">
+    <rect x="1150" y="170" width="390" height="390" rx="22" fill="#ffffff" stroke="#99f6e4" stroke-width="2"/>
+    <path d="M1172 170 H1518 Q1540 170 1540 192 V254 H1150 V192 Q1150 170 1172 170" fill="#0f766e"/>
+  </g>
+  <rect x="1174" y="190" width="82" height="24" rx="12" fill="#ccfbf1"/>
+  <text class="nodeTag" x="1215" y="207" text-anchor="middle" fill="#0f766e">NODE 03</text>
+  <text class="nodeTitle" x="1174" y="238">T113</text>
+  <text class="nodeRole" x="1310" y="237">Tina Linux / LVGL 显示终端</text>
+
+  <text class="section" x="1178" y="292">接收与解析</text>
+  <text class="body" x="1178" y="320">• TCP Server 完整收帧与 CRC32 校验</text>
+  <text class="body" x="1178" y="347">• 状态 JSON 原子写入，网络与 UI 解耦</text>
+
+  <text class="section" x="1178" y="390">LVGL 二次开发</text>
+  <text class="body" x="1178" y="418">• 重构主页面、状态逻辑与差量刷新</text>
+  <text class="body" x="1178" y="445">• 传感器仪表盘、设备在线状态</text>
+  <text class="body" x="1178" y="472">• Wi-Fi 配置与连接、系统设置</text>
+
+  <rect x="1178" y="497" width="334" height="37" rx="12" fill="#ecfdf5"/>
+  <text class="bodyStrong" x="1345" y="521" text-anchor="middle">本地 HMI 不依赖公网 Broker</text>
+
+  <!-- Engineering support -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="640" width="420" height="170" rx="20" fill="#f8fafc" stroke="#cbd5e1"/>
+  </g>
+  <text class="bottomTitle" x="88" y="675">工程化运行保障</text>
+  <text class="bottomText" x="88" y="704">• BusyBox / OpenWrt / systemd 开机自启动</text>
+  <text class="bottomText" x="88" y="730">• supervisor 进程守护、健康检查与故障恢复</text>
+  <text class="bottomText" x="88" y="756">• tmpfs 日志/CSV 定额轮转、版本化安装包</text>
+  <text class="bottomText" x="88" y="782">• 24 h 核心链路 + 3 h 08 min MQTT/Qt 验收</text>
+  <line x1="480" y1="700" x2="605" y2="530" stroke="#94a3b8" stroke-width="3" stroke-dasharray="8 7"/>
+
+  <!-- MQTT Broker -->
+  <g filter="url(#shadow)">
+    <rect x="550" y="640" width="500" height="170" rx="20" fill="#faf5ff" stroke="#c4b5fd" stroke-width="2"/>
+  </g>
+  <rect x="578" y="661" width="124" height="25" rx="12.5" fill="#ede9fe"/>
+  <text class="nodeTag" x="640" y="678" text-anchor="middle" fill="#6d28d9">NORTHBOUND</text>
+  <text class="bottomTitle" x="578" y="716">MQTT Broker</text>
+  <text class="bottomText" x="578" y="744">MQTT 3.1.1 · Telemetry · Retained LWT</text>
+  <text class="bottomText" x="578" y="770">LED Command · Execution Response</text>
+
+  <line x1="800" y1="560" x2="800" y2="640" stroke="#7c3aed" stroke-width="4"
+        stroke-dasharray="9 6" marker-end="url(#arrowPurple)"/>
+  <rect x="824" y="577" width="145" height="35" rx="17.5" fill="#f3e8ff"/>
+  <text class="linkTitle" x="896.5" y="599" text-anchor="middle">MQTT 北向桥接</text>
+
+  <!-- Windows dashboard -->
+  <g filter="url(#shadow)">
+    <rect x="1120" y="640" width="420" height="170" rx="20" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"/>
+  </g>
+  <text class="bottomTitle" x="1148" y="680">Windows Qt MQTT 上位机</text>
+  <text class="bottomText" x="1148" y="711">系统总览 · 实时趋势 · LED 闭环控制</text>
+  <text class="bottomText" x="1148" y="737">严格 JSON 校验 · CSV · 中英双语</text>
+  <text class="bottomText" x="1148" y="763">PC 接收时间绘图 · 解析错误统计</text>
+  <rect x="1148" y="778" width="208" height="22" rx="11" fill="#ede9fe"/>
+  <text x="1252" y="793" text-anchor="middle" style="font:600 11px Arial,'Microsoft YaHei',sans-serif;fill:#6d28d9">Qt Widgets + Qt Charts + Paho</text>
+
+  <line x1="1050" y1="725" x2="1120" y2="725" stroke="#7c3aed" stroke-width="4"
+        marker-start="url(#arrowPurple)" marker-end="url(#arrowPurple)"/>
+
+  <text class="foot" x="80" y="857">主数据面：STM32 ↔ i.MX6ULL → T113　｜　北向数据面：i.MX6ULL ↔ MQTT Broker ↔ Windows Qt</text>
+  <text class="foot" x="1520" y="857" text-anchor="end">CAN / TCP / MQTT 三协议协同</text>
+</svg>

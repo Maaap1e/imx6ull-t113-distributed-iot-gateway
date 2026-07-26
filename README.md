@@ -2,13 +2,13 @@
 
 # i.MX6ULL + T113 + STM32F103 分布式嵌入式物联网网关
 
-**集 Linux 传感器采集、CAN 节点、TCP 可视化与 CAN IAP/OTA 于一体的分布式嵌入式原型系统**
+**集 Linux 边缘采集、CAN 节点与 OTA、T113/LVGL 本地显示、MQTT 北向接入和 Qt 上位机于一体的分布式嵌入式系统**
 
 ![C](https://img.shields.io/badge/Language-C-00599C.svg)
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v1.1.0--rc.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-v1.1.0-brightgreen.svg)
 
 </div>
 
@@ -18,13 +18,23 @@
 
 本项目实现了一套由 **i.MX6ULL、全志 T113 与 STM32F103** 组成的三节点分布式嵌入式物联网系统。
 
-- **i.MX6ULL 边缘网关**：采集 AP3216C 与 ICM20608 数据，通过 SocketCAN 接收 STM32F103 的 DHT11 数据，并将多个节点的状态合并后发送给 T113。
+- **i.MX6ULL 边缘网关**：采集 AP3216C 与 ICM20608 数据，通过 SocketCAN 接收 STM32F103 的 DHT11 数据，聚合状态后分别发送至 T113 本地终端和 MQTT Broker。
 - **STM32F103 CAN 节点**：周期上报心跳和温湿度数据，接收 LED 控制与 Bootloader 切换命令，并支持通过 CAN 总线进行固件升级。
 - **全志 T113 显示终端**：接收带帧头和 CRC32 的 TCP 数据，写入原子状态文件，再由 LVGL 页面显示设备在线状态与传感器数据。
+- **Windows Qt 上位机**：通过 MQTT 订阅聚合遥测与在线状态，提供系统总览、实时趋势、CSV 记录和带执行回执的 LED 控制。
 
 i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 App 固件。Bootloader 依次完成应用区擦除、分块写入、序号检查、CRC32 校验以及 App 跳转，构成 Linux 网关远程升级 CAN 节点固件的完整闭环。
 
-当前稳定版本为 **`v1.0.0`**，已完成三节点冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收。当前候选版本为 **`v1.1.0-rc.1`**，新增 i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机，并完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。详见 [v1.0.0 实板验收报告](docs/acceptance/v1.0.0/RESULT.md)和 [v1.1.0-rc.1 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)。
+当前稳定版本为 **`v1.1.0`**：核心三节点网关已完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收；新增的 i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机已完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)和 [v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)。
+
+## 系统架构
+
+![三节点分布式嵌入式物联网网关系统架构](docs/images/system-architecture.svg)
+
+- **本地实时链路**：STM32F103 经 CAN 向 i.MX6ULL 上报数据并接收控制；i.MX6ULL 经自定义 TCP 帧向 T113 推送聚合状态，T113 负责 CRC32 校验、状态文件更新和 LVGL 显示。
+- **北向管理链路**：i.MX6ULL 的独立 MQTT Bridge 发布遥测与 LWT 状态，并接收白名单控制命令；Windows Qt 上位机通过 Broker 完成监控、趋势记录和命令闭环。
+- **升级链路**：i.MX6ULL OTA Host 通过 CAN 向 STM32 常驻 Bootloader 发送固件，Bootloader 完成 Flash 擦写、分片序号检查、CRC32 校验和 App 跳转。
+- **故障隔离**：MQTT Broker 或 PC 离线不阻塞 CAN、TCP 与 LVGL 本地链路；关键进程由 supervisor 管理，日志和 CSV 在 tmpfs 中定额轮转。
 
 ## 贡献范围与可验证证据
 
@@ -53,19 +63,6 @@ LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设
 
 > 界面中出现的第三方商标和应用图标归各自权利人所有，仅用于实机界面与功能展示。
 
-```mermaid
-flowchart LR
-    AP["AP3216C / I2C"] --> GW["i.MX6ULL 边缘网关"]
-    ICM["ICM20608 / SPI"] --> GW
-    DHT["DHT11"] --> MCU["STM32F103 CAN 节点"]
-    MCU <-->|"CAN 500 kbit/s"| GW
-    GW -->|"自定义 TCP 帧 + JSON"| RX["T113 TCP 接收端"]
-    RX -->|"原子更新状态 JSON"| UI["T113 LVGL 终端"]
-    FW["STM32 App 固件"] --> OTA["i.MX6ULL CAN OTA 主机"]
-    OTA -->|"CAN IAP/OTA"| BOOT["STM32 常驻 Bootloader"]
-    BOOT --> MCU
-```
-
 ## 核心亮点
 
 | 模块 | 实现内容 | 工程要点 |
@@ -76,6 +73,7 @@ flowchart LR
 | CAN OTA | Linux 主机发送固件信息和 6 字节数据分片 | Flash 擦写、序号检查、进度状态、整包 CRC32 与 App 有效性校验 |
 | T113 数据桥接 | TCP 接收端原子更新 `/tmp/t113_sensor_state.json` | 网络线程与 LVGL UI 解耦，避免网络阻塞影响界面刷新 |
 | MQTT 北向桥接 | 独立进程发布聚合 JSON、LWT 状态并处理白名单命令 | Broker 故障不影响 CAN/TCP/LVGL，支持退避重连、守护和日志轮转 |
+| Windows Qt 上位机 | 总览、趋势、控制、设置、CSV 与中英双语界面 | 严格 JSON 校验、PC 接收时间绘图、解析错误统计及命令执行回执 |
 | LVGL 交互终端 | 基于既有工程重构主页面和状态逻辑，接入网关数据、Wi-Fi 配置、仪表盘与在线状态 | 状态文件解耦网络与 UI，合并定时器，数据无变化时不重复刷新控件 |
 | 后台运行 | 启停脚本、PID 文件、日志及有上限的重连退避 | 程序在后台持续运行，不占用板卡前台串口 |
 
@@ -88,6 +86,8 @@ sequenceDiagram
     participant G as i.MX6ULL 网关
     participant R as T113 TCP 接收端
     participant U as LVGL UI
+    participant B as MQTT Broker
+    participant P as Windows Qt 上位机
 
     S->>G: AP3216C 与 ICM20608 数据
     C->>G: 0x101 心跳 / 0x102 DHT11
@@ -96,6 +96,12 @@ sequenceDiagram
     R->>R: 校验并原子更新状态文件
     U->>R: 周期读取最新状态
     U->>U: 仅刷新发生变化的控件
+    G->>B: 聚合遥测 + retained 在线状态
+    B->>P: MQTT 遥测与状态
+    P->>B: 白名单 LED 命令
+    B->>G: 命令下发
+    G->>B: 执行结果响应
+    B->>P: 控制闭环回执
 ```
 
 ## 软件分层
@@ -106,8 +112,10 @@ sequenceDiagram
 | STM32 Bootloader | OTA 会话、Flash 擦写、CRC 校验和 App 跳转 |
 | i.MX6ULL CAN 服务 | 接收 CAN 帧，维护 STM32 在线状态，输出 JSON/CSV |
 | i.MX6ULL 网关服务 | 采集本地传感器、合并 CAN 节点状态、封装 TCP 帧 |
+| i.MX6ULL MQTT Bridge | 发布聚合遥测和 LWT，校验白名单命令并回传执行结果 |
 | T113 接收服务 | TCP 监听、完整帧解析、CRC 校验、状态文件写入 |
 | T113 LVGL 应用 | 页面管理、状态轮询、控件差量刷新与交互 |
+| Windows Qt 上位机 | MQTT 连接、遥测解析、趋势显示、CSV 记录与远程控制 |
 
 ## 项目结构
 
@@ -130,7 +138,7 @@ sequenceDiagram
 |   |-- can_ota_bootloader/       # 常驻 CAN Bootloader
 |   `-- dht11_can_app/            # DHT11 CAN App，链接到 0x08010000
 |-- scripts/                      # 虚拟机构建/打包、板端安装/守护与健康检查
-|-- tests/                        # TCP 协议单测与故障注入
+|-- tests/                        # TCP 协议、MQTT 命令单测与故障注入
 |-- VERSION                       # 发布版本
 |-- .env.example                  # 不含密钥的环境变量示例
 |-- THIRD_PARTY_NOTICES.md        # 第三方来源与许可证边界
@@ -392,7 +400,7 @@ sh scripts/install_target.sh t113      # 在 T113
 | tmpfs 日志/CSV 定额轮转 | `v1.0.0` 已实现，已完成 24 小时实板验收 |
 | CRC、超长帧、粘包与拆包测试 | 已加入自动化测试与故障注入工具 |
 | OTA 与进程守护协调 | 已实现锁文件及 systemd 服务暂停/恢复 |
-| MQTT 命令下发与状态回传 | `v1.1.0-rc.1` 已实现并完成 3 小时 8 分钟实板验收 |
+| MQTT 命令下发与状态回传 | `v1.1.0` 已实现并完成 3 小时 8 分钟实板验收 |
 | Windows Qt MQTT 上位机 | 已实现总览、趋势、控制、设置、CSV 与中英双语界面 |
 | i.MX6ULL 本地 OTA 进度页面 | 规划中 |
 | 固件签名、回滚和断点续传 | 规划中 |
@@ -418,9 +426,9 @@ tail -f /tmp/t113_tcp.log
 
 ```text
 STM32 -> CAN -> /tmp/stm32_can_state.json
-       -> i.MX6ULL TCP frame
-       -> T113 /tmp/t113_sensor_state.json
-       -> LVGL controls
+       -> i.MX6ULL 聚合状态
+          |-> TCP frame -> T113 state JSON -> LVGL controls
+          `-> MQTT Broker -> Windows Qt dashboard / CSV / LED command
 ```
 
 ## 演进方向

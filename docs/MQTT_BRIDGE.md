@@ -76,7 +76,7 @@ Pass the directory that contains the ARM Paho shared-library symlinks:
 ```sh
 PAHO_PREFIX="$PAHO_PREFIX" \
 PAHO_LIB_DIR="$PAHO_PREFIX/lib" \
-PACKAGE_VERSION=1.1.0-rc.1 \
+PACKAGE_VERSION=1.1.0 \
   sh scripts/package_target.sh imx6ull
 ```
 
@@ -168,4 +168,4 @@ systemctl enable --now iot-mqtt-bridge.service
 5. Kill `mqtt_bridge` and verify the supervisor assigns a new PID.
 6. Send ASCII and terminator-appended LED payloads and verify responses.
 7. Confirm `/tmp/mqtt_bridge.log` rotates at the configured limit.
-8. Repeat a bounded soak test before tagging `v1.1.0`.
+8. Repeat a bounded soak test before promoting a future release candidate.

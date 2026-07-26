@@ -30,7 +30,7 @@ still be built with their corresponding BSP/SDK workflows.
 ## Create and transfer target bundles
 
 ```sh
-PAHO_LIB_DIR="$PAHO_PREFIX/lib" PACKAGE_VERSION=1.1.0-rc.1 \
+PAHO_LIB_DIR="$PAHO_PREFIX/lib" PACKAGE_VERSION=1.1.0 \
   sh scripts/package_target.sh imx6ull
 sh scripts/package_target.sh t113
 
