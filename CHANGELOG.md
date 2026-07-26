@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 - 2026-07-26
+
+### Released
+
+- Promoted `v1.1.0-rc.1` to the stable `v1.1.0` release.
+- No runtime code changes were introduced after the release candidate.
+- The core three-node gateway completed a 24-hour hardware acceptance test.
+- The MQTT and Qt increment completed a 3-hour 8-minute continuous-operation test.
+- Verified MQTT telemetry, CSV recording, LED closed-loop control, process recovery and network recovery.
+
 ## 1.1.0-rc.1 - 2026-07-26
 
 ### Added
