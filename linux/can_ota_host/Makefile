@@ -1,6 +1,7 @@
 CC ?= gcc
 CFLAGS ?= -std=gnu99 -Wall -Wextra -O2
 LDFLAGS ?=
+LDLIBS ?= -lrt
 
 TARGET := stm32_can_ota_host
 
@@ -8,8 +9,8 @@ TARGET := stm32_can_ota_host
 
 all: $(TARGET)
 
-$(TARGET): stm32_can_ota_host.c
-	$(CC) $(CFLAGS) -o $@ stm32_can_ota_host.c $(LDFLAGS)
+$(TARGET): stm32_can_ota_host.c ota_package.c ota_package.h ../../common/ota_contract.h
+	$(CC) $(CFLAGS) -o $@ stm32_can_ota_host.c ota_package.c $(LDFLAGS) $(LDLIBS)
 
 clean:
 	$(RM) $(TARGET)

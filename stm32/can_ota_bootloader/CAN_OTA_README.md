@@ -1,64 +1,40 @@
 # STM32F103 CAN OTA Bootloader
 
-This folder is a modified copy of `IAP Bootloader V1.0`.
-
-The original serial IAP files are kept for reference. The Keil project is changed to build:
+本工程基于开发板 IAP Bootloader 例程修改，项目新增和维护的核心入口
+为：
 
 - `User/main_can_ota.c`
 - `User/CAN_OTA/can_ota.c`
+- `../common/ota_metadata.c`
+- `../../common/ota_contract.h`
 
-## Flash Layout
+## Flash 与构建
 
 ```text
-Bootloader: 0x08000000
-App:        0x08010000
+Bootloader  0x08000000 + 0x10000
+App         0x08010000 + 0x6F800
+Metadata    0x0807F800 + 0x0800
 ```
 
-The DHT11 App must be linked at `0x08010000`, and its vector table offset must be `0x10000`.
+Keil 工程已经把 Bootloader IROM 限制为 64 KiB，防止链接输出覆盖 App。
+用 ST-Link 烧录 Bootloader 后，使用版本化 `.ota` 包安装 App。
 
-## CAN Settings
+## 启动策略
+
+- 元数据 `PENDING`：镜像校验通过后标记 `TRIAL`，允许一次启动；
+- 元数据 `TRIAL`：上次 App 未确认，留在 CAN 恢复模式；
+- 元数据 `CONFIRMED`：镜像 CRC 和向量通过后正常启动；
+- 元数据为空或损坏：留在恢复模式。
+
+恢复模式可以连续接收新的 ENTER 和 OTA 会话，无需每次失败后重新给
+Bootloader 断电。
+
+## CAN 设置
 
 ```text
-Bitrate: 500 Kbps
+Bitrate: 500 Kbit/s
 CAN TX:  PA12
 CAN RX:  PA11
 ```
 
-STM32 elite board jumper P6 must connect PA12 to CTX and PA11 to CRX.
-
-## Protocol
-
-```text
-0x300  i.MX6ULL -> STM32  enter OTA, DATA[0] = 0xA5
-0x301  i.MX6ULL -> STM32  firmware info
-0x302  i.MX6ULL -> STM32  firmware data
-0x380  STM32    -> i.MX6ULL status
-```
-
-Firmware info frame:
-
-```text
-DATA[0..3] = firmware size, little endian
-DATA[4..7] = firmware crc32, little endian
-```
-
-Firmware data frame:
-
-```text
-DATA[0..1] = sequence, little endian
-DATA[2..7] = 6 firmware bytes
-```
-
-Status frame:
-
-```text
-DATA[0] = status
-DATA[1] = error
-DATA[2] = progress, 0-100
-DATA[3..4] = sequence, little endian
-DATA[5..6] = received KB, little endian
-```
-
-## Next Step
-
-Build this Bootloader in Keil and burn it once with ST-Link. Then implement the i.MX6ULL CAN OTA host to send `stm32_app.bin`.
+协议和错误码详见 [`docs/OTA_FLOW.md`](../../docs/OTA_FLOW.md)。

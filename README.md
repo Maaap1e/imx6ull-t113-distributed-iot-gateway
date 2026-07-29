@@ -8,7 +8,7 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v1.1.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/Version-v1.2.0--rc.1-orange.svg)
 
 </div>
 
@@ -23,9 +23,9 @@
 - **全志 T113 显示终端**：接收带帧头和 CRC32 的 TCP 数据，写入原子状态文件，再由 LVGL 页面显示设备在线状态与传感器数据。
 - **Windows Qt 上位机**：通过 MQTT 订阅聚合遥测与在线状态，提供系统总览、实时趋势、CSV 记录和带执行回执的 LED 控制。
 
-i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 App 固件。Bootloader 依次完成应用区擦除、分块写入、序号检查、CRC32 校验以及 App 跳转，构成 Linux 网关远程升级 CAN 节点固件的完整闭环。
+i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版本化 `.ota` 固件包。`v1.2.0-rc.1` 在分块传输、序号检查和 CRC32 基础上，新增硬件 ID 校验、版本/降级策略、持久化启动元数据、首次试启动确认和掉电后 CAN 恢复模式。最终 App `1.2.0.3` 已完成正常升级、匹配版本确认心跳及完整冷启动保持实板验收；硬件误配、降级、传输中断和确认前复位等对抗性故障注入仍作为后续验证项。
 
-当前稳定版本为 **`v1.1.0`**：核心三节点网关已完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收；新增的 i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机已完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)和 [v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)。
+当前稳定版本为 **`v1.1.0`**：核心三节点网关已完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收；i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机已完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。当前候选版本 **`v1.2.0-rc.1`** 聚焦版本化 CAN OTA，已通过本报告声明范围内的实板验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)、[v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)和 [v1.2.0-rc.1 STM32 CAN OTA 增量验收报告](docs/acceptance/v1.2.0-rc.1/RESULT.md)。
 
 ## 系统架构
 
@@ -33,7 +33,7 @@ i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送新 
 
 - **本地实时链路**：STM32F103 经 CAN 向 i.MX6ULL 上报数据并接收控制；i.MX6ULL 经自定义 TCP 帧向 T113 推送聚合状态，T113 负责 CRC32 校验、状态文件更新和 LVGL 显示。
 - **北向管理链路**：i.MX6ULL 的独立 MQTT Bridge 发布遥测与 LWT 状态，并接收白名单控制命令；Windows Qt 上位机通过 Broker 完成监控、趋势记录和命令闭环。
-- **升级链路**：i.MX6ULL OTA Host 通过 CAN 向 STM32 常驻 Bootloader 发送固件，Bootloader 完成 Flash 擦写、分片序号检查、CRC32 校验和 App 跳转。
+- **升级链路**：i.MX6ULL OTA Host 校验版本化 `.ota` 包并通过 CAN 发送 Manifest 与镜像；STM32 Bootloader 完成目标/版本检查、Flash 回读、CRC32、试启动确认和异常恢复。
 - **故障隔离**：MQTT Broker 或 PC 离线不阻塞 CAN、TCP 与 LVGL 本地链路；关键进程由 supervisor 管理，日志和 CSV 在 tmpfs 中定额轮转。
 
 ## 贡献范围与可验证证据
@@ -70,7 +70,7 @@ LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设
 | Linux 传感器采集 | 基于官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树 | 修改寄存器读写和字符设备接口，以 NFS + 用户态程序验证 `/dev` 数据链路 |
 | TCP 板间通信 | 20 字节二进制帧头 + JSON 负载 | 序号、时间戳、长度、CRC32、完整收发、心跳与断线重连 |
 | STM32 CAN 节点 | 心跳、DHT11 数据、LED 控制和控制应答 | SocketCAN 过滤、Checksum8、超时离线判断 |
-| CAN OTA | Linux 主机发送固件信息和 6 字节数据分片 | Flash 擦写、序号检查、进度状态、整包 CRC32 与 App 有效性校验 |
+| CAN OTA | Linux 主机发送硬件/版本 Manifest 和 6 字节数据分片 | `.ota` 包校验、误刷/误降级保护、Flash 回读、整包 CRC32、试启动确认与恢复模式 |
 | T113 数据桥接 | TCP 接收端原子更新 `/tmp/t113_sensor_state.json` | 网络线程与 LVGL UI 解耦，避免网络阻塞影响界面刷新 |
 | MQTT 北向桥接 | 独立进程发布聚合 JSON、LWT 状态并处理白名单命令 | Broker 故障不影响 CAN/TCP/LVGL，支持退避重连、守护和日志轮转 |
 | Windows Qt 上位机 | 总览、趋势、控制、设置、CSV 与中英双语界面 | 严格 JSON 校验、PC 接收时间绘图、解析错误统计及命令执行回执 |
@@ -122,6 +122,7 @@ sequenceDiagram
 ```text
 .
 |-- docs/                         # 通信协议、OTA 与部署文档
+|-- common/                       # Linux/STM32 共用 OTA 协议常量
 |-- config/                       # 两块 Linux 板的运行配置
 |-- deploy/                       # BusyBox init 与 systemd 服务
 |-- linux/
@@ -135,10 +136,12 @@ sequenceDiagram
 |   |-- tcp_receiver/             # TCP Server 与 JSON/CSV 输出
 |   `-- lvgl_app/                 # 最新 LVGL UI 和数据桥接源码
 |-- stm32/
+|   |-- common/                   # OTA 启动元数据与确认逻辑
 |   |-- can_ota_bootloader/       # 常驻 CAN Bootloader
 |   `-- dht11_can_app/            # DHT11 CAN App，链接到 0x08010000
+|-- tools/                         # 版本化 STM32 .ota 固件打包器
 |-- scripts/                      # 虚拟机构建/打包、板端安装/守护与健康检查
-|-- tests/                        # TCP 协议、MQTT 命令单测与故障注入
+|-- tests/                        # TCP、MQTT、OTA 包单测与故障注入
 |-- VERSION                       # 发布版本
 |-- .env.example                  # 不含密钥的环境变量示例
 |-- THIRD_PARTY_NOTICES.md        # 第三方来源与许可证边界
@@ -349,15 +352,24 @@ export T113_SENSOR_STATE_FILE=/tmp/t113_sensor_state.json
 
 ### 6. 执行 STM32 CAN OTA
 
-先通过 Keil 烧录常驻 Bootloader，将 STM32 App 链接到 `0x08010000` 并生成 `.bin`，然后在 i.MX6ULL 执行：
+先通过 Keil 烧录新版常驻 Bootloader，将 STM32 App 链接到 `0x08010000` 并生成 `.bin`。在 Ubuntu 虚拟机生成带硬件 ID、版本和双 CRC 的 `.ota` 包：
+
+```sh
+python3 tools/package_stm32_ota.py \
+  --input stm32/dht11_can_app/Output/stm32_dht11_can_app.bin \
+  --output stm32_dht11_can_app-v1.2.0.3.ota \
+  --version 1.2.0.3
+```
+
+再把 `.ota` 包复制到 i.MX6ULL 并执行：
 
 ```sh
 cd linux/can_ota_host
 chmod +x setup_can.sh run_ota.sh
-./run_ota.sh stm32_dht11_can_app.bin
+./run_ota.sh /tmp/stm32_dht11_can_app-v1.2.0.3.ota
 ```
 
-一次成功升级依次经历 `ready`、`erasing`、`writing`、`verify` 和 `done`。固件二进制不进入 Git 历史，建议作为版本化的 GitHub Release 附件发布。
+一次成功升级依次经历 Manifest 校验、`ready`、`erasing`、`writing`、`verify`、元数据持久化和 `done`；App 首次运行完成核心 CAN 初始化后确认启动。固件产物不进入 Git 历史，建议作为 GitHub Release 附件发布。
 
 ### 7. 直接从完整仓库安装
 
@@ -382,6 +394,7 @@ sh scripts/install_target.sh t113      # 在 T113
 - [编译与板端部署](docs/BUILD_AND_DEPLOY.md)
 - [运行、守护与日志限额](docs/RUNTIME_MANAGEMENT.md)
 - [v1.0 实板验收清单](docs/V1_ACCEPTANCE.md)
+- [v1.2.0-rc.1 STM32 CAN OTA 增量验收](docs/acceptance/v1.2.0-rc.1/RESULT.md)
 - [GitHub 发布检查清单](docs/PUBLISH_CHECKLIST.md)
 
 ## 当前完成情况
@@ -393,7 +406,8 @@ sh scripts/install_target.sh t113      # 在 T113
 | TCP 心跳、CRC、断线重连与离线状态 | 已实现 |
 | STM32 心跳与 DHT11 CAN 数据上报 | 已实现，真实数据依赖正常 DHT11 硬件 |
 | Linux CAN 状态 JSON/CSV 输出 | 已验证 |
-| STM32 CAN Bootloader 与整包 OTA | 已验证 |
+| STM32 CAN Bootloader 与基础整包 OTA | `v1.0.0` 已完成实板升级与断电保持验收 |
+| 版本化 OTA 包、误降级保护和试启动确认 | `v1.2.0-rc.1` 已通过正常升级、指定版本确认和最终冷启动保持；完整对抗性故障注入矩阵仍待补充 |
 | T113 LVGL 设备状态和传感器可视化 | 已集成 |
 | 统一配置、优雅退出与健康检查 | `v1.0.0` 已实现 |
 | BusyBox/systemd 开机启动与异常拉起 | `v1.0.0` 已实现，已完成实板冷启动验收|
@@ -403,7 +417,7 @@ sh scripts/install_target.sh t113      # 在 T113
 | MQTT 命令下发与状态回传 | `v1.1.0` 已实现并完成 3 小时 8 分钟实板验收 |
 | Windows Qt MQTT 上位机 | 已实现总览、趋势、控制、设置、CSV 与中英双语界面 |
 | i.MX6ULL 本地 OTA 进度页面 | 规划中 |
-| 固件签名、回滚和断点续传 | 规划中 |
+| 固件签名、A/B 自动回滚和断点续传 | 规划中；当前为单槽位试启动确认与恢复模式 |
 
 ## 验证方法
 
@@ -436,7 +450,7 @@ STM32 -> CAN -> /tmp/stm32_can_state.json
 - 使用轻量级 JSON 解析器替代当前的字段查找逻辑。
 - 为 MQTT 增加 TLS、身份认证、请求去重及本地 Broker 验收。
 - 为 OTA 主机增加状态 JSON，并在 i.MX6ULL 本地屏幕显示升级进度。
-- 增加固件版本策略、数字签名、回滚确认和掉电恢复机制。
+- 在现有版本策略、试启动确认和掉电恢复模式上增加数字签名、受保护的防回滚计数，并评估外部 Flash/A-B 自动回滚。
 - 增加 CAN bus-off 自动恢复、节点注册和多节点地址分配。
 - 将运行指标接入轻量级监控，并保存正式版本的长期稳定性趋势。
 

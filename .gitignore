@@ -1,4 +1,4 @@
-# Linux and C/C++ build output
+﻿# Linux and C/C++ build output
 build/
 dist/
 cmake-build-*/
@@ -13,6 +13,8 @@ Output/
 *.map
 *.hex
 *.bin
+*.ota
+/dist-ota-dev/
 *.lst
 *.lnp
 *.dep
@@ -28,6 +30,7 @@ t113_display_app
 demo
 /tests/protocol_test
 /tests/mqtt_command_test
+/tests/ota_package_test
 
 # Python cache
 __pycache__/

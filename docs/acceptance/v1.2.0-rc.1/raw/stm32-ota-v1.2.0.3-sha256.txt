@@ -1,0 +1,2 @@
+6b0d12b317b30490b8a813d84a0a5e9187b7f1a11db692e92cd09af930022ab1  stm32/dht11_can_app/Output/stm32_dht11_can_app.bin
+e8f715055181805b4c67e7d01791ea6e79d321f06cca7b5b80c2a9b7756620e0  dist-ota-dev/stm32_dht11_can_app-v1.2.0.3.ota

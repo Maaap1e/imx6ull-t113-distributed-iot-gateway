@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.2.0-rc.1 - 2026-07-29
+
+### Added
+
+- Added a versioned STM32 `.ota` package with hardware ID, semantic firmware
+  version, image CRC32 and header CRC32.
+- Added Linux-side package validation and a packaging tool that rejects an
+  oversized image or invalid STM32 vector table before transfer.
+- Added persistent STM32 boot metadata and one-shot
+  `PENDING -> TRIAL -> CONFIRMED` startup confirmation.
+- Added end-to-end Host success criteria: `DONE` is followed by a matching
+  four-component post-confirmation STM32 App heartbeat before the command
+  exits successfully.
+- Added target mismatch protection, default downgrade rejection, Flash
+  read-back checks and reusable CAN recovery sessions after failed updates.
+- Added automatic App-to-Bootloader entry handshaking and non-blocking DHT11
+  recovery so sensor faults do not make the OTA control path unreachable.
+- Added native OTA package parser tests and a documented real-board
+  power-interruption acceptance matrix.
+- Added versioned real-board acceptance evidence for App `1.2.0.3`, including
+  OTA completion, post-confirmation heartbeat and a final cold-start check.
+
+### Changed
+
+- Reserved the final 2 KiB Flash page for boot metadata; the App slot is now
+  limited to 446 KiB (`0x6F800` bytes).
+- The CAN OTA Host now accepts `.ota` packages instead of unversioned raw
+  `.bin` files.
+- CAN setup scripts now provide a deterministic system-command `PATH`, avoiding
+  `/sbin/ip` lookup failures in non-interactive shells.
+- DHT11 recovery now respects the sensor sampling interval, rejects invalid
+  all-zero or out-of-range samples, and reports healthy only after a valid
+  measurement rather than after interface initialization alone.
+
+### Known limitations
+
+- CRC32 is an integrity check, not firmware authentication.
+- This is a single-App-slot recovery design: unconfirmed or corrupt images
+  remain in CAN recovery mode, but the previous image is not restored
+  automatically.
+- Digital signatures, protected monotonic anti-rollback state, A/B rollback
+  and resumable transfer remain future work.
+
 ## 1.1.0 - 2026-07-26
 
 ### Released

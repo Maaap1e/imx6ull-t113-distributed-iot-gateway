@@ -22,7 +22,9 @@ bytes 0 through 6.
 | 1 | Application minor version |
 | 2 | Counter low byte |
 | 3 | Counter high byte |
-| 4..6 | Reserved |
+| 4 | Application patch version |
+| 5 | Application build version |
+| 6 | Reserved |
 | 7 | Checksum |
 
 ## `0x102` DHT11 sample

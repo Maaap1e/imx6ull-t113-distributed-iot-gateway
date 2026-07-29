@@ -39,6 +39,8 @@ typedef struct {
     int humidity;
     unsigned int app_major;
     unsigned int app_minor;
+    unsigned int app_patch;
+    unsigned int app_build;
     unsigned int counter;
     unsigned long frames;
     unsigned long checksum_errors;
@@ -181,7 +183,7 @@ static void write_state_json(const char *path, const stm32_state_t *state)
             "\"dht_ok\":%d,"
             "\"temperature\":%d,"
             "\"humidity\":%d,"
-            "\"app_version\":\"%u.%u\","
+            "\"app_version\":\"%u.%u.%u.%u\","
             "\"counter\":%u,"
             "\"frames\":%lu,"
             "\"checksum_errors\":%lu,"
@@ -193,6 +195,8 @@ static void write_state_json(const char *path, const stm32_state_t *state)
             state->humidity,
             state->app_major,
             state->app_minor,
+            state->app_patch,
+            state->app_build,
             state->counter,
             state->frames,
             state->checksum_errors,
@@ -230,7 +234,7 @@ static void append_csv(const char *path, const stm32_state_t *state)
         fprintf(fp, "timestamp,online,dht_ok,temperature,humidity,app_version,counter,frames,checksum_errors\n");
     }
 
-    fprintf(fp, "%ld,%d,%d,%d,%d,%u.%u,%u,%lu,%lu\n",
+    fprintf(fp, "%ld,%d,%d,%d,%d,%u.%u.%u.%u,%u,%lu,%lu\n",
             (long)state->last_seen,
             state->online,
             state->dht_ok,
@@ -238,6 +242,8 @@ static void append_csv(const char *path, const stm32_state_t *state)
             state->humidity,
             state->app_major,
             state->app_minor,
+            state->app_patch,
+            state->app_build,
             state->counter,
             state->frames,
             state->checksum_errors);
@@ -269,14 +275,18 @@ static void handle_heartbeat(const struct can_frame *frame, stm32_state_t *state
     state->online = 1;
     state->app_major = frame->data[0];
     state->app_minor = frame->data[1];
+    state->app_patch = frame->data[4];
+    state->app_build = frame->data[5];
     state->counter = (unsigned int)frame->data[2] | ((unsigned int)frame->data[3] << 8);
     state->last_seen = time(NULL);
     state->frames++;
 
     if (g_verbose) {
-        printf("[heartbeat] version=%u.%u counter=%u\n",
+        printf("[heartbeat] version=%u.%u.%u.%u counter=%u\n",
                state->app_major,
                state->app_minor,
+               state->app_patch,
+               state->app_build,
                state->counter);
     }
 }
@@ -301,12 +311,15 @@ static void handle_dht11(const struct can_frame *frame, stm32_state_t *state)
     state->frames++;
 
     if (g_verbose || state->last_seen - g_last_summary_log >= SUMMARY_LOG_SECONDS) {
-        printf("[dht11] temp=%d C humidity=%d %% ok=%d version=%u.%u counter=%u frames=%lu\n",
+        printf("[dht11] temp=%d C humidity=%d %% ok=%d "
+               "version=%u.%u.%u.%u counter=%u frames=%lu\n",
                state->temperature,
                state->humidity,
                state->dht_ok,
                state->app_major,
                state->app_minor,
+               state->app_patch,
+               state->app_build,
                state->counter,
                state->frames);
         g_last_summary_log = state->last_seen;

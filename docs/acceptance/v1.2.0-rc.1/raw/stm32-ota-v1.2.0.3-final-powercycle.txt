@@ -1,0 +1,82 @@
+=== STM32 OTA 1.2.0.3 FINAL POWERCYCLE ===
+Wed Jul 29 02:04:41 UTC 2026
+=== CONSECUTIVE STATES ===
+1785290681
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":39,"app_version":"1.2.0.3","counter":29,"frames":170,"checksum_errors":0,"last_seen":1785290680}
+
+1785290684
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":39,"app_version":"1.2.0.3","counter":30,"frames":172,"checksum_errors":0,"last_seen":1785290682}
+
+1785290686
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":39,"app_version":"1.2.0.3","counter":31,"frames":174,"checksum_errors":0,"last_seen":1785290684}
+
+1785290688
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":39,"app_version":"1.2.0.3","counter":32,"frames":176,"checksum_errors":0,"last_seen":1785290686}
+
+1785290690
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":39,"app_version":"1.2.0.3","counter":33,"frames":178,"checksum_errors":0,"last_seen":1785290688}
+
+1785290692
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":40,"app_version":"1.2.0.3","counter":34,"frames":180,"checksum_errors":0,"last_seen":1785290690}
+
+=== HEALTH ===
+OK   supervisor: pid=10541
+OK   can-client: pid=31606
+OK   gateway: pid=10575
+OK   mqtt-bridge: pid=10586
+INFO file=/tmp/stm32_can_state.json bytes=167
+INFO file=/tmp/imx6ull_gateway_state.json bytes=562
+INFO file=/tmp/stm32_can_data.csv bytes=19852
+INFO file=/tmp/stm32_can_client.log bytes=22134
+INFO file=/tmp/imx6ull_gateway.log bytes=38495
+INFO file=/tmp/mqtt_bridge.log bytes=5562
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           248M  1.3M  247M   1% /var/volatile
+              total        used        free      shared  buff/cache   available
+Mem:           494M         98M        291M        5.3M        105M        307M
+Swap:            0B          0B          0B
+=== CAN ===
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          3          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    45472      5684     0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    264040     33005    0       0       0       0
+=== LOG ===
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=165 frames=664
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=170 frames=674
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=175 frames=684
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=180 frames=694
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=185 frames=704
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=190 frames=714
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=195 frames=724
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=200 frames=734
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=205 frames=744
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=27 C humidity=36 % ok=1 version=1.0.0.0 counter=0 frames=1
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=5 frames=11
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=10 frames=21
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=15 frames=31
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=20 frames=41
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=25 frames=51
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=30 frames=61
+[dht11] temp=27 C humidity=35 % ok=1 version=1.2.0.3 counter=35 frames=71
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.3 counter=40 frames=81
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.3 counter=45 frames=91
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.3 counter=50 frames=101
+[state] STM32 offline
+[dht11] temp=27 C humidity=38 % ok=1 version=1.2.0.3 counter=0 frames=112
+[dht11] temp=27 C humidity=38 % ok=1 version=1.2.0.3 counter=5 frames=122
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.3 counter=10 frames=132
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.3 counter=15 frames=142
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.3 counter=20 frames=152
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.3 counter=25 frames=162
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.3 counter=30 frames=172
+[dht11] temp=28 C humidity=40 % ok=1 version=1.2.0.3 counter=35 frames=182

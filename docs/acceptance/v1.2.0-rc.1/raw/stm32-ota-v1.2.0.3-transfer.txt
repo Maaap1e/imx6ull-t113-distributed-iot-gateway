@@ -1,0 +1,527 @@
+Stopping STM32 CAN sensor client before OTA...
+stm32_can_sensor_client stopped
+can0 is up, bitrate=500000
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+CAN iface=can0 package=/tmp/stm32_dht11_can_app-v1.2.0.3.ota image_size=39720 crc32=0xF4BD8235 pacing=20000us
+Requesting running App to enter Bootloader...
+Sending ENTER OTA attempt 1...
+STM32 status=ready(0x01) error=0x00 progress=0%
+Sending manifest: hardware=0xF103 version=1.2.0.3 flags=0x00
+STM32 status=ready(0x01) error=none(0x00) progress=0% seq=0 received=0KB
+Sending firmware info: size=39720 crc32=0xF4BD8235
+STM32 status=erasing(0x02) error=none(0x00) progress=0% seq=0 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=0% seq=0 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=0% seq=0 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=0% seq=32 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=0% seq=64 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=1% seq=96 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=1% seq=128 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=2% seq=160 received=0KB
+STM32 status=writing(0x03) error=none(0x00) progress=2% seq=192 received=1KB
+STM32 status=writing(0x03) error=none(0x00) progress=3% seq=224 received=1KB
+STM32 status=writing(0x03) error=none(0x00) progress=3% seq=256 received=1KB
+STM32 status=writing(0x03) error=none(0x00) progress=4% seq=288 received=1KB
+STM32 status=writing(0x03) error=none(0x00) progress=4% seq=320 received=1KB
+STM32 status=writing(0x03) error=none(0x00) progress=5% seq=352 received=2KB
+STM32 status=writing(0x03) error=none(0x00) progress=5% seq=384 received=2KB
+STM32 status=writing(0x03) error=none(0x00) progress=6% seq=416 received=2KB
+STM32 status=writing(0x03) error=none(0x00) progress=6% seq=448 received=2KB
+STM32 status=writing(0x03) error=none(0x00) progress=7% seq=480 received=2KB
+STM32 status=writing(0x03) error=none(0x00) progress=7% seq=512 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=8% seq=544 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=8% seq=576 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=9% seq=608 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=9% seq=640 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=10% seq=672 received=3KB
+STM32 status=writing(0x03) error=none(0x00) progress=10% seq=704 received=4KB
+STM32 status=writing(0x03) error=none(0x00) progress=11% seq=736 received=4KB
+STM32 status=writing(0x03) error=none(0x00) progress=11% seq=768 received=4KB
+STM32 status=writing(0x03) error=none(0x00) progress=12% seq=800 received=4KB
+STM32 status=writing(0x03) error=none(0x00) progress=12% seq=832 received=4KB
+STM32 status=writing(0x03) error=none(0x00) progress=13% seq=864 received=5KB
+STM32 status=writing(0x03) error=none(0x00) progress=13% seq=896 received=5KB
+STM32 status=writing(0x03) error=none(0x00) progress=14% seq=928 received=5KB
+STM32 status=writing(0x03) error=none(0x00) progress=14% seq=960 received=5KB
+STM32 status=writing(0x03) error=none(0x00) progress=15% seq=992 received=5KB
+STM32 status=writing(0x03) error=none(0x00) progress=15% seq=1024 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=15% seq=1056 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=16% seq=1088 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=16% seq=1120 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=17% seq=1152 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=17% seq=1184 received=6KB
+STM32 status=writing(0x03) error=none(0x00) progress=18% seq=1216 received=7KB
+STM32 status=writing(0x03) error=none(0x00) progress=18% seq=1248 received=7KB
+STM32 status=writing(0x03) error=none(0x00) progress=19% seq=1280 received=7KB
+STM32 status=writing(0x03) error=none(0x00) progress=19% seq=1312 received=7KB
+STM32 status=writing(0x03) error=none(0x00) progress=20% seq=1344 received=7KB
+STM32 status=writing(0x03) error=none(0x00) progress=20% seq=1376 received=8KB
+STM32 status=writing(0x03) error=none(0x00) progress=21% seq=1408 received=8KB
+STM32 status=writing(0x03) error=none(0x00) progress=21% seq=1440 received=8KB
+STM32 status=writing(0x03) error=none(0x00) progress=22% seq=1472 received=8KB
+STM32 status=writing(0x03) error=none(0x00) progress=22% seq=1504 received=8KB
+STM32 status=writing(0x03) error=none(0x00) progress=23% seq=1536 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=23% seq=1568 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=24% seq=1600 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=24% seq=1632 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=25% seq=1664 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=25% seq=1696 received=9KB
+STM32 status=writing(0x03) error=none(0x00) progress=26% seq=1728 received=10KB
+STM32 status=writing(0x03) error=none(0x00) progress=26% seq=1760 received=10KB
+STM32 status=writing(0x03) error=none(0x00) progress=27% seq=1792 received=10KB
+STM32 status=writing(0x03) error=none(0x00) progress=27% seq=1824 received=10KB
+STM32 status=writing(0x03) error=none(0x00) progress=28% seq=1856 received=10KB
+STM32 status=writing(0x03) error=none(0x00) progress=28% seq=1888 received=11KB
+STM32 status=writing(0x03) error=none(0x00) progress=29% seq=1920 received=11KB
+STM32 status=writing(0x03) error=none(0x00) progress=29% seq=1952 received=11KB
+STM32 status=writing(0x03) error=none(0x00) progress=29% seq=1984 received=11KB
+STM32 status=writing(0x03) error=none(0x00) progress=30% seq=2016 received=11KB
+STM32 status=writing(0x03) error=none(0x00) progress=30% seq=2048 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=31% seq=2080 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=31% seq=2112 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=32% seq=2144 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=32% seq=2176 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=33% seq=2208 received=12KB
+STM32 status=writing(0x03) error=none(0x00) progress=33% seq=2240 received=13KB
+STM32 status=writing(0x03) error=none(0x00) progress=34% seq=2272 received=13KB
+STM32 status=writing(0x03) error=none(0x00) progress=34% seq=2304 received=13KB
+STM32 status=writing(0x03) error=none(0x00) progress=35% seq=2336 received=13KB
+STM32 status=writing(0x03) error=none(0x00) progress=35% seq=2368 received=13KB
+STM32 status=writing(0x03) error=none(0x00) progress=36% seq=2400 received=14KB
+STM32 status=writing(0x03) error=none(0x00) progress=36% seq=2432 received=14KB
+STM32 status=writing(0x03) error=none(0x00) progress=37% seq=2464 received=14KB
+STM32 status=writing(0x03) error=none(0x00) progress=37% seq=2496 received=14KB
+STM32 status=writing(0x03) error=none(0x00) progress=38% seq=2528 received=14KB
+STM32 status=writing(0x03) error=none(0x00) progress=38% seq=2560 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=39% seq=2592 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=39% seq=2624 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=40% seq=2656 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=40% seq=2688 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=41% seq=2720 received=15KB
+STM32 status=writing(0x03) error=none(0x00) progress=41% seq=2752 received=16KB
+STM32 status=writing(0x03) error=none(0x00) progress=42% seq=2784 received=16KB
+STM32 status=writing(0x03) error=none(0x00) progress=42% seq=2816 received=16KB
+STM32 status=writing(0x03) error=none(0x00) progress=43% seq=2848 received=16KB
+STM32 status=writing(0x03) error=none(0x00) progress=43% seq=2880 received=16KB
+STM32 status=writing(0x03) error=none(0x00) progress=44% seq=2912 received=17KB
+STM32 status=writing(0x03) error=none(0x00) progress=44% seq=2944 received=17KB
+STM32 status=writing(0x03) error=none(0x00) progress=44% seq=2976 received=17KB
+STM32 status=writing(0x03) error=none(0x00) progress=45% seq=3008 received=17KB
+STM32 status=writing(0x03) error=none(0x00) progress=45% seq=3040 received=17KB
+STM32 status=writing(0x03) error=none(0x00) progress=46% seq=3072 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=46% seq=3104 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=47% seq=3136 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=47% seq=3168 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=48% seq=3200 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=48% seq=3232 received=18KB
+STM32 status=writing(0x03) error=none(0x00) progress=49% seq=3264 received=19KB
+STM32 status=writing(0x03) error=none(0x00) progress=49% seq=3296 received=19KB
+STM32 status=writing(0x03) error=none(0x00) progress=50% seq=3328 received=19KB
+STM32 status=writing(0x03) error=none(0x00) progress=50% seq=3360 received=19KB
+STM32 status=writing(0x03) error=none(0x00) progress=51% seq=3392 received=19KB
+STM32 status=writing(0x03) error=none(0x00) progress=51% seq=3424 received=20KB
+STM32 status=writing(0x03) error=none(0x00) progress=52% seq=3456 received=20KB
+STM32 status=writing(0x03) error=none(0x00) progress=52% seq=3488 received=20KB
+STM32 status=writing(0x03) error=none(0x00) progress=53% seq=3520 received=20KB
+STM32 status=writing(0x03) error=none(0x00) progress=53% seq=3552 received=20KB
+STM32 status=writing(0x03) error=none(0x00) progress=54% seq=3584 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=54% seq=3616 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=55% seq=3648 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=55% seq=3680 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=56% seq=3712 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=56% seq=3744 received=21KB
+STM32 status=writing(0x03) error=none(0x00) progress=57% seq=3776 received=22KB
+STM32 status=writing(0x03) error=none(0x00) progress=57% seq=3808 received=22KB
+STM32 status=writing(0x03) error=none(0x00) progress=58% seq=3840 received=22KB
+STM32 status=writing(0x03) error=none(0x00) progress=58% seq=3872 received=22KB
+STM32 status=writing(0x03) error=none(0x00) progress=58% seq=3904 received=22KB
+STM32 status=writing(0x03) error=none(0x00) progress=59% seq=3936 received=23KB
+STM32 status=writing(0x03) error=none(0x00) progress=59% seq=3968 received=23KB
+STM32 status=writing(0x03) error=none(0x00) progress=60% seq=4000 received=23KB
+STM32 status=writing(0x03) error=none(0x00) progress=60% seq=4032 received=23KB
+STM32 status=writing(0x03) error=none(0x00) progress=61% seq=4064 received=23KB
+STM32 status=writing(0x03) error=none(0x00) progress=61% seq=4096 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=62% seq=4128 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=62% seq=4160 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=63% seq=4192 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=63% seq=4224 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=64% seq=4256 received=24KB
+STM32 status=writing(0x03) error=none(0x00) progress=64% seq=4288 received=25KB
+STM32 status=writing(0x03) error=none(0x00) progress=65% seq=4320 received=25KB
+STM32 status=writing(0x03) error=none(0x00) progress=65% seq=4352 received=25KB
+STM32 status=writing(0x03) error=none(0x00) progress=66% seq=4384 received=25KB
+STM32 status=writing(0x03) error=none(0x00) progress=66% seq=4416 received=25KB
+STM32 status=writing(0x03) error=none(0x00) progress=67% seq=4448 received=26KB
+STM32 status=writing(0x03) error=none(0x00) progress=67% seq=4480 received=26KB
+STM32 status=writing(0x03) error=none(0x00) progress=68% seq=4512 received=26KB
+STM32 status=writing(0x03) error=none(0x00) progress=68% seq=4544 received=26KB
+STM32 status=writing(0x03) error=none(0x00) progress=69% seq=4576 received=26KB
+STM32 status=writing(0x03) error=none(0x00) progress=69% seq=4608 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=70% seq=4640 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=70% seq=4672 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=71% seq=4704 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=71% seq=4736 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=72% seq=4768 received=27KB
+STM32 status=writing(0x03) error=none(0x00) progress=72% seq=4800 received=28KB
+STM32 status=writing(0x03) error=none(0x00) progress=73% seq=4832 received=28KB
+STM32 status=writing(0x03) error=none(0x00) progress=73% seq=4864 received=28KB
+STM32 status=writing(0x03) error=none(0x00) progress=73% seq=4896 received=28KB
+STM32 status=writing(0x03) error=none(0x00) progress=74% seq=4928 received=28KB
+STM32 status=writing(0x03) error=none(0x00) progress=74% seq=4960 received=29KB
+STM32 status=writing(0x03) error=none(0x00) progress=75% seq=4992 received=29KB
+STM32 status=writing(0x03) error=none(0x00) progress=75% seq=5024 received=29KB
+STM32 status=writing(0x03) error=none(0x00) progress=76% seq=5056 received=29KB
+STM32 status=writing(0x03) error=none(0x00) progress=76% seq=5088 received=29KB
+STM32 status=writing(0x03) error=none(0x00) progress=77% seq=5120 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=77% seq=5152 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=78% seq=5184 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=78% seq=5216 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=79% seq=5248 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=79% seq=5280 received=30KB
+STM32 status=writing(0x03) error=none(0x00) progress=80% seq=5312 received=31KB
+STM32 status=writing(0x03) error=none(0x00) progress=80% seq=5344 received=31KB
+STM32 status=writing(0x03) error=none(0x00) progress=81% seq=5376 received=31KB
+STM32 status=writing(0x03) error=none(0x00) progress=81% seq=5408 received=31KB
+STM32 status=writing(0x03) error=none(0x00) progress=82% seq=5440 received=31KB
+STM32 status=writing(0x03) error=none(0x00) progress=82% seq=5472 received=32KB
+STM32 status=writing(0x03) error=none(0x00) progress=83% seq=5504 received=32KB
+STM32 status=writing(0x03) error=none(0x00) progress=83% seq=5536 received=32KB
+STM32 status=writing(0x03) error=none(0x00) progress=84% seq=5568 received=32KB
+STM32 status=writing(0x03) error=none(0x00) progress=84% seq=5600 received=32KB
+STM32 status=writing(0x03) error=none(0x00) progress=85% seq=5632 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=85% seq=5664 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=86% seq=5696 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=86% seq=5728 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=87% seq=5760 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=87% seq=5792 received=33KB
+STM32 status=writing(0x03) error=none(0x00) progress=87% seq=5824 received=34KB
+STM32 status=writing(0x03) error=none(0x00) progress=88% seq=5856 received=34KB
+STM32 status=writing(0x03) error=none(0x00) progress=88% seq=5888 received=34KB
+STM32 status=writing(0x03) error=none(0x00) progress=89% seq=5920 received=34KB
+STM32 status=writing(0x03) error=none(0x00) progress=89% seq=5952 received=34KB
+STM32 status=writing(0x03) error=none(0x00) progress=90% seq=5984 received=35KB
+STM32 status=writing(0x03) error=none(0x00) progress=90% seq=6016 received=35KB
+STM32 status=writing(0x03) error=none(0x00) progress=91% seq=6048 received=35KB
+STM32 status=writing(0x03) error=none(0x00) progress=91% seq=6080 received=35KB
+STM32 status=writing(0x03) error=none(0x00) progress=92% seq=6112 received=35KB
+STM32 status=writing(0x03) error=none(0x00) progress=92% seq=6144 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=93% seq=6176 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=93% seq=6208 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=94% seq=6240 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=94% seq=6272 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=95% seq=6304 received=36KB
+STM32 status=writing(0x03) error=none(0x00) progress=95% seq=6336 received=37KB
+STM32 status=writing(0x03) error=none(0x00) progress=96% seq=6368 received=37KB
+STM32 status=writing(0x03) error=none(0x00) progress=96% seq=6400 received=37KB
+STM32 status=writing(0x03) error=none(0x00) progress=97% seq=6432 received=37KB
+STM32 status=writing(0x03) error=none(0x00) progress=97% seq=6464 received=37KB
+STM32 status=writing(0x03) error=none(0x00) progress=98% seq=6496 received=38KB
+STM32 status=writing(0x03) error=none(0x00) progress=98% seq=6528 received=38KB
+STM32 status=writing(0x03) error=none(0x00) progress=99% seq=6560 received=38KB
+STM32 status=writing(0x03) error=none(0x00) progress=99% seq=6592 received=38KB
+STM32 status=writing(0x03) error=none(0x00) progress=100% seq=6619 received=38KB
+STM32 status=verify(0x04) error=none(0x00) progress=100% seq=6620 received=38KB
+STM32 status=done(0x05) error=none(0x00) progress=100% seq=6620 received=38KB
+STM32 App confirmed and heartbeat version 1.2.0.3 received.
+STM32 CAN OTA and trial-boot confirmation finished successfully.
+Restarting STM32 CAN sensor client...
+can0 is up, bitrate=500000
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+	  bitrate 500000 sample-point 0.866
+	  tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+	  flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+	  clock 30000000
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=0 C humidity=0 % ok=0 version=1.1 counter=0 frames=2
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=10 frames=22
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=19 frames=40
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=29 frames=60
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=39 frames=80
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=48 frames=98
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=58 frames=118
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=68 frames=138
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=78 frames=158
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=87 frames=176
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=97 frames=196
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=107 frames=216
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=117 frames=236
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=126 frames=254
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=136 frames=274
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=146 frames=294
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=156 frames=314
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=165 frames=332
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=175 frames=352
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=185 frames=372
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=194 frames=390
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=204 frames=410
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=214 frames=430
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=224 frames=450
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=233 frames=468
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=243 frames=488
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=253 frames=508
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=7 frames=528
+[dht11] temp=27 C humidity=39 % ok=1 version=1.1 counter=16 frames=546
+[dht11] temp=27 C humidity=40 % ok=1 version=1.1 counter=26 frames=566
+[dht11] temp=27 C humidity=39 % ok=1 version=1.1 counter=36 frames=586
+[dht11] temp=27 C humidity=38 % ok=1 version=1.1 counter=46 frames=606
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=55 frames=624
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=65 frames=644
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=75 frames=664
+[dht11] temp=27 C humidity=37 % ok=1 version=1.1 counter=84 frames=682
+[state] STM32 offline
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=0 C humidity=0 % ok=0 version=1.0.0.0 counter=1 frames=1
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=10 frames=19
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=19 frames=37
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=29 frames=57
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=38 frames=75
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=48 frames=95
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=57 frames=113
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=67 frames=133
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=76 frames=151
+[state] STM32 offline
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=77 frames=153
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=87 frames=173
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=96 frames=191
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=106 frames=211
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=115 frames=229
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=125 frames=249
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=134 frames=267
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=144 frames=287
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=153 frames=305
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=162 frames=323
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=172 frames=343
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=181 frames=361
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=191 frames=381
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=200 frames=399
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=210 frames=419
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=219 frames=437
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=229 frames=457
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=239 frames=477
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=248 frames=495
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=2 frames=515
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=11 frames=533
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=21 frames=553
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=30 frames=571
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=40 frames=591
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=49 frames=609
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=58 frames=627
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=68 frames=647
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=77 frames=665
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=87 frames=685
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=96 frames=703
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=106 frames=723
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=115 frames=741
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=125 frames=761
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=135 frames=781
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=144 frames=799
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=154 frames=819
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=163 frames=837
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=173 frames=857
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=182 frames=875
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=192 frames=895
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=201 frames=913
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=210 frames=931
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=220 frames=951
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=229 frames=969
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=239 frames=989
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=248 frames=1007
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=2 frames=1027
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=11 frames=1045
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=21 frames=1065
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=31 frames=1085
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=40 frames=1103
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=50 frames=1123
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=59 frames=1141
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=69 frames=1161
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=78 frames=1179
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=88 frames=1199
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=97 frames=1217
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=106 frames=1235
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=116 frames=1255
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=125 frames=1273
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=135 frames=1293
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.0 counter=145 frames=1313
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=28 C humidity=33 % ok=1 version=1.0.0.0 counter=0 frames=1
+[dht11] temp=28 C humidity=33 % ok=1 version=1.2.0.1 counter=10 frames=21
+[dht11] temp=28 C humidity=33 % ok=1 version=1.2.0.1 counter=20 frames=41
+[dht11] temp=28 C humidity=33 % ok=1 version=1.2.0.1 counter=30 frames=61
+[dht11] temp=28 C humidity=33 % ok=1 version=1.2.0.1 counter=39 frames=79
+[dht11] temp=28 C humidity=33 % ok=1 version=1.2.0.1 counter=49 frames=99
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=59 frames=119
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=69 frames=139
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=78 frames=157
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=88 frames=177
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=98 frames=197
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=108 frames=217
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=117 frames=235
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=127 frames=255
+[dht11] temp=28 C humidity=32 % ok=1 version=1.2.0.1 counter=137 frames=275
+[state] STM32 offline
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=3 frames=284
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=12 frames=302
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=22 frames=322
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=32 frames=342
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=41 frames=360
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=51 frames=380
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=61 frames=400
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=70 frames=418
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=80 frames=438
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=90 frames=458
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=99 frames=476
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=109 frames=496
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=119 frames=516
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=128 frames=534
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=138 frames=554
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=148 frames=574
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=157 frames=592
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=167 frames=612
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=177 frames=632
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=186 frames=650
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=196 frames=670
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=206 frames=690
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=215 frames=708
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=225 frames=728
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=235 frames=748
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=244 frames=766
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=254 frames=786
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=8 frames=806
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=18 frames=826
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=28 frames=846
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=37 frames=864
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=47 frames=884
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=57 frames=904
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=66 frames=922
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=76 frames=942
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=86 frames=962
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=95 frames=980
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=105 frames=1000
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=115 frames=1020
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=124 frames=1038
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=134 frames=1058
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=144 frames=1078
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=153 frames=1096
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=163 frames=1116
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=173 frames=1136
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=182 frames=1154
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=192 frames=1174
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=202 frames=1194
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=211 frames=1212
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=221 frames=1232
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=231 frames=1252
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=240 frames=1270
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=250 frames=1290
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=4 frames=1310
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=13 frames=1328
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=23 frames=1348
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=33 frames=1368
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=43 frames=1388
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=53 frames=1408
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=62 frames=1426
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=72 frames=1446
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=82 frames=1466
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=91 frames=1484
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=101 frames=1504
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=111 frames=1524
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=120 frames=1542
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=130 frames=1562
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=140 frames=1582
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=150 frames=1602
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=160 frames=1622
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.1 counter=169 frames=1640
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+[dht11] temp=0 C humidity=0 % ok=0 version=1.0.0.0 counter=0 frames=1
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=5 frames=11
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=10 frames=21
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=15 frames=31
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=20 frames=41
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=25 frames=51
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=30 frames=61
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=35 frames=71
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=40 frames=81
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=45 frames=91
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=50 frames=101
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=55 frames=111
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=60 frames=121
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=65 frames=131
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=70 frames=141
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=75 frames=151
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=80 frames=161
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=85 frames=171
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=90 frames=181
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=95 frames=191
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=100 frames=201
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=105 frames=211
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=110 frames=221
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=115 frames=231
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=120 frames=241
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=125 frames=251
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=130 frames=261
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=135 frames=271
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=140 frames=281
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=145 frames=291
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=150 frames=301
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=155 frames=311
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=160 frames=321
+[dht11] temp=0 C humidity=0 % ok=1 version=1.2.0.2 counter=165 frames=331
+[state] STM32 offline
+[dht11] temp=0 C humidity=0 % ok=0 version=1.2.0.2 counter=0 frames=334
+[dht11] temp=28 C humidity=41 % ok=1 version=1.2.0.2 counter=5 frames=344
+[dht11] temp=28 C humidity=45 % ok=1 version=1.2.0.2 counter=10 frames=354
+[dht11] temp=28 C humidity=41 % ok=1 version=1.2.0.2 counter=15 frames=364
+[dht11] temp=28 C humidity=41 % ok=1 version=1.2.0.2 counter=20 frames=374
+[dht11] temp=28 C humidity=40 % ok=1 version=1.2.0.2 counter=25 frames=384
+[dht11] temp=28 C humidity=40 % ok=1 version=1.2.0.2 counter=30 frames=394
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.2 counter=35 frames=404
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.2 counter=40 frames=414
+[dht11] temp=28 C humidity=39 % ok=1 version=1.2.0.2 counter=45 frames=424
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=50 frames=434
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=55 frames=444
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=60 frames=454
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=65 frames=464
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=70 frames=474
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=75 frames=484
+[dht11] temp=28 C humidity=38 % ok=1 version=1.2.0.2 counter=80 frames=494
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=85 frames=504
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=90 frames=514
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=95 frames=524
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=100 frames=534
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=105 frames=544
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=110 frames=554
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=115 frames=564
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=120 frames=574
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=125 frames=584
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=130 frames=594
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=135 frames=604
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=140 frames=614
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=145 frames=624
+[dht11] temp=28 C humidity=37 % ok=1 version=1.2.0.2 counter=150 frames=634
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=155 frames=644
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=160 frames=654
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=165 frames=664
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=170 frames=674
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=175 frames=684
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=180 frames=694
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=185 frames=704
+[dht11] temp=28 C humidity=36 % ok=1 version=1.2.0.2 counter=190 frames=714
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=195 frames=724
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=200 frames=734
+[dht11] temp=27 C humidity=36 % ok=1 version=1.2.0.2 counter=205 frames=744
+listening on can0, state=/tmp/stm32_can_state.json, csv=/tmp/stm32_can_data.csv
+log: /tmp/stm32_can_client.log
+pid: /tmp/stm32_can_client.pid
+latest json: /tmp/stm32_can_state.json
+csv data: /tmp/stm32_can_data.csv

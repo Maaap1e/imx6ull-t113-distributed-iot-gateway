@@ -57,7 +57,7 @@ if [ "$ROLE" = "t113" ]; then
 fi
 cp "$BASE_DIR/deploy/systemd/"*.service "$BUNDLE_DIR/deploy/systemd/"
 cp "$BASE_DIR/docs/RUNTIME_MANAGEMENT.md" "$BASE_DIR/docs/V1_ACCEPTANCE.md" "$BUNDLE_DIR/docs/"
-cp "$BASE_DIR/docs/MQTT_BRIDGE.md" "$BUNDLE_DIR/docs/"
+cp "$BASE_DIR/docs/MQTT_BRIDGE.md" "$BASE_DIR/docs/OTA_FLOW.md" "$BUNDLE_DIR/docs/"
 
 for name in install_target.sh healthcheck.sh runtime_maintenance.sh \
     runtime_supervisor.sh run_can_client.sh run_gateway.sh run_t113.sh \

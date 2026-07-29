@@ -11,15 +11,11 @@
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
-#define CAN_OTA_ID_ENTER        0x300u
-#define CAN_OTA_ID_INFO         0x301u
-#define CAN_OTA_ID_DATA         0x302u
-#define CAN_OTA_ID_STATUS       0x380u
-
-#define CAN_OTA_CMD_ENTER       0xA5u
+#include "ota_package.h"
 
 #define CAN_OTA_STATUS_READY    0x01u
 #define CAN_OTA_STATUS_ERASING  0x02u
@@ -34,6 +30,7 @@
 #define DATA_BYTES_PER_FRAME    6u
 #define ENTER_ATTEMPTS          30
 #define ENTER_PROBE_TIMEOUT_MS  200
+#define APP_CONFIRM_TIMEOUT_MS  15000
 
 typedef struct {
     uint8_t status;
@@ -45,8 +42,8 @@ typedef struct {
 
 static void usage(const char *prog)
 {
-    printf("Usage: %s -f stm32_app.bin [-i can0] [-p pacing_us] [-t timeout_ms]\n", prog);
-    printf("Example: %s -i can0 -f stm32_dht11_app.bin\n", prog);
+    printf("Usage: %s -f stm32_app.ota [-i can0] [-p pacing_us] [-t timeout_ms]\n", prog);
+    printf("Example: %s -i can0 -f stm32_dht11_app-v1.2.0.ota\n", prog);
 }
 
 static const char *status_name(uint8_t status)
@@ -69,26 +66,36 @@ static const char *status_name(uint8_t status)
     }
 }
 
-static uint32_t crc32_update(uint32_t crc, const uint8_t *data, size_t len)
+static const char *error_name(uint8_t error)
 {
-    size_t i;
-
-    crc = ~crc;
-    for (i = 0; i < len; i++) {
-        int bit;
-        crc ^= data[i];
-        for (bit = 0; bit < 8; bit++) {
-            uint32_t mask = 0u - (crc & 1u);
-            crc = (crc >> 1) ^ (0xEDB88320u & mask);
-        }
+    switch (error) {
+    case 0x00:
+        return "none";
+    case 0x01:
+        return "timeout";
+    case 0x02:
+        return "firmware-info";
+    case 0x03:
+        return "image-size";
+    case 0x04:
+        return "sequence";
+    case 0x05:
+        return "flash";
+    case 0x06:
+        return "image-crc";
+    case 0x07:
+        return "app-vector";
+    case 0x08:
+        return "manifest";
+    case 0x09:
+        return "hardware-id";
+    case 0x0A:
+        return "rollback-policy";
+    case 0x0B:
+        return "boot-metadata";
+    default:
+        return "unknown";
     }
-
-    return ~crc;
-}
-
-static uint32_t crc32_buffer(const uint8_t *data, size_t len)
-{
-    return crc32_update(0, data, len);
 }
 
 static void put_le16(uint8_t *buf, uint16_t value)
@@ -108,6 +115,17 @@ static void put_le32(uint8_t *buf, uint32_t value)
 static uint16_t get_le16(const uint8_t *buf)
 {
     return (uint16_t)buf[0] | ((uint16_t)buf[1] << 8);
+}
+
+static int64_t monotonic_ms(void)
+{
+    struct timespec now;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &now) < 0) {
+        perror("clock_gettime");
+        return -1;
+    }
+    return ((int64_t)now.tv_sec * 1000) + (now.tv_nsec / 1000000);
 }
 
 static int load_file(const char *path, uint8_t **out_data, size_t *out_size)
@@ -161,9 +179,15 @@ static int open_can_socket(const char *iface)
     int fd;
     struct ifreq ifr;
     struct sockaddr_can addr;
-    struct can_filter filter = {
-        CAN_OTA_ID_STATUS,
-        CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG
+    struct can_filter filters[] = {
+        {
+            CAN_OTA_ID_STATUS,
+            CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG
+        },
+        {
+            CAN_APP_ID_HEARTBEAT,
+            CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG
+        }
     };
 
     fd = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -173,7 +197,7 @@ static int open_can_socket(const char *iface)
     }
 
     if (setsockopt(fd, SOL_CAN_RAW, CAN_RAW_FILTER,
-                   &filter, sizeof(filter)) < 0) {
+                   filters, sizeof(filters)) < 0) {
         perror("setsockopt CAN_RAW_FILTER");
         close(fd);
         return -1;
@@ -289,16 +313,18 @@ static int wait_status(int fd, ota_status_t *status, int timeout_ms)
         return -1;
     }
 
-    printf("STM32 status=%s(0x%02X) error=0x%02X progress=%u%% seq=%u received=%uKB\n",
+    printf("STM32 status=%s(0x%02X) error=%s(0x%02X) progress=%u%% seq=%u received=%uKB\n",
            status_name(status->status),
            status->status,
+           error_name(status->error),
            status->error,
            status->progress,
            status->seq,
            status->received_kb);
 
     if (status->status == CAN_OTA_STATUS_ERROR) {
-        fprintf(stderr, "STM32 reported OTA error: 0x%02X\n", status->error);
+        fprintf(stderr, "STM32 reported OTA error: %s (0x%02X)\n",
+                error_name(status->error), status->error);
         return -1;
     }
 
@@ -308,6 +334,10 @@ static int wait_status(int fd, ota_status_t *status, int timeout_ms)
 static int send_enter(int fd, int timeout_ms)
 {
     uint8_t data[8] = { CAN_OTA_CMD_ENTER, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t app_control[8] = {
+        CAN_APP_CMD_ENTER_BOOT, 0, 0, 0, 0, 0, 0,
+        CAN_APP_CMD_ENTER_BOOT
+    };
     ota_status_t status;
     int attempt;
     int probe_timeout = timeout_ms < ENTER_PROBE_TIMEOUT_MS ?
@@ -317,6 +347,19 @@ static int send_enter(int fd, int timeout_ms)
     if (probe_timeout <= 0) {
         probe_timeout = ENTER_PROBE_TIMEOUT_MS;
     }
+
+    /*
+     * If the App is currently running, request a controlled reset through
+     * its normal command ID first. A bootloader already in recovery simply
+     * ignores this frame. Repeated 0x300 probes below then cover the reset
+     * and CAN reinitialization window without requiring a manual reset.
+     */
+    printf("Requesting running App to enter Bootloader...\n");
+    if (send_can_frame(fd, CAN_APP_ID_CONTROL,
+                       app_control, sizeof(app_control)) < 0) {
+        return -1;
+    }
+    usleep(100000u);
 
     for (attempt = 0; attempt < ENTER_ATTEMPTS; attempt++) {
         printf("Sending ENTER OTA attempt %d...\n", attempt + 1);
@@ -329,12 +372,50 @@ static int send_enter(int fd, int timeout_ms)
                    status.status,
                    status.error,
                    status.progress);
-            return status.status == CAN_OTA_STATUS_ERROR ? -1 : 0;
+            if (status.status == CAN_OTA_STATUS_ERROR) {
+                return -1;
+            }
+            if (status.status == CAN_OTA_STATUS_READY) {
+                return 0;
+            }
         }
     }
 
     fprintf(stderr, "STM32 did not enter OTA mode\n");
     return -1;
+}
+
+static int send_manifest(int fd, const ota_package_t *package,
+                         int timeout_ms)
+{
+    uint8_t data[8];
+    ota_status_t status;
+
+    data[0] = CAN_OTA_PROTOCOL_VERSION;
+    data[1] = package->flags;
+    put_le16(&data[2], package->hardware_id);
+    put_le32(&data[4], package->firmware_version);
+
+    printf("Sending manifest: hardware=0x%04X version=%u.%u.%u.%u flags=0x%02X\n",
+           package->hardware_id,
+           CAN_OTA_VERSION_MAJOR(package->firmware_version),
+           CAN_OTA_VERSION_MINOR(package->firmware_version),
+           CAN_OTA_VERSION_PATCH(package->firmware_version),
+           CAN_OTA_VERSION_BUILD(package->firmware_version),
+           package->flags);
+
+    if (send_can_frame(fd, CAN_OTA_ID_MANIFEST, data, 8) < 0) {
+        return -1;
+    }
+    if (wait_status(fd, &status, timeout_ms) < 0) {
+        return -1;
+    }
+    if (status.status != CAN_OTA_STATUS_READY) {
+        fprintf(stderr, "unexpected manifest response: 0x%02X\n",
+                status.status);
+        return -1;
+    }
+    return 0;
 }
 
 static int send_info(int fd, size_t size, uint32_t crc, int timeout_ms)
@@ -418,15 +499,111 @@ static int send_firmware(int fd, const uint8_t *fw, size_t size,
     return 0;
 }
 
+static int wait_app_confirmation(int fd, uint32_t firmware_version)
+{
+    uint8_t expected_major = CAN_OTA_VERSION_MAJOR(firmware_version);
+    uint8_t expected_minor = CAN_OTA_VERSION_MINOR(firmware_version);
+    uint8_t expected_patch = CAN_OTA_VERSION_PATCH(firmware_version);
+    uint8_t expected_build = CAN_OTA_VERSION_BUILD(firmware_version);
+    int64_t start_ms = monotonic_ms();
+    int64_t deadline_ms;
+
+    if (start_ms < 0) {
+        return -1;
+    }
+    deadline_ms = start_ms + APP_CONFIRM_TIMEOUT_MS;
+
+    while (1) {
+        fd_set rfds;
+        struct timeval tv;
+        struct can_frame frame;
+        int64_t now_ms;
+        int64_t remaining_ms;
+        int ret;
+        uint8_t checksum = 0u;
+        int i;
+
+        now_ms = monotonic_ms();
+        if (now_ms < 0) {
+            return -1;
+        }
+        remaining_ms = deadline_ms - now_ms;
+        if (remaining_ms <= 0) {
+            fprintf(stderr,
+                    "timeout waiting for confirmed STM32 App heartbeat\n");
+            return -1;
+        }
+
+        FD_ZERO(&rfds);
+        FD_SET(fd, &rfds);
+        tv.tv_sec = (time_t)(remaining_ms / 1000);
+        tv.tv_usec = (suseconds_t)((remaining_ms % 1000) * 1000);
+        ret = select(fd + 1, &rfds, NULL, NULL, &tv);
+        if (ret == 0) {
+            fprintf(stderr,
+                    "timeout waiting for confirmed STM32 App heartbeat\n");
+            return -1;
+        }
+        if (ret < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            perror("select App heartbeat");
+            return -1;
+        }
+        ret = (int)read(fd, &frame, sizeof(frame));
+        if (ret < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            perror("read App heartbeat");
+            return -1;
+        }
+        if ((size_t)ret != sizeof(frame) ||
+            (frame.can_id & (CAN_EFF_FLAG | CAN_RTR_FLAG)) != 0u ||
+            (frame.can_id & CAN_SFF_MASK) != CAN_APP_ID_HEARTBEAT ||
+            frame.can_dlc != 8u) {
+            continue;
+        }
+        for (i = 0; i < 7; i++) {
+            checksum = (uint8_t)(checksum + frame.data[i]);
+        }
+        if (checksum != frame.data[7]) {
+            fprintf(stderr, "ignoring heartbeat with invalid checksum\n");
+            continue;
+        }
+        if (frame.data[0] != expected_major ||
+            frame.data[1] != expected_minor ||
+            frame.data[4] != expected_patch ||
+            frame.data[5] != expected_build) {
+            fprintf(stderr,
+                    "received App heartbeat version %u.%u.%u.%u, "
+                    "expected %u.%u.%u.%u\n",
+                    frame.data[0], frame.data[1],
+                    frame.data[4], frame.data[5],
+                    expected_major, expected_minor,
+                    expected_patch, expected_build);
+            continue;
+        }
+
+        printf("STM32 App confirmed and heartbeat version "
+               "%u.%u.%u.%u received.\n",
+               frame.data[0], frame.data[1],
+               frame.data[4], frame.data[5]);
+        return 0;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     const char *iface = DEFAULT_CAN_IFACE;
     const char *fw_path = NULL;
     unsigned int pacing_us = DEFAULT_PACING_US;
     int timeout_ms = DEFAULT_STATUS_TIMEOUT;
-    uint8_t *fw = NULL;
-    size_t fw_size = 0;
-    uint32_t crc;
+    uint8_t *package_data = NULL;
+    size_t package_size = 0;
+    ota_package_t package;
+    char package_error[160];
     int can_fd;
     int opt;
     int ret = 1;
@@ -457,39 +634,59 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (load_file(fw_path, &fw, &fw_size) < 0) {
+    if (load_file(fw_path, &package_data, &package_size) < 0) {
+        return 1;
+    }
+    if (ota_package_parse(package_data, package_size, &package,
+                          package_error, sizeof(package_error)) < 0) {
+        fprintf(stderr, "invalid OTA package: %s\n", package_error);
+        free(package_data);
+        return 1;
+    }
+    if (package.hardware_id != CAN_OTA_HARDWARE_ID_STM32F103) {
+        fprintf(stderr,
+                "package hardware 0x%04X does not match STM32F103 target 0x%04X\n",
+                package.hardware_id, CAN_OTA_HARDWARE_ID_STM32F103);
+        free(package_data);
         return 1;
     }
 
-    crc = crc32_buffer(fw, fw_size);
     can_fd = open_can_socket(iface);
     if (can_fd < 0) {
-        free(fw);
+        free(package_data);
         return 1;
     }
 
-    printf("CAN iface=%s firmware=%s size=%lu crc32=0x%08X pacing=%uus\n",
+    printf("CAN iface=%s package=%s image_size=%lu crc32=0x%08X pacing=%uus\n",
            iface,
            fw_path,
-           (unsigned long)fw_size,
-           crc,
+           (unsigned long)package.image_size,
+           package.image_crc32,
            pacing_us);
 
     if (send_enter(can_fd, timeout_ms) < 0) {
         goto out;
     }
-    if (send_info(can_fd, fw_size, crc, timeout_ms) < 0) {
+    if (send_manifest(can_fd, &package, timeout_ms) < 0) {
         goto out;
     }
-    if (send_firmware(can_fd, fw, fw_size, pacing_us, timeout_ms) < 0) {
+    if (send_info(can_fd, package.image_size,
+                  package.image_crc32, timeout_ms) < 0) {
+        goto out;
+    }
+    if (send_firmware(can_fd, package.image, package.image_size,
+                      pacing_us, timeout_ms) < 0) {
+        goto out;
+    }
+    if (wait_app_confirmation(can_fd, package.firmware_version) < 0) {
         goto out;
     }
 
-    printf("STM32 CAN OTA finished successfully.\n");
+    printf("STM32 CAN OTA and trial-boot confirmation finished successfully.\n");
     ret = 0;
 
 out:
     close(can_fd);
-    free(fw);
+    free(package_data);
     return ret;
 }

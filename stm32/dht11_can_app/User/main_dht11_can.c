@@ -5,24 +5,36 @@
 #include "./BSP/LCD/lcd.h"
 #include "./BSP/DHT11/dht11.h"
 #include "./BSP/CAN/can.h"
+#include "../../../common/ota_contract.h"
+#include "../../common/ota_metadata.h"
 
 #define APP_VECTOR_OFFSET       0x00010000u
 
-#define CAN_ID_STM32_HEARTBEAT  0x101u
 #define CAN_ID_STM32_DHT11      0x102u
-#define CAN_ID_IMX6ULL_CONTROL  0x201u
 #define CAN_ID_STM32_ACK        0x202u
 
-#define CAN_ID_OTA_ENTER        0x300u
-#define CAN_CMD_OTA_ENTER       0xA5u
-
 #define APP_VERSION_MAJOR       1u
-#define APP_VERSION_MINOR       1u
+#define APP_VERSION_MINOR       2u
+#define APP_VERSION_PATCH       0u
+#define APP_VERSION_BUILD       3u
+
+#define DHT_SAMPLE_INTERVAL_TICKS 200u
+
+/*
+ * Acceptance-test hook. Keep at 0 for release builds. Set to a nonzero
+ * duration, rebuild the App, then reset during the delay to verify that an
+ * unconfirmed TRIAL image is not booted repeatedly.
+ */
+#ifndef OTA_CONFIRM_DELAY_MS
+#define OTA_CONFIRM_DELAY_MS    0u
+#endif
+
+#define APP_FIRMWARE_VERSION \
+    CAN_OTA_VERSION(APP_VERSION_MAJOR, APP_VERSION_MINOR, \
+                    APP_VERSION_PATCH, APP_VERSION_BUILD)
 
 #define CTRL_CMD_LED0           0x01u
 #define CTRL_CMD_LED1           0x02u
-#define CTRL_CMD_ENTER_BOOT     0xA5u
-
 static uint8_t checksum8(const uint8_t *data, uint8_t len)
 {
     uint8_t i;
@@ -43,12 +55,12 @@ static void send_heartbeat(uint16_t counter)
     frame[1] = APP_VERSION_MINOR;
     frame[2] = (uint8_t)(counter & 0xFFu);
     frame[3] = (uint8_t)(counter >> 8);
-    frame[4] = 0;
-    frame[5] = 0;
+    frame[4] = APP_VERSION_PATCH;
+    frame[5] = APP_VERSION_BUILD;
     frame[6] = 0;
     frame[7] = checksum8(frame, 7);
 
-    can_send_msg(CAN_ID_STM32_HEARTBEAT, frame, 8);
+    can_send_msg(CAN_APP_ID_HEARTBEAT, frame, 8);
 }
 
 static void send_dht11_data(uint8_t temperature, uint8_t humidity,
@@ -86,11 +98,35 @@ static void send_ack(uint8_t cmd, uint8_t result)
 
 static void request_bootloader(void)
 {
-    uint8_t frame[8] = { CAN_CMD_OTA_ENTER, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t frame[8] = { CAN_OTA_CMD_ENTER, 0, 0, 0, 0, 0, 0, 0 };
 
-    can_send_msg(CAN_ID_OTA_ENTER, frame, 8);
+    can_send_msg(CAN_OTA_ID_ENTER, frame, 8);
     delay_ms(20);
     NVIC_SystemReset();
+}
+
+static uint8_t read_valid_dht11_sample(uint8_t *temperature,
+                                       uint8_t *humidity)
+{
+    uint8_t sampled_temperature = 0xFFu;
+    uint8_t sampled_humidity = 0xFFu;
+
+    /*
+     * The vendor DHT11 routine returns success even when its checksum does
+     * not match, leaving the output arguments unchanged. Sentinels detect
+     * that false-success path. The documented sensor ranges also reject the
+     * all-zero sample sometimes observed immediately after a power cycle.
+     */
+    if (dht11_read_data(&sampled_temperature, &sampled_humidity) != 0u ||
+        sampled_temperature == 0xFFu || sampled_humidity == 0xFFu ||
+        sampled_temperature > 60u ||
+        sampled_humidity < 5u || sampled_humidity > 95u) {
+        return 1u;
+    }
+
+    *temperature = sampled_temperature;
+    *humidity = sampled_humidity;
+    return 0u;
 }
 
 static void handle_control(void)
@@ -98,7 +134,7 @@ static void handle_control(void)
     uint8_t frame[8];
     uint8_t len;
 
-    len = can_receive_msg(CAN_ID_IMX6ULL_CONTROL, frame);
+    len = can_receive_msg(CAN_APP_ID_CONTROL, frame);
     if (len == 0) {
         return;
     }
@@ -122,7 +158,7 @@ static void handle_control(void)
         send_ack(frame[0], 0);
         break;
 
-    case CTRL_CMD_ENTER_BOOT:
+    case CAN_APP_CMD_ENTER_BOOT:
         send_ack(frame[0], 0);
         request_bootloader();
         break;
@@ -138,8 +174,16 @@ int main(void)
     uint8_t temperature = 0;
     uint8_t humidity = 0;
     uint8_t dht_ok = 0;
+    uint8_t dht_ready = 0;
     uint16_t counter = 0;
-    uint16_t tick_10ms = 0;
+    /*
+     * Start at one so the first DHT11 sample is delayed by about two seconds.
+     * dht11_init() already performs a sensor transaction; immediately issuing
+     * dht11_read_data() can violate the DHT11 minimum sampling interval.
+     */
+    uint16_t tick_10ms = 1;
+    ota_metadata_result_t confirm_result;
+    const ota_boot_metadata_t *boot_metadata;
 
     SCB->VTOR = FLASH_BASE | APP_VECTOR_OFFSET;
 
@@ -156,28 +200,101 @@ int main(void)
     lcd_show_string(30, 130, 220, 16, 16, "Temp:  C", BLUE);
     lcd_show_string(30, 150, 220, 16, 16, "Humi:  %", BLUE);
 
-    can_init(CAN_SJW_1TQ, CAN_BS2_8TQ, CAN_BS1_9TQ, 4, CAN_MODE_NORMAL);
+    if (can_init(CAN_SJW_1TQ, CAN_BS2_8TQ, CAN_BS1_9TQ,
+                 4, CAN_MODE_NORMAL) != 0u) {
+        printf("CAN initialization failed; refuse OTA confirmation.\r\n");
+        lcd_show_string(30, 110, 220, 16, 16, "CAN Init ERR", RED);
+        delay_ms(1000);
+        NVIC_SystemReset();
+    }
 
-    while (dht11_init()) {
+    /*
+     * Confirmation is deliberately performed after the core clock, console,
+     * display and CAN path are alive, but before an optional DHT11 failure can
+     * block startup. A reset before this point leaves the image in TRIAL state,
+     * so the bootloader enters recovery instead of repeatedly booting it.
+     */
+    if (OTA_CONFIRM_DELAY_MS > 0u) {
+        printf("OTA confirmation delayed by %lu ms for acceptance test.\r\n",
+               (unsigned long)OTA_CONFIRM_DELAY_MS);
+        delay_ms(OTA_CONFIRM_DELAY_MS);
+    }
+
+    boot_metadata = ota_metadata_get();
+    if (ota_metadata_is_valid(boot_metadata) &&
+        boot_metadata->firmware_version != APP_FIRMWARE_VERSION) {
+        confirm_result = OTA_METADATA_RESULT_INVALID;
+        printf("OTA version mismatch: manifest=0x%08lX app=0x%08lX\r\n",
+               (unsigned long)boot_metadata->firmware_version,
+               (unsigned long)APP_FIRMWARE_VERSION);
+    } else {
+        confirm_result = ota_metadata_confirm_running_image();
+    }
+    if (confirm_result == OTA_METADATA_RESULT_OK) {
+        printf("OTA image %u.%u.%u.%u confirmed.\r\n",
+               CAN_OTA_VERSION_MAJOR(APP_FIRMWARE_VERSION),
+               CAN_OTA_VERSION_MINOR(APP_FIRMWARE_VERSION),
+               CAN_OTA_VERSION_PATCH(APP_FIRMWARE_VERSION),
+               CAN_OTA_VERSION_BUILD(APP_FIRMWARE_VERSION));
+    } else if (confirm_result == OTA_METADATA_RESULT_EMPTY) {
+        printf("Legacy image boot: no OTA metadata to confirm.\r\n");
+    } else {
+        printf("OTA confirmation warning: result=%u\r\n", confirm_result);
+    }
+    if (confirm_result != OTA_METADATA_RESULT_OK &&
+        confirm_result != OTA_METADATA_RESULT_EMPTY) {
+        lcd_show_string(30, 110, 220, 16, 16, "OTA Confirm ERR", RED);
+        delay_ms(1000);
+        NVIC_SystemReset();
+    }
+    send_heartbeat(counter);
+
+    if (dht11_init() != 0u) {
+        dht_ready = 0;
         dht_ok = 0;
         lcd_show_string(30, 110, 220, 16, 16, "DHT11 Error", RED);
         send_dht11_data(0, 0, dht_ok, counter++);
-        delay_ms(500);
-        LED0_TOGGLE();
+    } else {
+        dht_ready = 1;
+        dht_ok = 0;
+        lcd_show_string(30, 110, 220, 16, 16, "DHT11 Wait ", RED);
     }
-
-    dht_ok = 1;
-    lcd_show_string(30, 110, 220, 16, 16, "DHT11 OK   ", RED);
-    send_heartbeat(counter);
 
     while (1) {
         handle_control();
 
-        if ((tick_10ms % 100u) == 0u) {
-            if (dht11_read_data(&temperature, &humidity) == 0) {
-                dht_ok = 1;
-            } else {
+        if ((tick_10ms % DHT_SAMPLE_INTERVAL_TICKS) == 0u) {
+            /*
+             * Sensor recovery is periodic rather than a blocking startup
+             * loop. CAN control and the OTA entry command therefore remain
+             * responsive even when DHT11 is absent or faulty.
+             */
+            if (!dht_ready) {
+                if (dht11_init() == 0u) {
+                    dht_ready = 1;
+                    dht_ok = 0;
+                    temperature = 0u;
+                    humidity = 0u;
+                    lcd_show_string(30, 110, 220, 16, 16,
+                                    "DHT11 Wait ", RED);
+                } else {
+                    dht_ready = 0;
+                    dht_ok = 0;
+                    temperature = 0u;
+                    humidity = 0u;
+                }
+            } else if (read_valid_dht11_sample(&temperature,
+                                               &humidity) != 0u) {
+                dht_ready = 0;
                 dht_ok = 0;
+                temperature = 0u;
+                humidity = 0u;
+                lcd_show_string(30, 110, 220, 16, 16,
+                                "DHT11 Error", RED);
+            } else {
+                dht_ok = 1;
+                lcd_show_string(30, 110, 220, 16, 16,
+                                "DHT11 OK   ", RED);
             }
 
             lcd_show_num(30 + 40, 130, temperature, 2, 16, BLUE);

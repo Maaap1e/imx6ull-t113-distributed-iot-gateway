@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+PATH="/usr/sbin:/usr/bin:/sbin:/bin${PATH:+:$PATH}"
+export PATH
+
 APP_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 BASE_DIR=$(CDPATH= cd -- "$APP_DIR/../.." && pwd)
 APP="$APP_DIR/stm32_can_ota_host"
@@ -22,7 +25,7 @@ CLIENT_STOP_SCRIPT=""
 CLIENT_START_SCRIPT=""
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 stm32_app.bin"
+    echo "Usage: $0 stm32_app.ota"
     exit 1
 fi
 

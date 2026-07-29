@@ -35,6 +35,11 @@ jobs:
           tar -tzf dist/iot-gateway-$(cat VERSION)-imx6ull.tar.gz >/dev/null
           tar -tzf dist/iot-gateway-$(cat VERSION)-t113.tar.gz >/dev/null
       - name: Check Python tool
-        run: python3 -m py_compile tests/tcp_fault_injector.py
+        run: |
+          python3 -m py_compile tests/tcp_fault_injector.py
+          python3 -m py_compile tools/package_stm32_ota.py
+          python3 -m unittest \
+            tests/test_package_stm32_ota.py \
+            tests/test_ota_layout.py
       - name: Check version metadata
         run: grep -F "$(cat VERSION)" README.md

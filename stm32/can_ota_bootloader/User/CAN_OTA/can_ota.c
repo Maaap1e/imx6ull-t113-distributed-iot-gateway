@@ -14,6 +14,9 @@ static uint32_t g_write_addr;
 static uint32_t g_received_size;
 static uint32_t g_expected_size;
 static uint32_t g_expected_crc;
+static uint32_t g_expected_version;
+static uint16_t g_expected_hardware_id;
+static uint8_t g_manifest_flags;
 static uint16_t g_expected_seq;
 
 static uint16_t le16(const uint8_t *buf)
@@ -45,7 +48,7 @@ static uint32_t crc32_update(uint32_t crc, const uint8_t *data, uint32_t len)
     return ~crc;
 }
 
-static uint32_t crc32_flash(uint32_t addr, uint32_t len)
+uint32_t can_ota_crc32_flash(uint32_t addr, uint32_t len)
 {
     uint32_t crc = 0;
     uint32_t i;
@@ -186,19 +189,37 @@ uint8_t can_ota_wait_enter(uint32_t timeout_ms)
     return 0;
 }
 
-uint8_t can_ota_app_is_valid(uint32_t app_addr)
+uint8_t can_ota_app_is_valid(uint32_t app_addr, uint32_t image_size)
 {
     uint32_t sp = *(volatile uint32_t *)app_addr;
     uint32_t reset = *(volatile uint32_t *)(app_addr + 4u);
+    uint32_t reset_addr = reset & ~1u;
 
-    if ((sp & 0x2FFE0000u) != 0x20000000u) {
+    if (image_size < 8u || image_size > CAN_OTA_MAX_APP_SIZE) {
         return 0;
     }
-    if ((reset & 0xFF000000u) != 0x08000000u) {
+    if (sp < CAN_OTA_SRAM_START || sp > CAN_OTA_SRAM_END) {
+        return 0;
+    }
+    if ((reset & 1u) == 0u) {
+        return 0;
+    }
+    if (reset_addr < app_addr || reset_addr >= app_addr + image_size) {
         return 0;
     }
 
     return 1;
+}
+
+uint8_t can_ota_image_matches_metadata(const ota_boot_metadata_t *metadata)
+{
+    if (!ota_metadata_is_valid(metadata) ||
+        !can_ota_app_is_valid(OTA_APP_ADDR, metadata->image_size)) {
+        return 0u;
+    }
+
+    return can_ota_crc32_flash(OTA_APP_ADDR, metadata->image_size) ==
+           metadata->image_crc32;
 }
 
 static uint8_t erase_app_area(uint32_t app_size)
@@ -218,7 +239,8 @@ static uint8_t erase_app_area(uint32_t app_size)
     erase.PageAddress = FLASH_APP1_ADDR;
     erase.NbPages = pages;
 
-    if (HAL_FLASHEx_Erase(&erase, &page_error) != HAL_OK) {
+    if (HAL_FLASHEx_Erase(&erase, &page_error) != HAL_OK ||
+        page_error != 0xFFFFFFFFu) {
         HAL_FLASH_Lock();
         return 1;
     }
@@ -229,6 +251,9 @@ static uint8_t erase_app_area(uint32_t app_size)
 
 static uint8_t flush_write_buf(void)
 {
+    uint16_t padded_bytes;
+    uint16_t i;
+
     if (g_write_pos == 0) {
         return 0;
     }
@@ -237,8 +262,20 @@ static uint8_t flush_write_buf(void)
         ((uint8_t *)g_write_buf)[g_write_pos++] = 0xFF;
     }
 
+    padded_bytes = g_write_pos;
+    if (g_write_addr + padded_bytes > OTA_METADATA_ADDR) {
+        return 1;
+    }
+
     stmflash_write(g_write_addr, g_write_buf, (g_write_pos + 1u) / 2u);
-    g_write_addr += g_write_pos;
+    for (i = 0u; i < padded_bytes; i++) {
+        if (*(volatile uint8_t *)(g_write_addr + i) !=
+            ((uint8_t *)g_write_buf)[i]) {
+            return 1;
+        }
+    }
+
+    g_write_addr += padded_bytes;
     g_write_pos = 0;
     return 0;
 }
@@ -279,12 +316,65 @@ static uint8_t wait_firmware_info(uint32_t *size, uint32_t *crc32)
     return 1;
 }
 
-uint8_t can_ota_run(void)
+static uint8_t wait_manifest(void)
 {
     uint8_t buf[8];
     uint32_t id;
+    uint32_t start = HAL_GetTick();
+    const ota_boot_metadata_t *current = ota_metadata_get();
+
+    while ((HAL_GetTick() - start) < 5000u) {
+        uint8_t len = can_receive(&id, buf);
+
+        if (len == 8u && id == CAN_OTA_ID_MANIFEST) {
+            if (buf[0] != CAN_OTA_PROTOCOL_VERSION ||
+                (buf[1] & (uint8_t)~CAN_OTA_MANIFEST_KNOWN_FLAGS) != 0u) {
+                return CAN_OTA_ERR_MANIFEST;
+            }
+
+            g_manifest_flags = buf[1];
+            g_expected_hardware_id = le16(&buf[2]);
+            g_expected_version = le32(&buf[4]);
+
+            if (g_expected_hardware_id !=
+                CAN_OTA_HARDWARE_ID_STM32F103) {
+                return CAN_OTA_ERR_HARDWARE;
+            }
+            if (g_expected_version == 0u) {
+                return CAN_OTA_ERR_MANIFEST;
+            }
+
+            if (ota_metadata_is_valid(current) &&
+                g_expected_version < current->firmware_version &&
+                (g_manifest_flags &
+                 CAN_OTA_MANIFEST_ALLOW_DOWNGRADE) == 0u) {
+                return CAN_OTA_ERR_ROLLBACK;
+            }
+
+            can_ota_send_status(CAN_OTA_STATUS_READY,
+                                CAN_OTA_ERR_NONE, 0u, 0u);
+            return CAN_OTA_ERR_NONE;
+        }
+        delay_ms(2);
+    }
+
+    return CAN_OTA_ERR_TIMEOUT;
+}
+
+uint8_t can_ota_run(void)
+{
+    uint8_t buf[8];
+    uint8_t manifest_error;
+    uint32_t id;
     uint32_t crc;
     uint32_t last_rx_tick;
+    ota_metadata_result_t metadata_result;
+
+    manifest_error = wait_manifest();
+    if (manifest_error != CAN_OTA_ERR_NONE) {
+        can_ota_send_status(CAN_OTA_STATUS_ERROR, manifest_error, 0, 0);
+        return 1;
+    }
 
     if (wait_firmware_info(&g_expected_size, &g_expected_crc)) {
         can_ota_send_status(CAN_OTA_STATUS_ERROR, CAN_OTA_ERR_INFO, 0, 0);
@@ -346,17 +436,31 @@ uint8_t can_ota_run(void)
         }
     }
 
-    flush_write_buf();
+    if (flush_write_buf()) {
+        can_ota_send_status(CAN_OTA_STATUS_ERROR, CAN_OTA_ERR_FLASH,
+                            100, g_expected_seq);
+        return 1;
+    }
     can_ota_send_status(CAN_OTA_STATUS_VERIFY, CAN_OTA_ERR_NONE, 100, g_expected_seq);
 
-    crc = crc32_flash(FLASH_APP1_ADDR, g_expected_size);
+    crc = can_ota_crc32_flash(FLASH_APP1_ADDR, g_expected_size);
     if (crc != g_expected_crc) {
         can_ota_send_status(CAN_OTA_STATUS_ERROR, CAN_OTA_ERR_CRC, 100, g_expected_seq);
         return 1;
     }
 
-    if (!can_ota_app_is_valid(FLASH_APP1_ADDR)) {
+    if (!can_ota_app_is_valid(FLASH_APP1_ADDR, g_expected_size)) {
         can_ota_send_status(CAN_OTA_STATUS_ERROR, CAN_OTA_ERR_APP, 100, g_expected_seq);
+        return 1;
+    }
+
+    metadata_result = ota_metadata_write_pending(g_expected_hardware_id,
+                                                 g_expected_version,
+                                                 g_expected_size,
+                                                 g_expected_crc);
+    if (metadata_result != OTA_METADATA_RESULT_OK) {
+        can_ota_send_status(CAN_OTA_STATUS_ERROR, CAN_OTA_ERR_METADATA,
+                            100, g_expected_seq);
         return 1;
     }
 

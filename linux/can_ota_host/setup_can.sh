@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+PATH="/usr/sbin:/usr/bin:/sbin:/bin${PATH:+:$PATH}"
+export PATH
+
 IFACE="${1:-can0}"
 BITRATE="${2:-500000}"
 

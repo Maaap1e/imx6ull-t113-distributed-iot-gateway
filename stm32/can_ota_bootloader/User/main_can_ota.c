@@ -19,12 +19,57 @@ static void boot_ui_show(void)
 
 static void jump_to_app_if_valid(void)
 {
-    if (can_ota_app_is_valid(FLASH_APP1_ADDR)) {
-        printf("Valid App found, jump to 0x%08X\r\n", FLASH_APP1_ADDR);
-        lcd_show_string(30, 130, 220, 16, 16, "Jump to APP...", BLUE);
-        delay_ms(100);
-        iap_load_app(FLASH_APP1_ADDR);
+    const ota_boot_metadata_t *metadata = ota_metadata_get();
+    ota_metadata_result_t result;
+    uint16_t image_state;
+
+    if (ota_metadata_is_blank()) {
+        printf("OTA metadata is empty; recovery mode required.\r\n");
+        return;
     }
+
+    if (!ota_metadata_is_valid(metadata)) {
+        printf("OTA metadata is invalid; recovery mode required.\r\n");
+        return;
+    }
+
+    image_state = ota_metadata_current_state(metadata);
+    if (image_state == 0u) {
+        printf("OTA state markers are invalid; recovery mode required.\r\n");
+        return;
+    }
+
+    printf("Metadata version: %u.%u.%u.%u state=0x%04X size=%lu\r\n",
+           CAN_OTA_VERSION_MAJOR(metadata->firmware_version),
+           CAN_OTA_VERSION_MINOR(metadata->firmware_version),
+           CAN_OTA_VERSION_PATCH(metadata->firmware_version),
+           CAN_OTA_VERSION_BUILD(metadata->firmware_version),
+           image_state,
+           (unsigned long)metadata->image_size);
+
+    if (image_state == OTA_IMAGE_STATE_TRIAL) {
+        printf("Trial image was not confirmed; stay in recovery mode.\r\n");
+        return;
+    }
+
+    if (!can_ota_image_matches_metadata(metadata)) {
+        printf("App CRC/vector does not match OTA metadata.\r\n");
+        return;
+    }
+
+    if (image_state == OTA_IMAGE_STATE_PENDING) {
+        result = ota_metadata_mark_trial();
+        if (result != OTA_METADATA_RESULT_OK) {
+            printf("Failed to mark image as trial: %u\r\n", result);
+            return;
+        }
+        printf("Image marked as trial boot.\r\n");
+    }
+
+    printf("Verified App, jump to 0x%08X\r\n", FLASH_APP1_ADDR);
+    lcd_show_string(30, 130, 220, 16, 16, "Jump to APP...", BLUE);
+    delay_ms(100);
+    iap_load_app(FLASH_APP1_ADDR);
 }
 
 int main(void)
@@ -50,27 +95,30 @@ int main(void)
         printf("No OTA command.\r\n");
         jump_to_app_if_valid();
 
-        printf("No valid App, stay in bootloader.\r\n");
-        lcd_show_string(30, 130, 220, 16, 16, "No valid APP!", BLUE);
+        printf("No bootable App, enter recovery mode.\r\n");
+        lcd_show_string(30, 130, 220, 16, 16, "OTA Recovery", BLUE);
         while (!can_ota_wait_enter(1000u)) {
             LED0_TOGGLE();
         }
     }
 
-    printf("CAN OTA started.\r\n");
-    lcd_show_string(30, 130, 220, 16, 16, "OTA Running...", BLUE);
-
-    if (can_ota_run() == 0) {
-        printf("OTA success, jump to App.\r\n");
-        lcd_show_string(30, 150, 220, 16, 16, "OTA Success!", BLUE);
-        delay_ms(300);
-        iap_load_app(FLASH_APP1_ADDR);
-    }
-
-    printf("OTA failed, stay in bootloader.\r\n");
-    lcd_show_string(30, 150, 220, 16, 16, "OTA Failed!", BLUE);
     while (1) {
-        LED0_TOGGLE();
-        delay_ms(300);
+        printf("CAN OTA started.\r\n");
+        lcd_show_string(30, 130, 220, 16, 16, "OTA Running...", BLUE);
+
+        if (can_ota_run() == 0) {
+            printf("OTA success, start trial App.\r\n");
+            lcd_show_string(30, 150, 220, 16, 16, "OTA Success!", BLUE);
+            delay_ms(300);
+            jump_to_app_if_valid();
+        } else {
+            printf("OTA failed, stay in recovery mode.\r\n");
+            lcd_show_string(30, 150, 220, 16, 16, "OTA Failed!", BLUE);
+        }
+
+        printf("Waiting for another OTA enter command.\r\n");
+        while (!can_ota_wait_enter(1000u)) {
+            LED0_TOGGLE();
+        }
     }
 }
