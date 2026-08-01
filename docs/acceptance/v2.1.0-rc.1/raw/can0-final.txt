@@ -1,0 +1,13 @@
+2: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+      bitrate 500000 sample-point 0.866
+      tq 133 prop-seg 6 phase-seg1 6 phase-seg2 2 sjw 1
+      flexcan: tseg1 4..16 tseg2 2..8 sjw 1..4 brp 1..256 brp-inc 1
+      clock 30000000
+      re-started bus-errors arbit-lost error-warn error-pass bus-off
+      0          0          0          1          0          0
+    RX: bytes  packets  errors  dropped overrun mcast
+    61704      7713     0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    171728     21496    0       0       0       0

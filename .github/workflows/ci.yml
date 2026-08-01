@@ -12,16 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install MQTT build dependency
+      - name: Install build and Python dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpaho-mqtt-dev
+          sudo apt-get install -y libpaho-mqtt-dev python3-cryptography
       - name: Check shell syntax
         run: find . -type f \( -name '*.sh' -o -name 'S90iot-*' \) -print0 | xargs -0 -n1 sh -n
       - name: Build Linux applications
         run: |
           make -C linux/can_sensor_client
           make -C linux/can_ota_host
+          make -C linux/can_ota_host_ab_secure
           make -C linux/imx6ull_gateway
           make -C linux/mqtt_bridge PAHO_PREFIX=/usr
           make -C t113/tcp_receiver
@@ -34,12 +35,13 @@ jobs:
           sh scripts/package_target.sh t113
           tar -tzf dist/iot-gateway-$(cat VERSION)-imx6ull.tar.gz >/dev/null
           tar -tzf dist/iot-gateway-$(cat VERSION)-t113.tar.gz >/dev/null
-      - name: Check Python tool
+      - name: Check Python tools and package tests
         run: |
           python3 -m py_compile tests/tcp_fault_injector.py
           python3 -m py_compile tools/package_stm32_ota.py
-          python3 -m unittest \
-            tests/test_package_stm32_ota.py \
-            tests/test_ota_layout.py
+          python3 -m py_compile tools/package_stm32_ota_ab.py
+          python3 -m py_compile tools/generate_ota_signing_key.py
+          python3 -m py_compile tools/make_ota_negative_test.py
+          python3 -m unittest discover -s tests -p 'test_*.py'
       - name: Check version metadata
         run: grep -F "$(cat VERSION)" README.md

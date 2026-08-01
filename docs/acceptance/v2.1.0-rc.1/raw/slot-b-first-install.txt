@@ -1,0 +1,11 @@
+OTA3 version=2.1.0.0 key_id=0x5A876252 A=39712 bytes B=39712 bytes
+Bootloader ready; inactive target is Slot B.
+STM32 status=writing error=none progress=100% seq=6631 received=38KB target=B
+STM32 status=verify error=none progress=100% seq=6632 received=38KB target=B
+STM32 status=done error=none progress=100% seq=6632 received=38KB target=B
+Confirmed heartbeat 2.1.0.0 from Slot B received.
+Signed resumable A/B CAN OTA completed and trial image confirmed.
+
+Post-boot state:
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":27,"humidity":36,"app_version":"2.1.0.0","counter":17,"frames":159,"checksum_errors":0,"last_seen":1785606244}
+

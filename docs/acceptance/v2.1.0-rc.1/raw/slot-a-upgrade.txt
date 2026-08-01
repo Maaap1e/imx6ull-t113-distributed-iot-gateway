@@ -1,0 +1,9 @@
+STM32 status=writing error=none progress=100% seq=6631 received=38KB target=A
+STM32 status=verify error=none progress=100% seq=6632 received=38KB target=A
+STM32 status=done error=none progress=100% seq=6632 received=38KB target=A
+Confirmed heartbeat 2.1.0.1 from Slot A received.
+Signed resumable A/B CAN OTA completed and trial image confirmed.
+
+Post-boot state:
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":47,"app_version":"2.1.0.1","counter":3,"frames":7,"checksum_errors":0,"last_seen":1785611855}
+

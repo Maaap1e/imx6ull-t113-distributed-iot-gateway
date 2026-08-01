@@ -1,0 +1,7 @@
+OTA3 version=2.1.0.3 key_id=0x5A876252 A=39716 bytes B=39716 bytes
+Requesting running App to enter Bootloader...
+Bootloader ready; inactive target is Slot A.
+Sending signed OTA3 manifest (248 bytes)...
+STM32 status=error error=ecdsa-signature progress=0% seq=0 received=0KB target=A
+STM32 rejected OTA: ecdsa-signature (0x0D)
+
