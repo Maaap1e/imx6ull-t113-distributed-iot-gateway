@@ -17,6 +17,7 @@ T113_CC="$T113_CC" sh scripts/build_all.sh t113
 
 file linux/imx6ull_gateway/imx6ull_gateway_app
 file linux/mqtt_bridge/mqtt_bridge
+file linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host
 file t113/tcp_receiver/t113_display_app
 ```
 
@@ -30,12 +31,12 @@ still be built with their corresponding BSP/SDK workflows.
 ## Create and transfer target bundles
 
 ```sh
-PAHO_LIB_DIR="$PAHO_PREFIX/lib" PACKAGE_VERSION=1.1.0 \
+PAHO_LIB_DIR="$PAHO_PREFIX/lib" PACKAGE_VERSION=2.1.0-rc.1 \
   sh scripts/package_target.sh imx6ull
-sh scripts/package_target.sh t113
+PACKAGE_VERSION=2.1.0-rc.1 sh scripts/package_target.sh t113
 
-scp dist/iot-gateway-1.0.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
-scp dist/iot-gateway-1.0.0-t113.tar.gz root@<T113_IP>:/tmp/
+scp dist/iot-gateway-2.1.0-rc.1-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-2.1.0-rc.1-t113.tar.gz root@<T113_IP>:/tmp/
 ```
 
 The packaging script also writes a `.sha256` file when `sha256sum` is available.
@@ -46,6 +47,25 @@ On the matching board, extract its bundle and run `sh scripts/install_target.sh
 writes new defaults as `<role>.conf.new`. See `docs/RUNTIME_MANAGEMENT.md` for
 BusyBox, systemd, health checks, and bounded tmpfs logs.
 
+The i.MX6ULL bundle keeps the legacy single-slot Host and also installs the
+signed A/B Host persistently at:
+
+```text
+/opt/iot-gateway/linux/can_ota_host_ab_secure/
+```
+
+After installation, run a signed package with:
+
+```sh
+/opt/iot-gateway/linux/can_ota_host_ab_secure/run_ota.sh \
+  /path/to/stm32-dht11-v2.1.0.3.ota3
+```
+
+The wrapper stops the CAN sensor client only for the duration of the update and
+restores it on success, rejection, interruption or failure. OTA packages are
+release assets and are not installed automatically. The private signing key
+must never be copied to the board or included in a target bundle.
+
 ## STM32 projects
 
 Open the `.uvprojx` file under each `Projects/MDK-ARM` directory with Keil MDK.
@@ -53,8 +73,9 @@ The bootloader and application use different link addresses:
 
 | Image | Flash address |
 |---|---:|
-| CAN OTA bootloader | `0x08000000` |
-| DHT11 CAN application | `0x08010000` |
+| A/B Secure CAN OTA bootloader | `0x08000000` |
+| DHT11 CAN Slot A application | `0x08010000` |
+| DHT11 CAN Slot B application | `0x08047000` |
 
 Build output is intentionally ignored. Keep `.bin`, `.hex`, `.axf`, `.map` and
 object files out of source commits. Publish tested firmware as versioned GitHub

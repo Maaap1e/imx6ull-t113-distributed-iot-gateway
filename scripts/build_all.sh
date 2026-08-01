@@ -16,6 +16,7 @@ case "$ROLE" in
         }
         make -C "$BASE_DIR/linux/can_sensor_client" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/can_ota_host" CC="$IMX_CC"
+        make -C "$BASE_DIR/linux/can_ota_host_ab_secure" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/imx6ull_gateway" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/mqtt_bridge" CC="$IMX_CC" \
             PAHO_PREFIX="$PAHO_PREFIX"

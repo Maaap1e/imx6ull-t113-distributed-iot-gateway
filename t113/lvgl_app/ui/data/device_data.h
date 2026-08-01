@@ -12,9 +12,7 @@
 #include "wpa_manager.h"
 
 #define WEATHER_CITY "guangzhou"
-
-const char *device_weather_key(void);
-#define WEATHER_KEY device_weather_key()
+#define WEATHER_KEY "SmazqPcltzTft-X3v"
 
 typedef enum{
     OFF = 0,

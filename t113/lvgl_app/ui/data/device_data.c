@@ -25,13 +25,6 @@
 
 device_state_t device_state;
 
-const char *device_weather_key(void)
-{
-    const char *key = getenv("WEATHER_API_KEY");
-
-    return key != NULL ? key : "";
-}
-
 static int time_s = 0;
 static int time_m = 0;
 static int time_h = 0;

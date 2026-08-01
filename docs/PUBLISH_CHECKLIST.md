@@ -10,6 +10,10 @@
 - 完成 `docs/V1_ACCEPTANCE.md`，保留 24 小时资源记录与故障恢复结果。
 - 确认 `VERSION`、README 徽章、Release tag 和固件版本相互一致。
 - 将测试通过的 `.bin`/`.hex` 放入 GitHub Release，不要提交到 Git 历史。
+- 确认私钥、私钥口令、`dist-ota-dev/` 和故障注入 `.ota3` 均未进入源码或运行包。
+- 确认生产 Host 未定义 `CAN_OTA_ACCEPTANCE_TEST`，`-H` 测试入口不可用。
+- 核对 `docs/acceptance/<version>/EVIDENCE_SHA256SUMS.txt` 后再生成发布资产。
+- 执行 `sh scripts/package_acceptance.sh`，保存证据压缩包及其 `.sha256`。
 
 ## 初始化仓库
 
@@ -44,3 +48,22 @@ Assets:
 
 Release 说明建议记录实测板卡、CAN 波特率、TCP 端口、固件链接地址、
 CRC32 结果以及当前未实现的签名/回滚能力。
+
+## v2.1.0-rc.1 发布资产
+
+```text
+iot-gateway-2.1.0-rc.1-imx6ull.tar.gz
+iot-gateway-2.1.0-rc.1-imx6ull.tar.gz.sha256
+iot-gateway-2.1.0-rc.1-t113.tar.gz
+iot-gateway-2.1.0-rc.1-t113.tar.gz.sha256
+stm32_can_ota_ab_secure_bootloader.hex
+stm32_dht11_can_app_slot_a-v2.1.0.3.bin
+stm32_dht11_can_app_slot_b-v2.1.0.3.bin
+stm32-dht11-v2.1.0.3.ota3
+v2.1.0-rc.1-stm32-assets.sha256
+v2.1.0-rc.1-acceptance-evidence.tar.gz
+```
+
+公开发布只附加正常签名固件，不附加私钥、口令、错误签名/错误硬件/授权降级等
+故障注入包。Release Notes 必须保留“签名 OTA 不是完整安全启动”和尚未完成的三项
+扩展故障注入边界。
