@@ -1,0 +1,6 @@
+STM32 status=writing error=none progress=100% seq=6631 received=38KB target=B
+STM32 status=verify error=none progress=100% seq=6632 received=38KB target=B
+STM32 status=done error=none progress=100% seq=6632 received=38KB target=B
+Confirmed heartbeat 2.1.0.3 from Slot B received.
+Signed resumable A/B CAN OTA completed and trial image confirmed.
+

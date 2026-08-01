@@ -1,0 +1,18 @@
+Fault-injection image: 2.1.0.2 Slot B, confirmation delayed by 30000 ms.
+The STM32 was reset during the delay window.
+
+Persistent Bootloader state after rollback:
+STM32F103 A/B Secure CAN OTA Bootloader
+Slot A: 0x08010000, Slot B: 0x08047000, size: 225280 bytes
+Next update target: Slot B
+A/B state: active=0 confirmed=0 candidate=255 attempted=0
+Verified Slot A, jump to 0x08010000
+OTA Slot A image 2.1.0.1 confirmed.
+
+Post-rollback state:
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":28,"humidity":41,"app_version":"2.1.0.1","counter":11,"frames":5,"checksum_errors":0,"last_seen":1785612379}
+
+Note: the direct `Rollback: trial image reset before confirmation` UART line was
+not included in the captured excerpt. The persisted cleared-candidate state and
+return to confirmed Slot A are retained here as endpoint evidence.
+

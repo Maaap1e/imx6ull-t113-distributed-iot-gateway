@@ -1,0 +1,7 @@
+STM32F103 A/B Secure CAN OTA Bootloader
+Slot A: 0x08010000, Slot B: 0x08047000, size: 225280 bytes
+Next update target: Slot A
+A/B state: active=1 confirmed=1 candidate=255 attempted=0
+Verified Slot B, jump to 0x08047000
+LCD ID:a1a1
+OTA Slot B image 2.1.0.3 confirmed.

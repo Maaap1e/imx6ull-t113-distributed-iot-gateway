@@ -1,5 +1,12 @@
 # Third-Party Notices
 
+## micro-ecc
+
+The secure A/B STM32 Bootloader vendors micro-ecc at commit
+`541b3a78026420a3e369c4c9281c396b5e531113`.
+Its BSD-2-Clause-style license is retained at
+`stm32/common_ab_secure/crypto/LICENSE.txt`.
+
 This repository contains project-authored integration code together with files
 from, or derived from, third-party SDKs and development-board examples.
 

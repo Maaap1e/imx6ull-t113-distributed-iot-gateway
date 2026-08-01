@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.1.0-rc.1 - 2026-08-01
+
+### Added
+
+- Added separately linked 220 KiB Slot A and Slot B applications with persistent
+  A/B boot metadata and automatic rollback when a trial image resets before
+  confirmation.
+- Added signed `.ota3` packages with STM32F103 Hardware ID, four-component
+  version, SHA-256 image/page digests, trusted Key ID and ECDSA-P256 signature.
+- Added 2 KiB page-level resumable CAN transfer backed by a persistent dual-page
+  resume journal and authenticated page hash tables.
+- Added the production `can_ota_host_ab_secure` program to the i.MX6ULL build,
+  target bundle and persistent `/opt/iot-gateway` installation.
+- Added versioned real-board evidence for A/B switching, rollback, transfer
+  power loss/resume, signature/Key ID/Hardware ID rejection, downgrade policy,
+  authorized downgrade and final cold boot of Slot B `2.1.0.3`.
+
+### Security
+
+- Production Host builds do not expose the Hardware ID acceptance-test bypass;
+  it is available only when explicitly compiled with
+  `CAN_OTA_ACCEPTANCE_TEST`.
+- The signing private key remains outside the repository and is never included
+  in target bundles. Only the trusted public key/Key ID is embedded in the
+  Bootloader.
+
+### Compatibility
+
+- Added explicit cryptography backends for older Ubuntu `cryptography`
+  releases used by the project VM, while retaining compatibility with current
+  versions.
+
+### Known limitations
+
+- This is signed OTA, not a complete secure-boot chain. Bootloader protection,
+  protected monotonic rollback state and remote TLS/authorization remain out of
+  scope.
+- Exact power interruption during boot-metadata page rotation and resume-journal
+  page rotation, plus tampering with a previously completed Flash page, remain
+  additional fault-injection coverage.
+
 ## 1.2.0-rc.1 - 2026-07-29
 
 ### Added

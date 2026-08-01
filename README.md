@@ -8,7 +8,7 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v1.2.0--rc.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-v2.1.0--rc.1-orange.svg)
 
 </div>
 
@@ -23,9 +23,9 @@
 - **全志 T113 显示终端**：接收带帧头和 CRC32 的 TCP 数据，写入原子状态文件，再由 LVGL 页面显示设备在线状态与传感器数据。
 - **Windows Qt 上位机**：通过 MQTT 订阅聚合遥测与在线状态，提供系统总览、实时趋势、CSV 记录和带执行回执的 LED 控制。
 
-i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版本化 `.ota` 固件包。`v1.2.0-rc.1` 在分块传输、序号检查和 CRC32 基础上，新增硬件 ID 校验、版本/降级策略、持久化启动元数据、首次试启动确认和掉电后 CAN 恢复模式。最终 App `1.2.0.3` 已完成正常升级、匹配版本确认心跳及完整冷启动保持实板验收；硬件误配、降级、传输中断和确认前复位等对抗性故障注入仍作为后续验证项。
+i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版本化 `.ota3` 固件包。`v2.1.0-rc.1` 新增 A/B 双槽自动回滚、SHA-256/ECDSA-P256 发布者签名、Hardware ID/Key ID/版本策略和 2KB 页级断点续传。最终 App `2.1.0.3` 已完成 A/B 切换、未确认镜像回滚、传输断电续传、签名与策略拒绝以及完整冷启动保持实板验收。
 
-当前稳定版本为 **`v1.1.0`**：核心三节点网关已完成冷启动、24 小时稳定运行、CAN/TCP 故障恢复、进程自恢复及 STM32 CAN OTA 实板验收；i.MX6ULL MQTT 北向桥接和 Windows Qt 上位机已完成 3 小时 8 分钟真实链路连续运行、CSV 记录及 LED 命令闭环验收。当前候选版本 **`v1.2.0-rc.1`** 聚焦版本化 CAN OTA，已通过本报告声明范围内的实板验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)、[v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)和 [v1.2.0-rc.1 STM32 CAN OTA 增量验收报告](docs/acceptance/v1.2.0-rc.1/RESULT.md)。
+当前稳定版本为 **`v1.1.0`**。当前候选版本 **`v2.1.0-rc.1`** 聚焦 A/B Secure CAN OTA，并已通过本报告声明范围内的实板验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)、[v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)、[v1.2.0-rc.1 单槽版本化 OTA 验收报告](docs/acceptance/v1.2.0-rc.1/RESULT.md)和 [v2.1.0-rc.1 A/B Secure CAN OTA 验收报告](docs/acceptance/v2.1.0-rc.1/RESULT.md)。
 
 ## 系统架构
 
@@ -70,7 +70,7 @@ LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设
 | Linux 传感器采集 | 基于官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树 | 修改寄存器读写和字符设备接口，以 NFS + 用户态程序验证 `/dev` 数据链路 |
 | TCP 板间通信 | 20 字节二进制帧头 + JSON 负载 | 序号、时间戳、长度、CRC32、完整收发、心跳与断线重连 |
 | STM32 CAN 节点 | 心跳、DHT11 数据、LED 控制和控制应答 | SocketCAN 过滤、Checksum8、超时离线判断 |
-| CAN OTA | Linux 主机发送硬件/版本 Manifest 和 6 字节数据分片 | `.ota` 包校验、误刷/误降级保护、Flash 回读、整包 CRC32、试启动确认与恢复模式 |
+| CAN OTA | Linux 主机发送签名 Manifest、认证页哈希表和 6 字节数据分片 | A/B 自动回滚、SHA-256/ECDSA-P256、误刷/误降级保护、Flash 回读及 2KB 页级断点续传 |
 | T113 数据桥接 | TCP 接收端原子更新 `/tmp/t113_sensor_state.json` | 网络线程与 LVGL UI 解耦，避免网络阻塞影响界面刷新 |
 | MQTT 北向桥接 | 独立进程发布聚合 JSON、LWT 状态并处理白名单命令 | Broker 故障不影响 CAN/TCP/LVGL，支持退避重连、守护和日志轮转 |
 | Windows Qt 上位机 | 总览、趋势、控制、设置、CSV 与中英双语界面 | 严格 JSON 校验、PC 接收时间绘图、解析错误统计及命令执行回执 |

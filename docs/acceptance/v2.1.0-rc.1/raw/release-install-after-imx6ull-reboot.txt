@@ -1,0 +1,7 @@
+total 32K
+-rwxr-xr-x 1 root root 3.1K Aug  1 20:47 run_ota.sh
+-rwxr-xr-x 1 root root  331 Aug  1 20:47 setup_can.sh
+-rwxr-xr-x 1 root root  22K Aug  1 20:47 stm32_can_ota_ab_secure_host
+/opt/iot-gateway/linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, for GNU/Linux 2.6.31, BuildID[sha1]=075a1ae7c7e8c6e0499501a8a4d544f48ef6838e, not stripped
+Usage: /opt/iot-gateway/linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host -f firmware.ota3 [-i can0] [-p pacing_us] [-t timeout_ms]
+{"node":"stm32f103","online":1,"dht_ok":1,"temperature":29,"humidity":41,"app_version":"2.1.0.3","counter":89,"frames":79,"checksum_errors":0,"last_seen":1785617661}

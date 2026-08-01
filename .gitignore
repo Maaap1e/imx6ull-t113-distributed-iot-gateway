@@ -14,6 +14,8 @@ Output/
 *.hex
 *.bin
 *.ota
+*.ota2
+*.ota3
 /dist-ota-dev/
 *.lst
 *.lnp
@@ -25,6 +27,7 @@ Output/
 imx6ull_gateway_app
 stm32_can_sensor_client
 stm32_can_ota_host
+stm32_can_ota_ab_secure_host
 t113_display_app
 /linux/mqtt_bridge/mqtt_bridge
 demo
@@ -52,6 +55,7 @@ param.cfg
 .env
 .env.*
 !.env.example
+secrets/
 
 # T113 assets are supplied separately because their redistribution rights vary
 t113/lvgl_app/res/font/*.otf

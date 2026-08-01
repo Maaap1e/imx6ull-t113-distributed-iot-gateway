@@ -27,6 +27,7 @@ if [ "$ROLE" = "imx6ull" ]; then
     require_file "$BASE_DIR/linux/imx6ull_gateway/imx6ull_gateway_app"
     require_file "$BASE_DIR/linux/can_sensor_client/stm32_can_sensor_client"
     require_file "$BASE_DIR/linux/can_ota_host/stm32_can_ota_host"
+    require_file "$BASE_DIR/linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host"
     require_file "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge"
 else
     require_file "$BASE_DIR/t113/tcp_receiver/t113_display_app"
@@ -58,6 +59,13 @@ fi
 cp "$BASE_DIR/deploy/systemd/"*.service "$BUNDLE_DIR/deploy/systemd/"
 cp "$BASE_DIR/docs/RUNTIME_MANAGEMENT.md" "$BASE_DIR/docs/V1_ACCEPTANCE.md" "$BUNDLE_DIR/docs/"
 cp "$BASE_DIR/docs/MQTT_BRIDGE.md" "$BASE_DIR/docs/OTA_FLOW.md" "$BUNDLE_DIR/docs/"
+cp "$BASE_DIR/docs/OTA_AB_SECURE_V3.md" "$BASE_DIR/docs/BUILD_AND_DEPLOY.md" \
+    "$BASE_DIR/docs/RELEASE_V2.1.0_RC1.md" \
+    "$BUNDLE_DIR/docs/"
+if [ -d "$BASE_DIR/docs/acceptance/v$VERSION" ]; then
+    mkdir -p "$BUNDLE_DIR/docs/acceptance"
+    cp -R "$BASE_DIR/docs/acceptance/v$VERSION" "$BUNDLE_DIR/docs/acceptance/"
+fi
 
 for name in install_target.sh healthcheck.sh runtime_maintenance.sh \
     runtime_supervisor.sh run_can_client.sh run_gateway.sh run_t113.sh \
@@ -69,6 +77,7 @@ done
 if [ "$ROLE" = "imx6ull" ]; then
     mkdir -p "$BUNDLE_DIR/linux/imx6ull_gateway" \
         "$BUNDLE_DIR/linux/can_sensor_client" "$BUNDLE_DIR/linux/can_ota_host" \
+        "$BUNDLE_DIR/linux/can_ota_host_ab_secure" \
         "$BUNDLE_DIR/linux/mqtt_bridge" "$BUNDLE_DIR/lib"
     cp "$BASE_DIR/linux/imx6ull_gateway/imx6ull_gateway_app" \
         "$BASE_DIR/linux/imx6ull_gateway/start_gateway.sh" \
@@ -83,6 +92,10 @@ if [ "$ROLE" = "imx6ull" ]; then
         "$BASE_DIR/linux/can_ota_host/setup_can.sh" \
         "$BASE_DIR/linux/can_ota_host/run_ota.sh" \
         "$BUNDLE_DIR/linux/can_ota_host/"
+    cp "$BASE_DIR/linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host" \
+        "$BASE_DIR/linux/can_ota_host_ab_secure/setup_can.sh" \
+        "$BASE_DIR/linux/can_ota_host_ab_secure/run_ota.sh" \
+        "$BUNDLE_DIR/linux/can_ota_host_ab_secure/"
     cp "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge" \
         "$BASE_DIR/linux/mqtt_bridge/start_mqtt_bridge.sh" \
         "$BASE_DIR/linux/mqtt_bridge/stop_mqtt_bridge.sh" \

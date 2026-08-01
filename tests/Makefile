@@ -3,7 +3,9 @@ CFLAGS ?= -std=gnu99 -Wall -Wextra -Werror -O2
 PROTOCOL_TARGET := protocol_test
 MQTT_TARGET := mqtt_command_test
 OTA_PACKAGE_TARGET := ota_package_test
-TARGETS := $(PROTOCOL_TARGET) $(MQTT_TARGET) $(OTA_PACKAGE_TARGET)
+SHA256_TARGET := sha256_test
+TARGETS := $(PROTOCOL_TARGET) $(MQTT_TARGET) $(OTA_PACKAGE_TARGET) \
+	$(SHA256_TARGET)
 
 .PHONY: all test clean
 
@@ -20,10 +22,14 @@ $(OTA_PACKAGE_TARGET): ota_package_test.c ../linux/can_ota_host/ota_package.c \
 	$(CC) $(CFLAGS) -I../linux/can_ota_host -o $@ \
 		ota_package_test.c ../linux/can_ota_host/ota_package.c
 
+$(SHA256_TARGET): sha256_test.c ../common/crypto/sha256.c
+	$(CC) $(CFLAGS) -o $@ $^
+
 test: $(TARGETS)
 	./$(PROTOCOL_TARGET)
 	./$(MQTT_TARGET)
 	./$(OTA_PACKAGE_TARGET)
+	./$(SHA256_TARGET)
 
 clean:
 	$(RM) $(TARGETS)
