@@ -49,21 +49,58 @@ Assets:
 Release 说明建议记录实测板卡、CAN 波特率、TCP 端口、固件链接地址、
 CRC32 结果以及当前未实现的签名/回滚能力。
 
-## v2.1.0-rc.1 发布资产
+## v2.1.0 正式版发布资产
 
 ```text
-iot-gateway-2.1.0-rc.1-imx6ull.tar.gz
-iot-gateway-2.1.0-rc.1-imx6ull.tar.gz.sha256
-iot-gateway-2.1.0-rc.1-t113.tar.gz
-iot-gateway-2.1.0-rc.1-t113.tar.gz.sha256
+iot-gateway-2.1.0-imx6ull.tar.gz
+iot-gateway-2.1.0-imx6ull.tar.gz.sha256
 stm32_can_ota_ab_secure_bootloader.hex
 stm32_dht11_can_app_slot_a-v2.1.0.3.bin
 stm32_dht11_can_app_slot_b-v2.1.0.3.bin
 stm32-dht11-v2.1.0.3.ota3
-v2.1.0-rc.1-stm32-assets.sha256
-v2.1.0-rc.1-acceptance-evidence.tar.gz
+v2.1.0-stm32-assets.sha256
+v2.1.0-acceptance-evidence.tar.gz
+v2.1.0-acceptance-evidence.tar.gz.sha256
 ```
 
+T113/LVGL 在本次 OTA 正式版中没有运行时变更，可以继续使用 `v1.1.0` 已验收的
+T113 部署；如希望统一版本号，可额外构建并附加
+`iot-gateway-2.1.0-t113.tar.gz` 及其 `.sha256`。
+
+`v2.1.0` 直接采用 `v2.1.0-rc.1` 已验收的 STM32 二进制和正常签名 `.ota3` 内容，
+不得重新修改或重新签名后仍声称使用原验收证据。正式资产清单使用稳定版文件名，
+并记录其 SHA-256 与 RC 资产的对应关系。
+
 公开发布只附加正常签名固件，不附加私钥、口令、错误签名/错误硬件/授权降级等
-故障注入包。Release Notes 必须保留“签名 OTA 不是完整安全启动”和尚未完成的三项
-扩展故障注入边界。
+故障注入包。Release Notes 保留准确的能力边界，但这些量产级扩展不阻塞本项目正式
+版本发布。
+
+正式版证据包沿用候选版已经发布和校验的原始实板记录。需要单独重新生成时可执行：
+
+```sh
+sh scripts/package_acceptance.sh
+```
+
+`package_acceptance.sh` 会读取 `docs/acceptance/v2.1.0/EVIDENCE_SOURCE_VERSION`。
+正式 Release 的统一收集脚本则直接复制已经发布的 RC 验收压缩包，保留包内原始
+目录和字节，只生成稳定版附件名及外层 SHA-256。
+
+## v2.1.0 正式版发布顺序
+
+1. 确认 `VERSION`、README 徽章、CHANGELOG 和正式版发布说明均为 `2.1.0`。
+2. 执行完整自动化测试并确认三个 Keil 工程仍使用已验收配置。
+3. 生成 `iot-gateway-2.1.0-imx6ull.tar.gz`、正式证据包和所有 SHA-256 清单。
+4. 通过 PR 将纯发布文档与元数据变更合并到 `main`。
+5. 在合并后的 `main` 创建新标签 `v2.1.0`；保留且不移动 `v2.1.0-rc.1`。
+6. 创建名称为 `v2.1.0 — A/B Secure CAN OTA` 的 GitHub Release。
+7. 不勾选 Pre-release，勾选 Set as the latest release，并上传上述正式版资产。
+8. 下载 Release 附件后再次执行 SHA-256 校验，确认 GitHub 附件与本地发布目录一致。
+
+Ubuntu 中生成运行包后，可以用下面一条命令收集全部 9 个正式附件：
+
+```sh
+sh scripts/collect_v2_1_release_assets.sh /path/to/v2.1.0-rc.1-assets
+```
+
+输出目录为 `dist/v2.1.0-release/`。STM32 固件直接复制已验收的 RC 资产，脚本只生成
+稳定版文件清单，不重新构建或重新签名固件。

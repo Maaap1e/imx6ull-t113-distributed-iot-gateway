@@ -4,8 +4,9 @@ PROTOCOL_TARGET := protocol_test
 MQTT_TARGET := mqtt_command_test
 OTA_PACKAGE_TARGET := ota_package_test
 SHA256_TARGET := sha256_test
+SENSOR_UAPI_TARGET := sensor_uapi_test
 TARGETS := $(PROTOCOL_TARGET) $(MQTT_TARGET) $(OTA_PACKAGE_TARGET) \
-	$(SHA256_TARGET)
+	$(SHA256_TARGET) $(SENSOR_UAPI_TARGET)
 
 .PHONY: all test clean
 
@@ -25,11 +26,16 @@ $(OTA_PACKAGE_TARGET): ota_package_test.c ../linux/can_ota_host/ota_package.c \
 $(SHA256_TARGET): sha256_test.c ../common/crypto/sha256.c
 	$(CC) $(CFLAGS) -o $@ $^
 
+$(SENSOR_UAPI_TARGET): sensor_uapi_test.c \
+		../linux/kernel_drivers/imx6ull_sensors/sensor_uapi.h
+	$(CC) $(CFLAGS) -o $@ sensor_uapi_test.c
+
 test: $(TARGETS)
 	./$(PROTOCOL_TARGET)
 	./$(MQTT_TARGET)
 	./$(OTA_PACKAGE_TARGET)
 	./$(SHA256_TARGET)
+	./$(SENSOR_UAPI_TARGET)
 
 clean:
 	$(RM) $(TARGETS)

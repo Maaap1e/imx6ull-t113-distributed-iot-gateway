@@ -4,10 +4,19 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 BASE_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 VERSION="${PACKAGE_VERSION:-$(tr -d '\r\n' < "$BASE_DIR/VERSION")}"
-SOURCE_NAME="v$VERSION"
+EVIDENCE_VERSION="${EVIDENCE_VERSION:-}"
+if [ -z "$EVIDENCE_VERSION" ]; then
+    EVIDENCE_POINTER="$BASE_DIR/docs/acceptance/v$VERSION/EVIDENCE_SOURCE_VERSION"
+    if [ -f "$EVIDENCE_POINTER" ]; then
+        EVIDENCE_VERSION=$(tr -d '\r\n' < "$EVIDENCE_POINTER")
+    else
+        EVIDENCE_VERSION="$VERSION"
+    fi
+fi
+SOURCE_NAME="v$EVIDENCE_VERSION"
 SOURCE_DIR="$BASE_DIR/docs/acceptance/$SOURCE_NAME"
 DIST_DIR="${DIST_DIR:-$BASE_DIR/dist}"
-ARCHIVE_NAME="$SOURCE_NAME-acceptance-evidence.tar.gz"
+ARCHIVE_NAME="v$VERSION-acceptance-evidence.tar.gz"
 ARCHIVE="$DIST_DIR/$ARCHIVE_NAME"
 
 if [ ! -f "$SOURCE_DIR/RESULT.md" ] || \
@@ -31,7 +40,7 @@ if [ "$raw_count" -ne "$manifest_count" ]; then
     exit 1
 fi
 
-(cd "$SOURCE_DIR" && sha256sum -c EVIDENCE_SHA256SUMS.txt)
+(cd "$SOURCE_DIR" && tr -d '\r' < EVIDENCE_SHA256SUMS.txt | sha256sum -c -)
 
 mkdir -p "$DIST_DIR"
 if [ -e "$ARCHIVE" ] && [ "${FORCE:-0}" != "1" ]; then
@@ -45,3 +54,6 @@ tar -czf "$ARCHIVE" -C "$BASE_DIR/docs/acceptance" "$SOURCE_NAME"
 
 echo "Created $ARCHIVE"
 echo "Created $ARCHIVE.sha256"
+if [ "$EVIDENCE_VERSION" != "$VERSION" ]; then
+    echo "Evidence source: v$EVIDENCE_VERSION (promoted as v$VERSION)"
+fi

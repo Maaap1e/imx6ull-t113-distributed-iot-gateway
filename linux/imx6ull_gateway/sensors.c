@@ -1,4 +1,5 @@
 #include "sensors.h"
+#include "../kernel_drivers/imx6ull_sensors/sensor_uapi.h"
 
 #include <errno.h>
 #include <ctype.h>
@@ -130,15 +131,15 @@ static int read_ap3216c_dev(const char *dev, ap3216c_data_t *data)
 {
     int fd;
     int ret;
-    unsigned short raw[3];
+    struct gateway_ap3216c_sample raw;
 
     fd = open(dev, O_RDWR);
     if (fd < 0) {
         return -1;
     }
 
-    memset(raw, 0, sizeof(raw));
-    ret = (int)read(fd, raw, sizeof(raw));
+    memset(&raw, 0, sizeof(raw));
+    ret = (int)read(fd, &raw, sizeof(raw));
     close(fd);
 
     /*
@@ -149,9 +150,9 @@ static int read_ap3216c_dev(const char *dev, ap3216c_data_t *data)
         return -1;
     }
 
-    data->ir = raw[0];
-    data->als = raw[1];
-    data->ps = raw[2];
+    data->ir = raw.ir;
+    data->als = raw.als;
+    data->ps = raw.ps;
     return 0;
 }
 
@@ -159,15 +160,15 @@ static int read_icm20608(const char *dev, icm20608_data_t *data)
 {
     int fd;
     int ret;
-    signed int raw[7];
+    struct gateway_icm20608_sample raw;
 
     fd = open(dev, O_RDWR);
     if (fd < 0) {
         return -1;
     }
 
-    memset(raw, 0, sizeof(raw));
-    ret = (int)read(fd, raw, sizeof(raw));
+    memset(&raw, 0, sizeof(raw));
+    ret = (int)read(fd, &raw, sizeof(raw));
     close(fd);
 
     /*
@@ -178,13 +179,13 @@ static int read_icm20608(const char *dev, icm20608_data_t *data)
         return -1;
     }
 
-    data->gyro_x = (float)raw[0] / 16.4f;
-    data->gyro_y = (float)raw[1] / 16.4f;
-    data->gyro_z = (float)raw[2] / 16.4f;
-    data->accel_x = (float)raw[3] / 2048.0f;
-    data->accel_y = (float)raw[4] / 2048.0f;
-    data->accel_z = (float)raw[5] / 2048.0f;
-    data->temp = ((float)raw[6] - 25.0f) / 326.8f + 25.0f;
+    data->gyro_x = (float)raw.gyro_x / 16.4f;
+    data->gyro_y = (float)raw.gyro_y / 16.4f;
+    data->gyro_z = (float)raw.gyro_z / 16.4f;
+    data->accel_x = (float)raw.accel_x / 2048.0f;
+    data->accel_y = (float)raw.accel_y / 2048.0f;
+    data->accel_z = (float)raw.accel_z / 2048.0f;
+    data->temp = (float)raw.temperature / 326.8f + 25.0f;
 
     return 0;
 }

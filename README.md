@@ -8,7 +8,9 @@
 ![Linux](https://img.shields.io/badge/OS-Embedded%20Linux-FCC624.svg)
 ![LVGL](https://img.shields.io/badge/UI-LVGL-2A9D8F.svg)
 ![CAN](https://img.shields.io/badge/Bus-SocketCAN-E76F51.svg)
-![Version](https://img.shields.io/badge/Version-v2.1.0--rc.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-v2.1.0-brightgreen.svg)
+![Release](https://img.shields.io/badge/Release-Stable-2EA44F.svg)
+![OTA](https://img.shields.io/badge/OTA-A%2FB%20%7C%20ECDSA%20%7C%20Resume-6F42C1.svg)
 
 </div>
 
@@ -23,9 +25,40 @@
 - **全志 T113 显示终端**：接收带帧头和 CRC32 的 TCP 数据，写入原子状态文件，再由 LVGL 页面显示设备在线状态与传感器数据。
 - **Windows Qt 上位机**：通过 MQTT 订阅聚合遥测与在线状态，提供系统总览、实时趋势、CSV 记录和带执行回执的 LED 控制。
 
-i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版本化 `.ota3` 固件包。`v2.1.0-rc.1` 新增 A/B 双槽自动回滚、SHA-256/ECDSA-P256 发布者签名、Hardware ID/Key ID/版本策略和 2KB 页级断点续传。最终 App `2.1.0.3` 已完成 A/B 切换、未确认镜像回滚、传输断电续传、签名与策略拒绝以及完整冷启动保持实板验收。
+i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版本化 `.ota3` 固件包。正式版 `v2.1.0` 已实现 A/B 双槽自动回滚、SHA-256/ECDSA-P256 发布者签名、Hardware ID/Key ID/版本策略和 2KB 页级断点续传。最终 App `2.1.0.3` 已完成 A/B 切换、未确认镜像回滚、传输断电续传、签名与策略拒绝以及完整冷启动保持实板验收。
 
-当前稳定版本为 **`v1.1.0`**。当前候选版本 **`v2.1.0-rc.1`** 聚焦 A/B Secure CAN OTA，并已通过本报告声明范围内的实板验收。详见 [v1.0.0 核心链路实板验收报告](docs/acceptance/v1.0.0/RESULT.md)、[v1.1.0 MQTT/Qt 增量验收报告](docs/acceptance/v1.1.0-rc.1/RESULT.md)、[v1.2.0-rc.1 单槽版本化 OTA 验收报告](docs/acceptance/v1.2.0-rc.1/RESULT.md)和 [v2.1.0-rc.1 A/B Secure CAN OTA 验收报告](docs/acceptance/v2.1.0-rc.1/RESULT.md)。
+> **当前稳定版本：`v2.1.0`。** A/B Secure CAN OTA 沿用已完成实板验收的 `v2.1.0-rc.1` 功能基线，没有改变 STM32 固件、OTA 协议或 Linux Host 行为；正式版同时补齐了可审查的 i.MX6ULL 传感器驱动、共享 UAPI 和诊断程序。
+
+详见 [v2.1.0 正式版发布说明](docs/RELEASE_V2.1.0.md)、[v2.1.0 正式版验收索引](docs/acceptance/v2.1.0/RESULT.md)和原始的 [v2.1.0-rc.1 A/B Secure CAN OTA 实板证据](docs/acceptance/v2.1.0-rc.1/RESULT.md)。
+
+## v2.1.0 已完成功能
+
+| 方向 | 已完成能力 |
+|---|---|
+| 三节点端到端链路 | STM32F103 经 CAN 接入 i.MX6ULL，i.MX6ULL 聚合本地传感器后经 TCP 推送 T113/LVGL，并经 MQTT 接入 Windows Qt 上位机 |
+| Linux 传感器驱动 | 提供 AP3216C I2C、ICM20608 SPI 字符设备驱动、最小 DTSI、共享 UAPI 和板端诊断程序；修复 SPI 多字节读取缓冲区问题 |
+| 嵌入式运行管理 | BusyBox/systemd 自启动、进程守护、健康检查、优雅退出、断线重连、tmpfs 日志与 CSV 定额轮转 |
+| STM32 A/B OTA | 独立 Slot A/Slot B、非确认槽写入、一次试启动、App 主动确认、未确认自动回滚 |
+| 固件认证 | `.ota3` 包、SHA-256 镜像与页面摘要、ECDSA-P256 发布者签名、可信 Key ID、Hardware ID 校验 |
+| 版本策略 | 四段版本号、默认拒绝降级、签名保护的 `allow_downgrade` 授权降级 |
+| 断点续传 | 2KB Flash 页级 Resume Journal；约 30% 传输断电后从 `12288/39716` 字节继续 |
+| Host 成功判定 | 仅在收到目标版本和目标槽完全匹配的确认心跳后报告升级成功 |
+| 实板验收 | A/B 双向升级、自动回滚、传输断电续传、签名/Key ID/Hardware ID 拒绝、冷启动保持及 i.MX6ULL 重启恢复均通过 |
+| 自动化与发布 | 36 项 Python 测试及 C 协议/密码学/传感器 ABI 测试、Linux Host 交叉编译、三个 Keil 工程构建、SHA-256 资产清单和可追溯验收证据 |
+
+## 版本演进：1.x 到 2.x
+
+`1.x` 完成“系统能稳定运行和互联”，`2.x` 完成“固件能够经过认证、可恢复地升级”。仓库没有单独发布名为 `v2.0.0` 的标签，2.x 代正式版本由 `v2.1.0` 代表。
+
+| 版本 | 主要目标 | 关键增量 |
+|---|---|---|
+| `v1.0.0` | 三节点核心链路与运行加固 | i.MX6ULL 传感器采集、STM32 CAN 遥测/控制、T113 TCP/LVGL、启动守护、故障恢复和 24 小时实板稳定性验收 |
+| `v1.1.0` | 北向接入与 PC 可视化 | MQTT Bridge、LWT、白名单 LED 命令与执行回执、Windows Qt 总览/趋势/CSV/双语界面，完成 3 小时 8 分钟联调验收 |
+| `v1.2.0-rc.1` | 单槽版本化 CAN OTA | `.ota` 包、Hardware ID、四段版本、Header/Image CRC32、`PENDING → TRIAL → CONFIRMED`；支持失败后重刷，但不能自动恢复旧 App |
+| `v2.1.0-rc.1` | A/B Secure OTA 实板候选 | 新增 A/B 自动回滚、SHA-256/ECDSA-P256、Key ID、授权降级、双页 Metadata/Resume Journal 和页级断点续传，并完成完整实板验收 |
+| **`v2.1.0`** | **正式稳定版** | **将已验收的 RC 功能基线转正，补齐可审查的 Linux 传感器驱动、共享 UAPI、诊断工具，并统一正式版发布与证据索引** |
+
+各阶段证据分别见 [v1.0.0](docs/acceptance/v1.0.0/RESULT.md)、[v1.1.0-rc.1](docs/acceptance/v1.1.0-rc.1/RESULT.md)、[v1.2.0-rc.1](docs/acceptance/v1.2.0-rc.1/RESULT.md)和 [v2.1.0-rc.1](docs/acceptance/v2.1.0-rc.1/RESULT.md)。
 
 ## 系统架构
 
@@ -38,11 +71,11 @@ i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版�
 
 ## 贡献范围与可验证证据
 
-本仓库是基于芯片厂商 SDK、开发板例程和既有 T113/LVGL 工程完成的系统集成项目，不把第三方基础代码或全部教学页面声明为原创。项目工作的重点是：
+本项目围绕三节点数据链路、板端应用、图形终端和固件升级完成系统设计、功能开发与实板集成，主要工作包括：
 
 - 设计三节点系统架构、自定义 TCP 帧和 CAN 应用协议，完成 Linux 网关、T113 接收服务、STM32 CAN 节点及 CAN IAP/OTA 的跨平台联调。
-- 基于 i.MX6ULL 官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树，修改寄存器读写、字符设备接口并编写用户态验证程序；通过 NFS 挂载缩短模块和应用部署周期。
-- 基于既有 T113/LVGL 工程完成二次开发，重构页面状态逻辑和主页面，接入网关数据、Wi-Fi 配置与连接、传感器仪表盘及设备在线状态，并优化定时器和差量刷新。
+- 基于 i.MX6ULL 官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树，修复 SPI 多字节读取缓冲区问题，统一驱动与网关 UAPI，并编写独立诊断程序；通过 NFS 挂载缩短模块和应用部署周期。
+- 负责 T113/LVGL 本地终端的功能开发与系统集成，实现 TCP 状态接收、状态文件解耦、网关与 STM32 节点在线判断、传感器仪表盘、Wi-Fi 配置及界面差量刷新。
 - 补充板端自启动、进程守护、健康检查、日志轮转、版本化打包和实板验收证据，使系统能够冷启动运行并从 CAN/TCP 断线及关键进程退出中恢复。
 
 详细边界与源码证据索引见 [项目贡献与来源边界](docs/PROJECT_OWNERSHIP.md)；i.MX6ULL 驱动和 NFS 调试流程见 [驱动适配与 NFS 调试记录](docs/IMX6ULL_DRIVER_PORTING_AND_NFS.md)。
@@ -67,14 +100,14 @@ LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设
 
 | 模块 | 实现内容 | 工程要点 |
 |---|---|---|
-| Linux 传感器采集 | 基于官方/开发板例程适配 AP3216C（I2C）和 ICM20608（SPI）驱动与设备树 | 修改寄存器读写和字符设备接口，以 NFS + 用户态程序验证 `/dev` 数据链路 |
+| Linux 传感器采集 | AP3216C（I2C）与 ICM20608（SPI）字符设备驱动、最小 DTSI、共享 UAPI | 修复 SPI 连续读取缓冲区问题，增加总线错误返回、互斥保护和独立 `sensor_smoke_test` |
 | TCP 板间通信 | 20 字节二进制帧头 + JSON 负载 | 序号、时间戳、长度、CRC32、完整收发、心跳与断线重连 |
 | STM32 CAN 节点 | 心跳、DHT11 数据、LED 控制和控制应答 | SocketCAN 过滤、Checksum8、超时离线判断 |
 | CAN OTA | Linux 主机发送签名 Manifest、认证页哈希表和 6 字节数据分片 | A/B 自动回滚、SHA-256/ECDSA-P256、误刷/误降级保护、Flash 回读及 2KB 页级断点续传 |
 | T113 数据桥接 | TCP 接收端原子更新 `/tmp/t113_sensor_state.json` | 网络线程与 LVGL UI 解耦，避免网络阻塞影响界面刷新 |
 | MQTT 北向桥接 | 独立进程发布聚合 JSON、LWT 状态并处理白名单命令 | Broker 故障不影响 CAN/TCP/LVGL，支持退避重连、守护和日志轮转 |
 | Windows Qt 上位机 | 总览、趋势、控制、设置、CSV 与中英双语界面 | 严格 JSON 校验、PC 接收时间绘图、解析错误统计及命令执行回执 |
-| LVGL 交互终端 | 基于既有工程重构主页面和状态逻辑，接入网关数据、Wi-Fi 配置、仪表盘与在线状态 | 状态文件解耦网络与 UI，合并定时器，数据无变化时不重复刷新控件 |
+| LVGL 交互终端 | 完成主页面状态逻辑、网关数据接入、Wi-Fi 配置、传感器仪表盘与节点在线显示 | 状态文件解耦网络与 UI，合并定时器，数据无变化时不重复刷新控件 |
 | 后台运行 | 启停脚本、PID 文件、日志及有上限的重连退避 | 程序在后台持续运行，不占用板卡前台串口 |
 
 ## 数据链路
@@ -109,7 +142,7 @@ sequenceDiagram
 | 层级 | 主要职责 |
 |---|---|
 | STM32 应用层 | DHT11 采集、CAN 心跳/数据上报、控制命令处理 |
-| STM32 Bootloader | OTA 会话、Flash 擦写、CRC 校验和 App 跳转 |
+| STM32 Bootloader | 签名 Manifest 校验、A/B 槽选择、Flash 擦写/复核、续传日志、试启动与自动回滚 |
 | i.MX6ULL CAN 服务 | 接收 CAN 帧，维护 STM32 在线状态，输出 JSON/CSV |
 | i.MX6ULL 网关服务 | 采集本地传感器、合并 CAN 节点状态、封装 TCP 帧 |
 | i.MX6ULL MQTT Bridge | 发布聚合遥测和 LWT，校验白名单命令并回传执行结果 |
@@ -127,6 +160,8 @@ sequenceDiagram
 |-- deploy/                       # BusyBox init 与 systemd 服务
 |-- linux/
 |   |-- imx6ull_gateway/          # i.MX6ULL 采集与 TCP Client
+|   |-- kernel_drivers/           # AP3216C/ICM20608 驱动、DTSI 与共享 UAPI
+|   |-- sensor_diag/              # 构建生成的板端传感器诊断程序
 |   |-- can_sensor_client/        # SocketCAN 接收与状态发布
 |   |-- can_ota_host/             # v1 单槽 OTA Host（历史兼容）
 |   |-- can_ota_host_ab_secure/   # A/B 签名 OTA Host 与服务协调脚本
@@ -211,10 +246,11 @@ file linux/can_sensor_client/stm32_can_sensor_client
 file linux/can_ota_host/stm32_can_ota_host
 # v2.1 A/B Secure Host
 file linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host
+file linux/sensor_diag/sensor_smoke_test
 file t113/tcp_receiver/t113_display_app
 ```
 
-这里的脚本只编译本仓库可独立构建的 Linux 用户态程序，不会重新编译 i.MX6ULL 内核/设备树/驱动、STM32 Keil 工程或完整 T113 LVGL 程序。T113 LVGL 仍需放回匹配的 Tina SDK 应用目录编译；当前 T113 安装包包含的是独立 TCP 接收服务。
+这里的脚本会编译本仓库可独立构建的 Linux 用户态程序和传感器诊断程序，不会重新编译 i.MX6ULL 内核模块、设备树、STM32 Keil 工程或完整 T113 LVGL 程序。内核驱动需要在匹配开发板运行内核的 BSP 中单独构建；T113 LVGL 仍需放回匹配的 Tina SDK 应用目录编译。
 
 ### 3. 在虚拟机生成板端安装包
 
@@ -227,8 +263,8 @@ ls -lh dist/
 输出为：
 
 ```text
-dist/iot-gateway-1.0.0-imx6ull.tar.gz
-dist/iot-gateway-1.0.0-t113.tar.gz
+dist/iot-gateway-2.1.0-imx6ull.tar.gz
+dist/iot-gateway-2.1.0-t113.tar.gz
 dist/*.tar.gz.sha256
 ```
 
@@ -237,8 +273,8 @@ dist/*.tar.gz.sha256
 ### 4. 从虚拟机传到开发板
 
 ```sh
-scp dist/iot-gateway-1.0.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
-scp dist/iot-gateway-1.0.0-t113.tar.gz root@<T113_IP>:/tmp/
+scp dist/iot-gateway-2.1.0-imx6ull.tar.gz root@<IMX6ULL_IP>:/tmp/
+scp dist/iot-gateway-2.1.0-t113.tar.gz root@<T113_IP>:/tmp/
 ```
 
 可以同时传输对应的 `.sha256` 文件，并在板端支持 `sha256sum` 时执行 `sha256sum -c <文件名>.sha256` 检查传输完整性。如果板子没有 SSH/SCP，可以用 U 盘、TFTP 或 FTP 传输同一个安装包，后续安装步骤不变。
@@ -247,8 +283,8 @@ scp dist/iot-gateway-1.0.0-t113.tar.gz root@<T113_IP>:/tmp/
 
 ```sh
 cd /tmp
-tar -xzf iot-gateway-1.0.0-imx6ull.tar.gz
-cd iot-gateway-1.0.0-imx6ull
+tar -xzf iot-gateway-2.1.0-imx6ull.tar.gz
+cd iot-gateway-2.1.0-imx6ull
 sh scripts/install_target.sh imx6ull
 vi /etc/iot-gateway/imx6ull.conf
 ```
@@ -259,8 +295,8 @@ vi /etc/iot-gateway/imx6ull.conf
 
 ```sh
 cd /tmp
-tar -xzf iot-gateway-1.0.0-t113.tar.gz
-cd iot-gateway-1.0.0-t113
+tar -xzf iot-gateway-2.1.0-t113.tar.gz
+cd iot-gateway-2.1.0-t113
 sh scripts/install_target.sh t113
 vi /etc/iot-gateway/t113.conf
 ```
@@ -387,7 +423,7 @@ python3 tools/package_stm32_ota_ab.py \
 
 一次成功升级依次经历签名 Manifest 校验、目标槽选择、认证页面哈希表传输、`erasing`、`writing`、Flash CRC32/SHA-256 复核、候选元数据持久化和 `done`。Bootloader 只允许候选槽试启动一次；App 完成核心 CAN 初始化后确认，Host 仅在收到版本和槽位完全匹配的确认心跳后报告成功。传输断电后重新发送同一个包，会复核已完成页面并从首个缺失或损坏的 2KB 页继续。
 
-经过实板验收的 Bootloader、A/B App、正常签名 `.ota3`、i.MX6ULL 运行包和证据归档均随 `v2.1.0-rc.1` GitHub Pre-release 发布；私钥和故障注入包不公开。
+`v2.1.0` 正式发布资产包括经过实板验收的 Bootloader、A/B App、正常签名 `.ota3`、i.MX6ULL 运行包和证据归档；私钥和故障注入包不公开。正式版沿用 RC 阶段已验证的 STM32 二进制和 `.ota3` 内容，发布资产通过 SHA-256 清单关联。
 
 ### 7. 直接从完整仓库安装
 
@@ -404,31 +440,34 @@ sh scripts/install_target.sh t113      # 在 T113
 
 - [项目贡献与来源边界](docs/PROJECT_OWNERSHIP.md)
 - [i.MX6ULL 驱动适配与 NFS 调试](docs/IMX6ULL_DRIVER_PORTING_AND_NFS.md)
+- [AP3216C/ICM20608 驱动源码与诊断程序](linux/kernel_drivers/imx6ull_sensors/README.md)
 - [TCP 帧格式与 JSON 数据](docs/TCP_PROTOCOL.md)
 - [MQTT 北向桥接](docs/MQTT_BRIDGE.md)
 - [Windows Qt MQTT 上位机](pc/mqtt_dashboard/README.md)
 - [CAN 遥测与控制协议](docs/CAN_PROTOCOL.md)
 - [v1 单槽 CAN IAP/OTA 流程](docs/OTA_FLOW.md)
 - [A/B + SHA-256/ECDSA + 断点续传 OTA](docs/OTA_AB_SECURE_V3.md)
-- [v2.1.0-rc.1 发布说明](docs/RELEASE_V2.1.0_RC1.md)
+- [v2.1.0 正式版发布说明](docs/RELEASE_V2.1.0.md)
+- [v2.1.0-rc.1 历史发布说明](docs/RELEASE_V2.1.0_RC1.md)
 - [编译与板端部署](docs/BUILD_AND_DEPLOY.md)
 - [运行、守护与日志限额](docs/RUNTIME_MANAGEMENT.md)
 - [v1.0 实板验收清单](docs/V1_ACCEPTANCE.md)
 - [v1.2.0-rc.1 STM32 CAN OTA 增量验收](docs/acceptance/v1.2.0-rc.1/RESULT.md)
-- [v2.1.0-rc.1 A/B Secure CAN OTA 实板验收](docs/acceptance/v2.1.0-rc.1/RESULT.md)
+- [v2.1.0 正式版验收索引](docs/acceptance/v2.1.0/RESULT.md)
+- [v2.1.0-rc.1 A/B Secure CAN OTA 原始实板验收](docs/acceptance/v2.1.0-rc.1/RESULT.md)
 - [GitHub 发布检查清单](docs/PUBLISH_CHECKLIST.md)
 
 ## 当前完成情况
 
 | 功能 | 状态 |
 |---|---|
-| AP3216C、ICM20608 板端采集 | 已在 i.MX6ULL 验证 |
+| AP3216C、ICM20608 板端采集 | 已在 i.MX6ULL 验证；仓库已补齐驱动、DTSI、共享 UAPI、诊断程序和 ABI 测试 |
 | i.MX6ULL 到 T113 自定义 TCP 通信 | 已验证 |
 | TCP 心跳、CRC、断线重连与离线状态 | 已实现 |
 | STM32 心跳与 DHT11 CAN 数据上报 | 已实现，真实数据依赖正常 DHT11 硬件 |
 | Linux CAN 状态 JSON/CSV 输出 | 已验证 |
 | STM32 CAN Bootloader 与基础整包 OTA | v1 单槽实现保留用于历史兼容 |
-| A/B Secure CAN OTA | `v2.1.0-rc.1` 已通过 A/B 双向升级、试启动确认、自动回滚和最终冷启动保持 |
+| A/B Secure CAN OTA | `v2.1.0` 已通过 A/B 双向升级、试启动确认、自动回滚和最终冷启动保持 |
 | SHA-256/ECDSA-P256 固件认证 | 已完成签名、Key ID、Hardware ID 和写入后 Flash 完整性实板验收 |
 | 版本与降级策略 | 已完成默认降级拒绝、签名保护的授权降级及恢复最新版实板验收 |
 | 2KB 页级断点续传 | 已完成约 30% 传输断电，并从 `12288/39716` 字节恢复至最终确认 |
@@ -469,7 +508,9 @@ STM32 -> CAN -> /tmp/stm32_can_state.json
           `-> MQTT Broker -> Windows Qt dashboard / CSV / LED command
 ```
 
-## 演进方向
+## 可选后续方向
+
+以下内容属于产品化扩展，不影响 `v2.1.0` 作为当前项目正式完成版本：
 
 - 使用轻量级 JSON 解析器替代当前的字段查找逻辑。
 - 为 MQTT 增加 TLS、身份认证、请求去重及本地 Broker 验收。
