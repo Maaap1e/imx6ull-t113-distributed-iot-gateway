@@ -1,0 +1,44 @@
+/*
+ * Minimal sensor-related delta extracted from the project's ALIENTEK
+ * i.MX6ULL eMMC board DTS.  Include this from the board DTS or merge the
+ * nodes manually after checking for pin conflicts in the BSP baseline.
+ */
+
+&i2c1 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+
+	ap3216c: light-proximity@1e {
+		compatible = "alientek,ap3216c";
+		reg = <0x1e>;
+		status = "okay";
+	};
+};
+
+&iomuxc {
+	pinctrl_ecspi3_icm20608: icm20608grp {
+		fsl,pins = <
+			MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20    0x10b0
+			MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK  0x10b1
+			MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO    0x10b1
+			MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI    0x10b1
+		>;
+	};
+};
+
+&ecspi3 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3_icm20608>;
+	status = "okay";
+
+	icm20608: imu@0 {
+		compatible = "alientek,icm20608";
+		reg = <0>;
+		spi-max-frequency = <8000000>;
+		status = "okay";
+	};
+};

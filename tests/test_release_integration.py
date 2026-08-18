@@ -13,8 +13,9 @@ class SecureAbReleaseIntegrationTest(unittest.TestCase):
 
     def test_release_version_matches_acceptance_directory(self) -> None:
         version = self.read("VERSION").strip()
-        self.assertEqual(version, "2.1.0-rc.1")
+        self.assertEqual(version, "2.1.0")
         self.assertTrue((REPO / f"docs/acceptance/v{version}/RESULT.md").is_file())
+        self.assertTrue((REPO / "docs/RELEASE_V2.1.0.md").is_file())
 
     def test_imx_build_includes_secure_host(self) -> None:
         script = self.read("scripts/build_all.sh")
@@ -30,6 +31,7 @@ class SecureAbReleaseIntegrationTest(unittest.TestCase):
             script,
         )
         self.assertIn('docs/acceptance/v$VERSION', script)
+        self.assertIn("docs/RELEASE_V2.1.0.md", script)
         self.assertIn("docs/RELEASE_V2.1.0_RC1.md", script)
 
     def test_installer_uses_separate_persistent_directory(self) -> None:
@@ -58,12 +60,28 @@ class SecureAbReleaseIntegrationTest(unittest.TestCase):
 
     def test_acceptance_archive_verifies_evidence_first(self) -> None:
         script = self.read("scripts/package_acceptance.sh")
-        verify = "sha256sum -c EVIDENCE_SHA256SUMS.txt"
+        verify = "tr -d '\\r' < EVIDENCE_SHA256SUMS.txt | sha256sum -c -"
         archive = 'tar -czf "$ARCHIVE"'
         self.assertIn("manifest_count", script)
+        self.assertIn('EVIDENCE_VERSION="${EVIDENCE_VERSION:-}"', script)
+        self.assertIn("EVIDENCE_SOURCE_VERSION", script)
+        self.assertEqual(
+            self.read("docs/acceptance/v2.1.0/EVIDENCE_SOURCE_VERSION").strip(),
+            "2.1.0-rc.1",
+        )
         self.assertIn(verify, script)
         self.assertIn(archive, script)
         self.assertLess(script.index(verify), script.index(archive))
+
+    def test_imx_build_and_bundle_include_sensor_diagnostic(self) -> None:
+        build = self.read("scripts/build_all.sh")
+        package = self.read("scripts/package_target.sh")
+        installer = self.read("scripts/install_target.sh")
+        self.assertIn('linux/kernel_drivers/imx6ull_sensors"', build)
+        self.assertIn('user-test USER_CC="$IMX_CC"', build)
+        self.assertIn("linux/sensor_diag/sensor_smoke_test", build)
+        self.assertIn("linux/sensor_diag/sensor_smoke_test", package)
+        self.assertIn("linux/sensor_diag/sensor_smoke_test", installer)
 
 
 if __name__ == "__main__":

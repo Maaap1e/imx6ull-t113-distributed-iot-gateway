@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.1.0 - 2026-08-18
+
+### Released
+
+- Promoted the real-hardware-validated `v2.1.0-rc.1` A/B Secure CAN OTA
+  baseline to the stable `v2.1.0` release.
+- No STM32 firmware, OTA protocol, package signature, Linux Host or runtime
+  behavior changed after the release candidate; the final release keeps the
+  tested App `2.1.0.3` and its traceable SHA-256 asset identities.
+- Updated the project homepage with a completed-feature matrix and a clear
+  `1.x -> 2.x` release history.
+- Added stable release notes, acceptance pointers, final packaging commands and
+  release-asset naming for `v2.1.0`.
+- Published the project-adapted AP3216C and ICM20608 character drivers, the
+  minimum sensor DTSI, a shared kernel/userspace ABI and a target smoke-test
+  utility. The ICM20608 register path now uses a bounded SPI command/read
+  transaction instead of the legacy multi-byte transfer from a one-byte TX
+  buffer.
+- Integrated the sensor diagnostic into the i.MX6ULL build, target package and
+  persistent installation, and added a native ABI layout test.
+
+### Validated baseline
+
+- A/B bidirectional upgrade, one-shot trial boot, application confirmation and
+  automatic rollback.
+- SHA-256/ECDSA-P256 publisher authentication, Hardware ID/Key ID rejection,
+  default downgrade rejection and signed authorized downgrade.
+- 2 KiB page-level resume after STM32 power loss at approximately 30 percent,
+  followed by final Slot B confirmation and cold-boot persistence.
+- Persistent i.MX6ULL installation, system restart recovery, valid DHT11 data
+  and zero CAN checksum errors in the final recorded state.
+
 ## 2.1.0-rc.1 - 2026-08-01
 
 ### Added

@@ -36,6 +36,14 @@ from, or derived from, third-party SDKs and development-board examples.
   removed. Before commercial redistribution, review the terms supplied with
   the original development-board package.
 
+## i.MX6ULL sensor drivers and board DTS
+
+- `linux/kernel_drivers/imx6ull_sensors/` contains AP3216C and ICM20608
+  driver code adapted from ALIENTEK Linux teaching/BSP examples.
+- The project changes cover bus transfers, error returns, locking, character
+  device lifecycle, the shared userspace ABI and the minimum board-DTS delta.
+- The complete ALIENTEK/NXP Linux BSP is not redistributed in this repository.
+
 ## Eclipse Paho MQTT C
 
 - The optional i.MX6ULL MQTT bridge links against Eclipse Paho MQTT C.

@@ -34,6 +34,9 @@ demo
 /tests/protocol_test
 /tests/mqtt_command_test
 /tests/ota_package_test
+/tests/sensor_uapi_test
+/linux/kernel_drivers/imx6ull_sensors/sensor_smoke_test
+/linux/sensor_diag/sensor_smoke_test
 
 # Python cache
 __pycache__/

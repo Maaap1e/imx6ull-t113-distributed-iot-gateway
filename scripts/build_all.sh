@@ -18,6 +18,11 @@ case "$ROLE" in
         make -C "$BASE_DIR/linux/can_ota_host" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/can_ota_host_ab_secure" CC="$IMX_CC"
         make -C "$BASE_DIR/linux/imx6ull_gateway" CC="$IMX_CC"
+        make -C "$BASE_DIR/linux/kernel_drivers/imx6ull_sensors" \
+            user-test USER_CC="$IMX_CC"
+        mkdir -p "$BASE_DIR/linux/sensor_diag"
+        cp "$BASE_DIR/linux/kernel_drivers/imx6ull_sensors/sensor_smoke_test" \
+            "$BASE_DIR/linux/sensor_diag/sensor_smoke_test"
         make -C "$BASE_DIR/linux/mqtt_bridge" CC="$IMX_CC" \
             PAHO_PREFIX="$PAHO_PREFIX"
         ;;

@@ -85,10 +85,11 @@ if [ "$ROLE" = "imx6ull" ]; then
     require_binary "$BASE_DIR/linux/can_sensor_client/stm32_can_sensor_client"
     require_binary "$BASE_DIR/linux/can_ota_host/stm32_can_ota_host"
     require_binary "$BASE_DIR/linux/can_ota_host_ab_secure/stm32_can_ota_ab_secure_host"
+    require_binary "$BASE_DIR/linux/sensor_diag/sensor_smoke_test"
     require_binary "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge"
     mkdir -p "$APP_DIR/linux/imx6ull_gateway" "$APP_DIR/linux/can_sensor_client" \
         "$APP_DIR/linux/can_ota_host" "$APP_DIR/linux/can_ota_host_ab_secure" \
-        "$APP_DIR/linux/mqtt_bridge"
+        "$APP_DIR/linux/mqtt_bridge" "$APP_DIR/linux/sensor_diag"
     copy_exec "$BASE_DIR/linux/imx6ull_gateway/imx6ull_gateway_app" \
         "$APP_DIR/linux/imx6ull_gateway/imx6ull_gateway_app"
     copy_exec "$BASE_DIR/linux/can_sensor_client/stm32_can_sensor_client" \
@@ -115,6 +116,8 @@ if [ "$ROLE" = "imx6ull" ]; then
         "$APP_DIR/linux/can_ota_host_ab_secure/setup_can.sh"
     copy_exec "$BASE_DIR/linux/can_ota_host_ab_secure/run_ota.sh" \
         "$APP_DIR/linux/can_ota_host_ab_secure/run_ota.sh"
+    copy_exec "$BASE_DIR/linux/sensor_diag/sensor_smoke_test" \
+        "$APP_DIR/linux/sensor_diag/sensor_smoke_test"
     copy_exec "$BASE_DIR/linux/mqtt_bridge/mqtt_bridge" \
         "$APP_DIR/linux/mqtt_bridge/mqtt_bridge"
     copy_exec "$BASE_DIR/linux/mqtt_bridge/start_mqtt_bridge.sh" \
