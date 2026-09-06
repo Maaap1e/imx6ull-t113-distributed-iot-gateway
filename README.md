@@ -62,7 +62,9 @@ i.MX6ULL 同时作为 CAN OTA 主机，可向 STM32 常驻 Bootloader 发送版�
 
 ## 系统架构
 
-![三节点分布式嵌入式物联网网关系统架构](docs/images/system-architecture.svg)
+![三节点分布式嵌入式物联网网关：运行态数据与控制、签名 A/B CAN OTA，以及 T113 长条屏 LVGL 终端](docs/images/system-architecture-neurips-v3.png)
+
+图 (a) 展示采集、状态汇聚、T113 长条屏显示与 MQTT/Qt 管理链路；图 (b) 展示离线签名、CAN 传输和 A/B 试启动恢复。两图中的 i.MX6ULL 与 STM32 是同一组设备在不同流程中的角色。MQTT 控制对应 i.MX6ULL 本地 LED；OTA 由 CAN Host 发起，未确认镜像在复位后回滚。
 
 - **本地实时链路**：STM32F103 经 CAN 向 i.MX6ULL 上报数据并接收控制；i.MX6ULL 经自定义 TCP 帧向 T113 推送聚合状态，T113 负责 CRC32 校验、状态文件更新和 LVGL 显示。
 - **北向管理链路**：i.MX6ULL 的独立 MQTT Bridge 发布遥测与 LWT 状态，并接收白名单控制命令；Windows Qt 上位机通过 Broker 完成监控、趋势记录和命令闭环。
