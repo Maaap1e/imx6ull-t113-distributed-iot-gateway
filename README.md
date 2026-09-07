@@ -114,30 +114,47 @@ LVGL 应用包含主页、番茄时钟、时间显示、快捷入口、Wi-Fi 设
 
 ## 数据链路
 
+![端到端数据链路：传感器采集与汇聚、TCP 和 MQTT 双路分发、LED 命令及执行回执](docs/images/data-flow-neurips-v1.png)
+
+图 (a) 展示本地传感器与 STM32 CAN 数据的汇聚；图 (b) 展示同一聚合状态向 T113/LVGL 和 MQTT/Qt 的分发；图 (c) 展示 Qt 经 Broker、MQTT Bridge 控制 i.MX6ULL 本地 LED 的往返流程。各分区重复出现的模块表示同一进程的不同逻辑视图；LED 回执表示 sysfs 写入结果。
+
+<details>
+<summary>展开可编辑的 Mermaid 数据时序图</summary>
+
 ```mermaid
 sequenceDiagram
     participant S as Linux 传感器驱动
     participant C as STM32 CAN 节点
+    participant K as SocketCAN 服务
     participant G as i.MX6ULL 网关
     participant R as T113 TCP 接收端
     participant U as LVGL UI
+    participant M as MQTT Bridge
     participant B as MQTT Broker
     participant P as Windows Qt 上位机
+    participant L as i.MX6ULL LED sysfs
 
     S->>G: AP3216C 与 ICM20608 数据
-    C->>G: 0x101 心跳 / 0x102 DHT11
-    G->>G: 合并 /tmp/stm32_can_state.json
+    C->>K: 0x101 心跳 / 0x102 DHT11
+    K->>K: Checksum8 校验与节点超时判断
+    K->>G: 通过 stm32_can_state.json 交接最新状态
+    G->>G: 合并本地传感器与 CAN 节点状态
     G->>R: 帧头 + JSON + CRC32
     R->>R: 校验并原子更新状态文件
-    U->>R: 周期读取最新状态
+    R->>U: 通过 t113_sensor_state.json 交接快照
     U->>U: 仅刷新发生变化的控件
-    G->>B: 聚合遥测 + retained 在线状态
+    G->>M: 通过 imx6ull_gateway_state.json 交接快照
+    M->>B: 聚合遥测 + retained 状态 / LWT
     B->>P: MQTT 遥测与状态
     P->>B: 白名单 LED 命令
-    B->>G: 命令下发
-    G->>B: 执行结果响应
+    B->>M: cmd/led 下发
+    M->>L: 校验后写入 brightness / trigger
+    L-->>M: sysfs 写入结果
+    M->>B: cmd/response 执行结果
     B->>P: 控制闭环回执
 ```
+
+</details>
 
 ## 软件分层
 
